@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <title>Agregar libro</title>
+  </head>
+  <body>
+    <header>
+      <h1>Biblioteca</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html" target="_self">Inicio</a></li>
+          <li><a href="conocenos.htm" target="_self">Conocenos</a></li>
+          <li><a href="contacto.htm" target="_self">Contacto</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <h2>Agregar libro</h2>
+      <div>
+        <form action="procesar_libro.php" method="post">
+          <label for="titulo">Título:</label><br>
+          <input type="text" id="titulo" name="titulo" required><br><br>
+          <label for="autor">Autor:</label><br>
+          <input type="text" id="autor" name="autor" required><br><br>
+          <label for="paginas">Número de páginas:</label><br>
+          <input type="number" id="paginas" name="paginas" min="1" required><br><br>
+          <label for="edicion">Edición:</label><br>
+          <input type="text" id="edicion" name="edicion"><br><br>
+          <label for="descripcion">Descripción:</label><br>
+          <textarea id="descripcion" name="descripcion" rows="4" cols="40"></textarea><br><br>
+          <label for="genero">Género:</label><br>
+          <input type="text" id="genero" name="genero"><br><br>
+          <input type="submit" value="Agregar Libro">
+  </form>
+
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2026 Biblioteca. Todos los derechos reservados.</p>
+    </footer>
+  </body>
+</html>
