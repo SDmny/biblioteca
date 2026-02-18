@@ -6,7 +6,7 @@
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #ffe8ce;
+  background-color: hsl(295, 100%, 86%);
   color: #333;
   line-height: 1.6;
 }
