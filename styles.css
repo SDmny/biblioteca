@@ -128,3 +128,29 @@ footer {
     width: 100%;
   }
 }
+
+.card-section {
+    position: relative;
+    margin: 60px auto;
+    width: 80%;
+}
+
+.card-box {
+    background-color: #d89be6;
+    padding: 40px 25px 25px 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    text-align: justify;
+}
+
+.card-title {
+    position: absolute;
+    top: -18px;
+    left: 30px;
+    background-color: #b94ac9;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
