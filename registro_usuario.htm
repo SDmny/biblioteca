@@ -1,46 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="styles.css">
-    <title>Registrarse</title>
-  </head>
-  <body>
-    <header>
-      <h1>Biblioteca</h1>
-      <nav>
-        <ul>
-          <li><a href="index.html" target="_self">Inicio</a></li>
-          <li><a href="conocenos.htm" target="_self">Conocenos</a></li>
-          <li><a href="contacto.htm" target="_self">Contacto</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <h2>Registrarse</h2>
-      <div>
-        <form>
-          <label for="nombre">Nombre</label><br>
-          <input type="text" placeholder="Nombre(s)" id="nombre" name="nombre" required><br><br>
-          <label for="apellido">Apellido</label><br>
-          <input type="text" placeholder="Apellido(s)" id="apellido" name="apellido" required><br><br>
-          <label for="fec_nac">Fecha de nacimiento</label><br>
-          <input type="date" id="fec_nac" name="fec_nac" required><br><br>
-          <label for="email">Correo electrónico</label><br>
-          <input type="email" placeholder="correo@ejemplo.com" id="email" name="email" required><br><br>
-          <label for="usuario">Nombre de usuario</label><br>
-          <input type="text" placeholder="Usuario" id="usuario" name="usuario" required><br><br>
-          <label for="password">Contraseña</label><br>
-          <input type="password" id="password" name="password" required><br><br>
-          <label for="confirm_password">Verificar contraseña</label><br>
-          <input type="password" id="confirm_password" name="confirm_password" required><br><br>
-          <input type="submit" value="Registrarse">
-        </form>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registrarse</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-purple">
+  <div class="container">
+    <a class="navbar-brand text-pink fw-bold" href="index.html">Biblioteca</a>
+    <button class="navbar-toggler bg-light" type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="menu">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link text-white" href="index.html">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="conocenos.htm">Conocenos</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="contacto.htm">Contacto</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<main class="container main-container">
+  <h2 class="mb-4">Registrarse</h2>
+  <div class="card card-custom shadow p-4">
+    <form>
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" placeholder="Nombre(s)" class="form-control" id="nombre" name="nombre" required>
       </div>
-    </main>
-    <footer>
-      <p>&copy; 2026 Biblioteca. Todos los derechos reservados.</p>
-    </footer>
-  </body>
+      <div class="mb-3">
+        <label class="form-label">Apellido</label>
+        <input type="text" placeholder="Apellido(s)" class="form-control" id="apellido" name="apellido" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Fecha de nacimiento</label>
+        <input type="date" class="form-control" id="fec_nac" name="fec_nac" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" placeholder="correo@ejemplo.com" class="form-control" id="email" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Nombre de usuario</label>
+        <input type="text" placeholder="Usuario" class="form-control" id="usuario" name="usuario" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Verificar contraseña</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+      </div>
+      <input type="submit" value="Registrarse" class="btn btn-custom">
+    </form>
+  </div>
+</main>
+<footer class="bg-pink text-white text-center py-3 mt-4">
+  &copy; 2026 Biblioteca. Todos los derechos reservados.
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

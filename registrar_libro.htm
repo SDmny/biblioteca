@@ -1,45 +1,67 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="styles.css">
-    <title>Agregar libro</title>
-  </head>
-  <body>
-    <header>
-      <h1>Biblioteca</h1>
-      <nav>
-        <ul>
-          <li><a href="index.html" target="_self">Inicio</a></li>
-          <li><a href="conocenos.htm" target="_self">Conocenos</a></li>
-          <li><a href="contacto.htm" target="_self">Contacto</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <h2>Agregar libro</h2>
-      <div>
-        <form action="procesar_libro.php" method="post">
-          <label for="titulo">Título:</label><br>
-          <input type="text" id="titulo" name="titulo" required><br><br>
-          <label for="autor">Autor:</label><br>
-          <input type="text" id="autor" name="autor" required><br><br>
-          <label for="paginas">Número de páginas:</label><br>
-          <input type="number" id="paginas" name="paginas" min="1" required><br><br>
-          <label for="edicion">Edición:</label><br>
-          <input type="text" id="edicion" name="edicion"><br><br>
-          <label for="descripcion">Descripción:</label><br>
-          <textarea id="descripcion" name="descripcion" rows="4" cols="40"></textarea><br><br>
-          <label for="genero">Género:</label><br>
-          <input type="text" id="genero" name="genero"><br><br>
-          <input type="submit" value="Agregar Libro">
-  </form>
-
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registrar Libro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-purple">
+  <div class="container">
+    <a class="navbar-brand text-pink fw-bold" href="index.html">Biblioteca</a>
+    <button class="navbar-toggler bg-light" type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="menu">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link text-white" href="index.html">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="conocenos.htm">Conocenos</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="contacto.htm">Contacto</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<main class="container main-container">
+  <h2 class="mb-4">Agregar libro</h2>
+  <div class="card card-custom shadow p-4">
+    <form action="procesar_libro.php" method="post">
+      <div class="mb-3">
+        <label class="form-label">Título</label>
+        <input type="text" class="form-control" id="titulo" name="titulo" required>
       </div>
-    </main>
-    <footer>
-      <p>&copy; 2026 Biblioteca. Todos los derechos reservados.</p>
-    </footer>
-  </body>
+      <div class="mb-3">
+        <label class="form-label">Autor</label>
+        <input type="text" class="form-control" id="autor" name="autor" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Número de páginas</label>
+        <input type="number" class="form-control" id="paginas" name="paginas" min="1" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Edición</label>
+        <input type="text" class="form-control" id="edicion" name="edicion">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-control" id="descripcion" name="descripcion" rows="4"></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Género</label>
+        <input type="text" class="form-control" id="genero" name="genero">
+      </div>
+      <button type="submit" class="btn btn-custom">
+        Agregar Libro
+      </button>
+    </form>
+  </div>
+</main>
+<footer class="bg-pink text-white text-center py-3 mt-4">
+  &copy; 2026 Biblioteca. Todos los derechos reservados.
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
