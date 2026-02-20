@@ -1,7 +1,7 @@
 /* Estilo General */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: hsl(295, 100%, 86%);
+  background-color: hsl(295, 52%, 96%);
   color: #333;
   line-height: 1.6;
 }
@@ -12,7 +12,7 @@ body {
 }
 
 .text-pink {
-  color: rgb(243, 63, 189) !important;
+  color: rgb(240, 35, 178) !important;
 }
 
 .bg-pink {
@@ -28,7 +28,6 @@ body {
   color: #c919ab !important;
 }
 
-/* Contenido Principal */
 .main-container {
   border-left: 6px solid #8a1c7c;
   border-right: 6px solid #8a1c7c;
@@ -36,11 +35,11 @@ body {
 }
 
 h2 {
-  color: #891294;
+  color: #3f0c44;
 }
 
 h3 {
-  color: #7f2292;
+  color: #590569;
 }
 
 /* Tarjetas Generales */
@@ -48,36 +47,29 @@ h3 {
   background-color: #f4f4f4;
   border: 2px solid #c06ccf;
   border-radius: 15px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
-/* Efecto de Libros */
+/* Tarjetas Libros */
 .libro-card {
-  background-color: #f4f4f4;
+  background-color: #f3d5e9;
   border: 2px solid #c06ccf;
   border-radius: 15px;
-  transition: 
-    transform 0.35s ease,
-    box-shadow 0.35s ease,
-    background-color 0.35s ease;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, background-color 0.35s ease;
+  text-align: justify;
 }
 
 .libro-card:hover {
   transform: translateY(-10px) scale(1.03);
   box-shadow: 0 18px 35px rgba(0, 0, 0, 0.25);
-  background-color: #ffffff;
+  background-color: #f1bcf3;
 }
 
-.card-body,
-.libro-card {
-  text-align: justify;
-}
-
-/* Botones */
 .btn-custom {
   background-color: #3d093b;
   color: white;
   border-radius: 5px;
+  padding: 8px 18px;
+  border: none;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -87,7 +79,7 @@ h3 {
   transform: translateY(-2px);
 }
 
-/* Parte de Misión y Visión */
+/* Mision y Vision */
 .card-section {
   position: relative;
   margin: 60px auto;
