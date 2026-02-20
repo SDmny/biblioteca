@@ -1,0 +1,46 @@
+.form-container {
+  border-left: 6px solid #8a1c7c;
+  border-right: 6px solid #8a1c7c;
+  padding: 60px 5%;
+  display: flex;
+  justify-content: center;
+}
+
+.form-card {
+  background: linear-gradient(145deg, #f8e6f7, #ffffff);
+  border-radius: 18px;
+  padding: 40px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.form-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Campos */
+.form-label {
+  font-weight: 600;
+  color: #590569;
+}
+
+.form-control {
+  border-radius: 10px;
+  border: 2px solid #c06ccf;
+  padding: 10px 12px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #801b77;
+  box-shadow: 0 0 0 0.25rem rgba(128, 27, 119, 0.25);
+  transform: scale(1.02);
+}
+
+.form-card .btn-custom {
+  width: 100%;
+  padding: 10px;
+  font-weight: 600;
+}
