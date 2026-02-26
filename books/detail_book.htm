@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../styles.css">
     <title>Detalle del Libro</title>
   </head>
+  
   <body>
     <header>
       <nav class="navbar navbar-expand-lg bg-purple">
@@ -33,17 +34,13 @@
                 <a class="nav-link text-white" href="../index.html">Inicio</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-white" href="../conocenos.htm"
-                  >Conócenos</a
-                >
+                <a class="nav-link text-white" href="../conocenos.htm">Conócenos</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link text-white" href="../contacto.htm">Contacto</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-white" href="../users/add_user.htm"
-                  >Registrarse</a
-                >
+                <a class="nav-link text-white" href="../users/add_user.htm">Registrarse</a>
               </li>
             </ul>
           </div>
@@ -53,26 +50,30 @@
 
     <main class="container my-5">
       <h2 class="mb-4">Detalle del Libro</h2>
-      <div class="card p-4 shadow">
-        <h3 class="mb-3">Título del libro</h3>
-        <p><strong>Autor: </strong>Nombre del autor</p>
-        <p><strong>Número de páginas: </strong>0000</p>
-        <p><strong>Edición: </strong>Edición</p>
-        <p><strong>Género: </strong>Género del libro</p>
-        <p>
-          <strong>Descripción:</strong>Descripción del libro. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>
-
-        <div class="text-center my-4">
-          <img
-            src="imagenes/portada_libro.jpg"
-            alt="Portada del libro"
-            class="img-fluid rounded shadow"
-          >
-        </div>
-
-        <div class="mt-3">
-          <a href="../index.html" class="btn btn-pink">← Volver al catálogo</a>
+      <div class="card p-4 shadow detalle-libro-card">
+        <div class="detalle-libro-container">
+          <div class="detalle-libro-info">
+            <h3 class="mb-3">Título del libro</h3>
+            <p><strong>Autor: </strong>Nombre del autor</p>
+            <p><strong>Número de páginas: </strong>0000</p>
+            <p><strong>Edición: </strong>Edición</p>
+            <p><strong>Género: </strong>Género del libro</p>
+            <p>
+              <strong>Descripción:</strong>Descripción del libro. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </p>
+            <div class="mt-3">
+              <a href="../index.html" class="btn btn-pink">← Volver al catálogo</a>
+            </div>
+          </div>
+          <div class="detalle-libro-imagen">
+            <div class="text-center my-4">
+              <img
+                src="imagenes/portada_libro.jpg"
+                alt="Portada del libro"
+                class="img-fluid rounded shadow"
+              >
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -87,7 +88,7 @@
           class="validator-badge"
         >
       </a>
-      <a href="https://jigsaw.w3.org/css-validator/validator">
+      <a href="https://jigsaw.w3.org/css-validator/#validate-by-input">
         <img
           src="https://jigsaw.w3.org/css-validator/images/vcss"
           alt="Valid CSS"
@@ -95,6 +96,7 @@
         >
       </a>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
