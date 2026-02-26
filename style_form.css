@@ -14,9 +14,10 @@ body {
 }
 
 /* Contenedor interno */
+
 .form-wrapper {
   width: 95%;
-  max-width: 1000px;
+  max-width: 95%;
 }
 
 /* Titulos */
