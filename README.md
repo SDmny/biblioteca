@@ -2,9 +2,11 @@
 
 PW - Biblioteca
 
-## Descripción
-
 Este proyecto tiene como objetivo desarrollar un sistema de biblioteca digital que permita a los usuarios acceder a libros de forma organizada.
+
+# frontend
+Fue creada con el comando npm create vite@latest, es una aplicación de react, si utilizamos un comando relacionado con npm
+asegurate de que en la terminal estes en is-centro-deportivo (repositorio) \ frontend (aplicación react y donde está node_modules)
 
 ## Propósito
 
