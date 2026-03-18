@@ -46,7 +46,7 @@ function Header({ setView }) {
                     className="nav-link btn btn-link text-white"
                     onClick={() => setView("detalle")}
                   >
-                    Detalle Libro
+                    Libros
                   </button>
                 </li>
               </ul>
