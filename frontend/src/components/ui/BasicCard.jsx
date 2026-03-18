@@ -1,9 +1,9 @@
-function BasicCard({ titulo, parrafo }) {
+function BasicCard({ titulo, children }) {
   return (
     <div className="card-section">
       <div className="card-box">
         <h2 class="card-title-floating">{titulo}</h2>
-        <p className="card-text">{parrafo}</p>
+        <div className="card-text">{children}</div>
       </div>
     </div>
   );
