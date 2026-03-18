@@ -1,0 +1,241 @@
+/* Estilo General */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: hsl(295, 52%, 96%);
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Colores */
+.bg-purple {
+  background-color: #801b77 !important;
+}
+
+.text-pink {
+  color: rgb(240, 35, 178) !important;
+}
+
+.bg-pink {
+  background-color: #c919ab !important;
+}
+
+.navbar .nav-link {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #c919ab !important;
+}
+
+.main-container {
+  border-left: 6px solid #8a1c7c;
+  border-right: 6px solid #8a1c7c;
+  padding: 50px 5%;
+}
+
+h2 {
+  color: #3f0c44;
+}
+
+h3 {
+  color: #590569;
+}
+
+/* Tarjetas Generales */
+.card-custom {
+  background-color: #f4f4f4;
+  border: 2px solid #c06ccf;
+  border-radius: 15px;
+}
+
+/* Tarjetas Libros */
+.libro-card {
+  background-color: #f3d5e9;
+  border: 2px solid #c06ccf;
+  border-radius: 15px;
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    background-color 0.35s ease;
+  text-align: justify;
+}
+
+.libro-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.25);
+  background-color: #f1bcf3;
+}
+
+.btn-custom {
+  background-color: #3d093b;
+  color: white;
+  border-radius: 5px;
+  padding: 8px 18px;
+  border: none;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.btn-custom:hover {
+  background-color: #c919ab;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Mision y Vision */
+.card-section {
+  position: relative;
+  margin: 60px auto;
+  max-width: 800px;
+}
+
+.card-box {
+  background-color: #d89be6;
+  padding: 40px 25px 25px 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  text-align: justify;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.card-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.card-title-floating {
+  position: absolute;
+  top: -18px;
+  left: 30px;
+  background-color: #b94ac9;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Detalle del libro */
+.detalle-libro-container {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.detalle-libro-info {
+  flex: 1 1 500px;
+}
+
+.detalle-libro-imagen {
+  flex: 0 0 300px;
+  text-align: center;
+}
+
+.detalle-libro-imagen img {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid #c06ccf;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.detalle-libro-imagen img:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .detalle-libro-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .detalle-libro-info {
+    width: 100%;
+  }
+
+  .detalle-libro-imagen {
+    margin-top: 20px;
+  }
+}
+
+/* Tarjeta detalle del libro */
+.detalle-libro-card {
+  background: linear-gradient(145deg, #ffffff, #f3d5e9);
+  border: 2px solid #c06ccf;
+  border-radius: 18px;
+  padding: 35px;
+  box-shadow: 0 15px 35px rgba(128, 27, 119, 0.15);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.detalle-libro-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 45px rgba(128, 27, 119, 0.25);
+}
+
+.detalle-libro-info h3 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #c06ccf;
+  padding-bottom: 10px;
+}
+
+.detalle-libro-info p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.detalle-libro-info strong {
+  color: #4b0d49;
+}
+
+.btn-volver {
+  margin-top: 20px;
+  background-color: #801b77;
+  color: white;
+  border-radius: 8px;
+  padding: 10px 20px;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-volver:hover {
+  background-color: #c919ab;
+  transform: translateY(-2px);
+}
+
+.btn-pink {
+  background: linear-gradient(135deg, #c919ab, #801b77);
+  color: white !important;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 30px;
+  border: none;
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: 0 6px 15px rgba(128, 27, 119, 0.35);
+  transition: all 0.25s ease;
+}
+
+.btn-pink:hover {
+  background: linear-gradient(135deg, #d633c2, #5a0f53);
+  color: white !important;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 10px 22px rgba(128, 27, 119, 0.45);
+}
+
+.btn-pink:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 10px rgba(128, 27, 119, 0.3);
+}
