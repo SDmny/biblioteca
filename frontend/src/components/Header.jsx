@@ -1,47 +1,53 @@
-function Header() {
+function Header({ setView }) {
   return (
     <>
       <header>
-        <nav className="navbar navbar-expand-lg bg-purple">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
           <div className="container">
-            <a className="navbar-brand text-pink fw-bold" href="../index.html">
+            <a className="navbar-brand fw-bold" href="#">
               Biblioteca
             </a>
             <button
-              className="navbar-toggler bg-light"
+              className="navbar-toggler"
               type="button"
               data-bs-toggle="collapse"
               data-bs-target="#menu"
             >
               <span className="navbar-toggler-icon"></span>
             </button>
-            <div
-              className="collapse navbar-collapse justify-content-center"
-              id="menu"
-            >
-              <ul className="navbar-nav">
+            <div className="collapse navbar-collapse" id="menu">
+              <ul className="navbar-nav ms-auto">
                 <li className="nav-item">
-                  <a className="nav-link text-white" href="../index.html">
-                    Inicio
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link text-white" href="../conocenos.htm">
-                    Conócenos
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link text-white" href="../contacto.htm">
-                    Contacto
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a
-                    className="nav-link text-white"
-                    href="../users/add_user.htm"
+                  <button
+                    className="nav-link btn btn-link text-white"
+                    onClick={() => setView("home")}
                   >
-                    Registrarse
-                  </a>
+                    Inicio
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className="nav-link btn btn-link text-white"
+                    onClick={() => setView("conocenos")}
+                  >
+                    Conócenos
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className="nav-link btn btn-link text-white"
+                    onClick={() => setView("contacto")}
+                  >
+                    Contacto
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className="nav-link btn btn-link text-white"
+                    onClick={() => setView("detalle")}
+                  >
+                    Detalle Libro
+                  </button>
                 </li>
               </ul>
             </div>
