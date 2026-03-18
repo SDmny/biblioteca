@@ -1,11 +1,11 @@
 body {
-  background-color: #f4eef6;
+  background-color: #f5f0e6;
 }
 
 /* Contenedor principal */
 .form-container {
-  border-left: 8px solid #8a1c7c;
-  border-right: 8px solid #8a1c7c;
+  border-left: 8px solid #355e3b;
+  border-right: 8px solid #355e3b;
   padding: 60px 20px;
   min-height: 100vh;
   display: flex;
@@ -21,7 +21,7 @@ body {
 
 /* Titulos */
 .form-wrapper h2 {
-  color: #4b0d49;
+  color: #001f3f;
   font-weight: bold;
   margin-bottom: 20px;
 }
@@ -31,7 +31,7 @@ body {
   background-color: #ffffff;
   border-radius: 16px;
   padding: 30px;
-  border: 2px solid #b44ac0;
+  border: 2px solid #c9a227;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   width: 100%;
 }
@@ -39,24 +39,24 @@ body {
 /* Labels */
 .form-label {
   font-weight: 600;
-  color: #4b0d49;
+  color: #001f3f;
 }
 
 /* Inputs */
 .form-control {
   border-radius: 8px !important;
-  border: 2px solid #b44ac0 !important;
+  border: 2px solid #c9a227 !important;
 }
 
 .form-control:focus {
-  border-color: #8a1c7c !important;
-  box-shadow: 0 0 8px rgba(138, 28, 124, 0.4) !important;
+  border-color: #355e3b !important;
+  box-shadow: 0 0 8px rgba(53, 94, 59, 0.4) !important;
 }
 
 /* Boton */
 .btn-custom {
   width: 100%;
-  background-color: #8a1c7c;
+  background-color: #001f3f;
   color: white;
   font-weight: bold;
   border-radius: 8px;
@@ -65,7 +65,7 @@ body {
 }
 
 .btn-custom:hover {
-  background-color: #c218a8;
+  background-color: #355e3b;
   color: white;
 }
 
