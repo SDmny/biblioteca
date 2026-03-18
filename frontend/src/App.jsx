@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./interfaces/Home.jsx";
 import Conocenos from "./interfaces/Conocenos.jsx";
@@ -8,20 +8,19 @@ import Footer from "./components/Footer.jsx";
 import Header from "./components/Header.jsx";
 
 function App() {
-  const [view, setView] = useState("home");
   return (
-    <>
-      <Header setView={setView} />
-
-      <main className="container my-5">
-        {view === "home" && <Home />}
-        {view === "conocenos" && <Conocenos />}
-        {view === "contacto" && <Contacto />}
-        {view === "detalle" && <Catalogo />}
-      </main>
-
+    <Router>
+      <Header />
+      <div id="contenido">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/conocenos" element={<Conocenos />} />
+          <Route path="/contacto" element={<Contacto />} />
+          <Route path="/catalogo" element={<Catalogo />} />
+        </Routes>
+      </div>
       <Footer />
-    </>
+    </Router>
   );
 }
 

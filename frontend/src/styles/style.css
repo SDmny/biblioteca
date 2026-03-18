@@ -1,9 +1,16 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 /* Estilo General */
-body {
+#contenido {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f5f0e6;
   color: #001f3f;
   line-height: 1.6;
+  flex: 1;
 }
 
 /* Colores */

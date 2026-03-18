@@ -1,60 +1,48 @@
-function Header({ setView }) {
+import { Link } from "react-router-dom";
+
+function Header() {
   return (
-    <>
-      <header>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-          <div className="container">
-            <a className="navbar-brand fw-bold" href="#">
-              Biblioteca
-            </a>
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#menu"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="menu">
-              <ul className="navbar-nav ms-auto">
-                <li className="nav-item">
-                  <button
-                    className="nav-link btn btn-link text-white"
-                    onClick={() => setView("home")}
-                  >
-                    Inicio
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    className="nav-link btn btn-link text-white"
-                    onClick={() => setView("conocenos")}
-                  >
-                    Conócenos
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    className="nav-link btn btn-link text-white"
-                    onClick={() => setView("contacto")}
-                  >
-                    Contacto
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    className="nav-link btn btn-link text-white"
-                    onClick={() => setView("detalle")}
-                  >
-                    Libros
-                  </button>
-                </li>
-              </ul>
-            </div>
+    <header>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div className="container">
+          <Link className="navbar-brand fw-bold" to="/">
+            Biblioteca
+          </Link>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#menu"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="menu">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/">
+                  Inicio
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/conocenos">
+                  Conócenos
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/contacto">
+                  Contacto
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/catalogo">
+                  Libros
+                </Link>
+              </li>
+            </ul>
           </div>
-        </nav>
-      </header>
-    </>
+        </div>
+      </nav>
+    </header>
   );
 }
 
