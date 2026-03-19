@@ -1,16 +1,35 @@
+import { useNavigate } from "react-router-dom";
+
 function BookCard({ book }) {
+
+  const nav = useNavigate();
+
   return (
-    <div className="book-card">
-      <img src={book.image} alt={book.title} />
+
+    <div
+      className="libro-card"
+      onClick={() =>
+        nav("/libro/" + book.id)
+      }
+    >
+
+      <img
+        src={book.image || "/img/default.jpg"}
+        alt={book.title}
+      />
+
       <h4>{book.title}</h4>
+
       <p>{book.author}</p>
-      <span>{book.rating} ⭐</span>
-      <div className="buttons">
-        <button>Leer</button>
-        <button>Reservar</button>
-      </div>
+
+      <span>
+        ⭐ {book.rating}
+      </span>
+
     </div>
+
   );
+
 }
 
 export default BookCard;

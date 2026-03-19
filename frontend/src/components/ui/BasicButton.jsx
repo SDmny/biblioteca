@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 function BasicButton({ to, texto }) {
   return (
     <>
-      <Link className="btn btn-pink" to={to}>
+      <Link className="btn btn-main" to={to}>
         {texto}
       </Link>
     </>

@@ -3,72 +3,104 @@
     "id": 1,
     "title": "El Viento en los Sauces",
     "author": "Kenneth Grahame",
-    "rating": "4.5/5",
+    "rating": 4.5,
     "image": "/img/viento.jpg",
     "genre": "Ficción",
-    "language": "Español"
+    "language": "Español",
+    "pages": 210,
+    "edition": "1",
+    "date": "2024-01-10",
+    "description": "Un clásico de aventuras."
   },
   {
     "id": 2,
     "title": "1984",
     "author": "George Orwell",
-    "rating": "4.8/5",
+    "rating": 4.8,
     "image": "/img/1984.jpg",
     "genre": "Distopía",
-    "language": "Inglés"
+    "language": "Inglés",
+    "pages": 300,
+    "edition": "2",
+    "date": "2023-05-01",
+    "description": "Sociedad vigilada."
   },
   {
     "id": 3,
     "title": "Orgullo y Prejuicio",
     "author": "Jane Austen",
-    "rating": "4.7/5",
+    "rating": 4.7,
     "image": "/img/orgullo.jpg",
     "genre": "Romance",
-    "language": "Inglés"
+    "language": "Inglés",
+    "pages": 280,
+    "edition": "3",
+    "date": "2022-04-02",
+    "description": "Romance clásico."
   },
   {
     "id": 4,
     "title": "Cien Años de Soledad",
     "author": "Gabriel García Márquez",
-    "rating": "4.8/5",
+    "rating": 4.9,
     "image": "/img/cien.jpg",
     "genre": "Realismo mágico",
-    "language": "Español"
+    "language": "Español",
+    "pages": 350,
+    "edition": "5",
+    "date": "2023-10-12",
+    "description": "Macondo."
   },
   {
     "id": 5,
     "title": "La Sombra del Viento",
     "author": "Carlos Ruiz Zafón",
-    "rating": "4.6/5",
+    "rating": 4.6,
     "image": "/img/sombra.jpg",
     "genre": "Misterio",
-    "language": "Español"
+    "language": "Español",
+    "pages": 410,
+    "edition": "2",
+    "date": "2024-02-01",
+    "description": "Barcelona misteriosa."
   },
   {
     "id": 6,
-    "title": "Crónica de una Muerte Anunciada",
-    "author": "Gabriel García Márquez",
-    "rating": "4.7/5",
-    "image": "/img/cronica.jpg",
-    "genre": "Novela",
-    "language": "Español"
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "rating": 4.8,
+    "image": "/img/dune.jpg",
+    "genre": "Ciencia ficción",
+    "language": "Inglés",
+    "pages": 500,
+    "edition": "4",
+    "date": "2024-03-01",
+    "description": "Desierto."
   },
   {
     "id": 7,
-    "title": "Dune",
-    "author": "Frank Herbert",
-    "rating": "4.8/5",
-    "image": "/img/dune.jpg",
-    "genre": "Ciencia ficción",
-    "language": "Inglés"
+    "title": "Clean Code",
+    "author": "Robert Martin",
+    "rating": 4.9,
+    "image": "/img/code.jpg",
+    "genre": "Programación",
+    "language": "Inglés",
+    "pages": 450,
+    "edition": "1",
+    "date": "2024-02-15",
+    "description": "Buenas prácticas."
   },
   {
     "id": 8,
-    "title": "El Código Da Vinci",
-    "author": "Dan Brown",
-    "rating": "4.5/5",
-    "image": "/img/codigo.jpg",
-    "genre": "Misterio",
-    "language": "Inglés"
+    "title": "Historia Universal",
+    "author": "H. Wells",
+    "rating": 4.2,
+    "image": "/img/history.jpg",
+    "genre": "Historia",
+    "language": "Español",
+    "pages": 600,
+    "edition": "6",
+    "date": "2021-01-01",
+    "description": "Historia."
   }
 ]

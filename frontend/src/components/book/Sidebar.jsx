@@ -1,37 +1,66 @@
-function Sidebar() {
+function Sidebar({ filtrar }) {
+
   return (
-    <>
-      <aside className="sidebar">
-        <h3>CATÁLOGOS</h3>
-        <ul>
-          <li className="active">Todos</li>
-          <li>Novedades</li>
-          <li>Populares</li>
-        </ul>
 
-        <h3>GÉNEROS</h3>
-        <ul>
-          <li>Ficción</li>
-          <li>Misterio</li>
-          <li>Fantasía</li>
-          <li>Historia</li>
-          <li>Biografía</li>
-        </ul>
+    <div className="sidebar">
 
-        <h3>IDIOMAS</h3>
-        <ul>
-          <li>Español</li>
-          <li>Inglés</li>
-        </ul>
+      <h3>Filtros</h3>
 
-        <h3>FORMATOS</h3>
-        <ul>
-          <li>Ebook</li>
-          <li>Audiolibro</li>
-        </ul>
-      </aside>
-    </>
+
+      <button onClick={() => filtrar("todos")}>
+        Todos
+      </button>
+
+
+      <button onClick={() => filtrar("populares")}>
+        Populares
+      </button>
+
+
+      <button onClick={() => filtrar("nuevos")}>
+        Nuevos
+      </button>
+
+
+
+      <h4>Género</h4>
+
+      <button onClick={() => filtrar("genero","Ficción")}>
+        Ficción
+      </button>
+
+      <button onClick={() => filtrar("genero","Misterio")}>
+        Misterio
+      </button>
+
+      <button onClick={() => filtrar("genero","Historia")}>
+        Historia
+      </button>
+
+
+
+      <h4>Idioma</h4>
+
+      <button onClick={() => filtrar("idioma","Español")}>
+        Español
+      </button>
+
+      <button onClick={() => filtrar("idioma","Inglés")}>
+        Inglés
+      </button>
+
+
+
+      <h4>Páginas</h4>
+
+      <button onClick={() => filtrar("largos")}>
+        Más de 400 páginas
+      </button>
+
+    </div>
+
   );
+
 }
 
 export default Sidebar;

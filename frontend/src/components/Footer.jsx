@@ -1,7 +1,7 @@
 function Footer() {
   return (
     <>
-      <footer className="bg-pink text-white text-center py-3">
+      <footer className="bg-main text-white text-center py-3">
         &copy; 2026 Biblioteca. Todos los derechos reservados.
         <br />
         <a href="https://validator.w3.org/nu/#textarea" target="_blank">

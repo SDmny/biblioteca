@@ -5,7 +5,11 @@ function Home() {
   return (
     <>
       <main className="container main-container text-center">
-        <h2 className="mb-4">Bienvenido a la Biblioteca Digital</h2>
+
+        <h2 className="mb-4 text-main">
+          Bienvenido a la Biblioteca Digital
+        </h2>
+
         <div className="mt-4">
           <img
             src="src/assets/images/biblioteca_digital.jpeg"
@@ -13,11 +17,17 @@ function Home() {
             className="img-fluid rounded shadow"
           />
         </div>
+
         <p className="mb-4">
           Explora nuestro catálogo de libros digitales y accede a contenido de
           todo tipo de manera gratuita.
         </p>
-        <BasicButton to={"/catalogo"} texto={"Ver catálogo"}></BasicButton>
+
+        <BasicButton
+          to={"/catalogo"}
+          texto={"Ver catálogo"}
+        />
+
       </main>
     </>
   );
