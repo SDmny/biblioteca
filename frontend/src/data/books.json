@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "title": "El Viento en los Sauces",
+    "author": "Kenneth Grahame",
+    "rating": "4.5/5",
+    "image": "/img/viento.jpg",
+    "genre": "Ficción",
+    "language": "Español"
+  },
+  {
+    "id": 2,
+    "title": "1984",
+    "author": "George Orwell",
+    "rating": "4.8/5",
+    "image": "/img/1984.jpg",
+    "genre": "Distopía",
+    "language": "Inglés"
+  },
+  {
+    "id": 3,
+    "title": "Orgullo y Prejuicio",
+    "author": "Jane Austen",
+    "rating": "4.7/5",
+    "image": "/img/orgullo.jpg",
+    "genre": "Romance",
+    "language": "Inglés"
+  },
+  {
+    "id": 4,
+    "title": "Cien Años de Soledad",
+    "author": "Gabriel García Márquez",
+    "rating": "4.8/5",
+    "image": "/img/cien.jpg",
+    "genre": "Realismo mágico",
+    "language": "Español"
+  },
+  {
+    "id": 5,
+    "title": "La Sombra del Viento",
+    "author": "Carlos Ruiz Zafón",
+    "rating": "4.6/5",
+    "image": "/img/sombra.jpg",
+    "genre": "Misterio",
+    "language": "Español"
+  },
+  {
+    "id": 6,
+    "title": "Crónica de una Muerte Anunciada",
+    "author": "Gabriel García Márquez",
+    "rating": "4.7/5",
+    "image": "/img/cronica.jpg",
+    "genre": "Novela",
+    "language": "Español"
+  },
+  {
+    "id": 7,
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "rating": "4.8/5",
+    "image": "/img/dune.jpg",
+    "genre": "Ciencia ficción",
+    "language": "Inglés"
+  },
+  {
+    "id": 8,
+    "title": "El Código Da Vinci",
+    "author": "Dan Brown",
+    "rating": "4.5/5",
+    "image": "/img/codigo.jpg",
+    "genre": "Misterio",
+    "language": "Inglés"
+  }
+]

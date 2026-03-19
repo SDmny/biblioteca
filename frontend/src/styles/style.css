@@ -64,6 +64,10 @@ detalle libro
   flex: 1;
 }
 
+.main {
+  display: flex;
+}
+
 .main-container {
   border-left: 6px solid var(--clr-azul2);
   border-right: 6px solid var(--clr-azul2);
@@ -289,4 +293,12 @@ h3 {
 
 .detalle-libro-info strong {
   color: var(--clr-azul1);
+}
+
+/* Libros */
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
