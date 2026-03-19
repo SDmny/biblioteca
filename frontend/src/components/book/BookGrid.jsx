@@ -1,3 +1,5 @@
+import BookCard from "./BookCard.jsx";
+
 function BookGrid({ books }) {
   if (!books || books.length === 0) {
     return <p>No hay libros disponibles</p>;
