@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 function Header() {
   return (
     <header>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg bg-purple">
         <div className="container">
-          <Link className="navbar-brand fw-bold" to="/">
+          <Link className="navbar-brand text-pink fw-bold" to="/">
             Biblioteca
           </Link>
           <button

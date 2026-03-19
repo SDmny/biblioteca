@@ -1,13 +1,29 @@
+/* Indice del css
+
+colores
+root
+contenido
+main
+titulos h
+header y navar
+card
+btn
+
+detalle libro
+
+*/
+
+/* colores */
 :root {
-  --color-primary: #00366b; /* Azul oscuro */
-  --color-secondary: #274160; /* Azul */
-  --color-accent: #c9a227; /* Dorado */
-  --color-background: #edebe7; /* Beige claro */
-  --color-card: #ebe8d8; /* Beige más oscuro */
-  --color-hover: #e4d3a3; /* Hover para tarjetas */
+  --color-primary: #00468b;
+  --color-secondary: #031d5a;
+  --color-accent: #c9a227;
+  --color-background: #edebe7;
+  --color-card: #ebe8d8;
+  --color-hover: #e4d3a3;
 }
 
-/* Layout */
+/* root Layout */
 #root {
   display: flex;
   flex-direction: column;

@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import BasicButton from "../components/ui/BasicButton.jsx";
+
 function Home() {
   return (
     <>
@@ -14,9 +17,7 @@ function Home() {
           Explora nuestro catálogo de libros digitales y accede a contenido de
           todo tipo de manera gratuita.
         </p>
-        <a href="libros.htm" className="btn btn-custom px-4">
-          Ver catálogo
-        </a>
+        <BasicButton to={"/catalogo"} texto={"Ver catálogo"}></BasicButton>
       </main>
     </>
   );
