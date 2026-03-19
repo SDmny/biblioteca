@@ -35,3 +35,7 @@ return (
 }
 
 export default App;
+
+### linea para la importación de react router
+
+import { Link } from "react-router-dom";

@@ -6,7 +6,7 @@ function Catalogo() {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
-    fetch("public/data/books.json")
+    fetch("/data/books.json")
       .then((res) => res.json())
       .then((data) => setBooks(data));
   }, []);
