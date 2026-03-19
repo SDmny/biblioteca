@@ -1,9 +1,7 @@
 /* Indice del css
 
-colores
-root
-contenido
-main
+colores y clases preestablecidas
+root, contenido, main
 titulos h
 header y navar
 card
@@ -11,31 +9,31 @@ btn
 
 detalle libro
 
-*/
-
 /* colores */
 :root {
-  --color-primary: #00468b;
-  --color-secondary: #031d5a;
-  --color-accent: #c9a227;
-  --color-background: #edebe7;
-  --color-card: #ebe8d8;
-  --color-hover: #e4d3a3;
-}
+  --clr-azul1: #2f6fb0;
+  --clr-azul2: #00468b;
+  --clr-azul3: #0a2c7a;
+  --clr-azul4: #022e5c;
+  --clr-azul5: #021646;
 
-/* root Layout */
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
+  --clr-dorado1: #f0d77a;
+  --clr-dorado2: #e2c65a;
+  --clr-dorado3: #c9a227;
+  --clr-dorado4: #9a7a12;
 
-#contenido {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--color-background);
-  color: var(--color-primary);
-  line-height: 1.6;
-  flex: 1;
+  --clr-beige1: #f5f3ee;
+  --clr-beige2: #f4f1e4;
+  --clr-beige3: #edebe7;
+  --clr-beige4: #ebe8d8;
+  --clr-beige5: #e1ded6;
+  --clr-beige6: #dcd7c3;
+  --clr-beige7: #d4d0c4;
+  --clr-beige8: #e4d3a3;
+  --clr-beige9: #d6c089;
+
+  --clr-negro: #1a1a1a;
+  --clr-blanco: #ffffff;
 }
 
 /* Colores utilitarios */
@@ -51,13 +49,19 @@ detalle libro
   background-color: var(--color-secondary) !important;
 }
 
-.navbar .nav-link {
-  font-weight: 500;
-  transition: color 0.3s ease;
+/* root layout, contenido, main container*/
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-.navbar .nav-link:hover {
-  color: var(--color-accent) !important;
+#contenido {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  line-height: 1.6;
+  flex: 1;
 }
 
 .main-container {
@@ -65,6 +69,8 @@ detalle libro
   border-right: 6px solid var(--color-secondary);
   padding: 50px 5%;
 }
+
+/* titulos h */
 
 h2 {
   color: var(--color-primary);
@@ -74,14 +80,25 @@ h3 {
   color: var(--color-secondary);
 }
 
-/* Tarjetas Generales */
+/* header y navar */
+
+.navbar .nav-link {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: var(--color-accent) !important;
+}
+
+/* cards */
+
 .card-custom {
   background-color: var(--color-background);
   border: 2px solid var(--color-accent);
   border-radius: 15px;
 }
 
-/* Tarjetas Libros */
 .libro-card {
   background-color: var(--color-card);
   border: 2px solid var(--color-accent);
@@ -99,24 +116,6 @@ h3 {
   background-color: var(--color-hover);
 }
 
-.btn-custom {
-  background-color: var(--color-primary);
-  color: white;
-  border-radius: 5px;
-  padding: 8px 18px;
-  border: none;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
-}
-
-.btn-custom:hover {
-  background-color: var(--color-secondary);
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* Misión y Visión */
 .card-section {
   position: relative;
   margin: 60px auto;
@@ -151,7 +150,71 @@ h3 {
   font-weight: bold;
 }
 
+/* botones */
+
+.btn-custom {
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 5px;
+  padding: 8px 18px;
+  border: none;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.btn-custom:hover {
+  background-color: var(--color-secondary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-volver {
+  margin-top: 20px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 8px;
+  padding: 10px 20px;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-volver:hover {
+  background-color: var(--color-secondary);
+  transform: translateY(-2px);
+}
+
+.btn-pink {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary),
+    var(--color-primary)
+  );
+  color: white !important;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 30px;
+  border: none;
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: 0 6px 15px rgba(0, 31, 63, 0.35);
+  transition: all 0.25s ease;
+}
+
+.btn-pink:hover {
+  background: linear-gradient(135deg, #4a7a4f, var(--color-primary));
+  color: white !important;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 10px 22px rgba(0, 31, 63, 0.45);
+}
+
+.btn-pink:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 10px rgba(0, 31, 63, 0.3);
+}
+
 /* Detalle del libro */
+
 .detalle-libro-container {
   display: flex;
   gap: 40px;
@@ -230,48 +293,4 @@ h3 {
 
 .detalle-libro-info strong {
   color: var(--color-primary);
-}
-
-.btn-volver {
-  margin-top: 20px;
-  background-color: var(--color-primary);
-  color: white;
-  border-radius: 8px;
-  padding: 10px 20px;
-  border: none;
-  transition: all 0.3s ease;
-}
-
-.btn-volver:hover {
-  background-color: var(--color-secondary);
-  transform: translateY(-2px);
-}
-
-.btn-pink {
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary),
-    var(--color-primary)
-  );
-  color: white !important;
-  font-weight: 600;
-  padding: 10px 22px;
-  border-radius: 30px;
-  border: none;
-  display: inline-block;
-  text-decoration: none;
-  box-shadow: 0 6px 15px rgba(0, 31, 63, 0.35);
-  transition: all 0.25s ease;
-}
-
-.btn-pink:hover {
-  background: linear-gradient(135deg, #4a7a4f, var(--color-primary));
-  color: white !important;
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 10px 22px rgba(0, 31, 63, 0.45);
-}
-
-.btn-pink:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 4px 10px rgba(0, 31, 63, 0.3);
 }
