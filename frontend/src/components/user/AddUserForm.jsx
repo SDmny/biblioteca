@@ -101,7 +101,7 @@ function AddUserForm({ onSubmit }) {
           />
         </BasicInput>
         <input type="submit" value="Registrarse" className=" btn-custom" />
-        <BasicButton to={"/dashboard"} texto={"Volver"} />
+        <BasicButton to={"/"} texto={"Volver"} />
       </form>
     </>
   );
