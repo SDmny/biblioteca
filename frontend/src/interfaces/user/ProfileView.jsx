@@ -1,6 +1,6 @@
 import { useState } from "react";
 import BasicButton from "../../components/ui/BasicButton";
-import EditProfile from "../../components/user/EditProfile";
+import SeeProfile from "../../components/user/SeeProfile";
 import BackButton from "../../components/ui/BackButton";
 
 function ProfileView() {
@@ -26,7 +26,7 @@ function ProfileView() {
   return (
     <div className="main-container">
       <BackButton ruta="/" />
-      <EditProfile user={user}>
+      <SeeProfile user={user}>
         <BasicButton to={"/add-book"} texto={"Publicar libro"} />
 
         <hr />
@@ -46,7 +46,7 @@ function ProfileView() {
             </button>
           </div>
         ))}
-      </EditProfile>
+      </SeeProfile>
     </div>
   );
 }
