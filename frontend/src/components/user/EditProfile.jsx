@@ -26,9 +26,6 @@ function EditProfile({ user, children }) {
         <br />
 
         <BasicButton to={"/profile-edit"} texto={"Modificar datos"} />
-        <BasicButton to={"/add-book"} texto={"Publicar libro"} />
-
-        <hr />
         {children}
       </BasicCard>
     </>

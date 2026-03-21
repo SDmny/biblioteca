@@ -32,6 +32,10 @@ function ProfileView() {
   return (
     <div className="main-container">
       <EditProfile user={user}>
+        <BasicButton to={"/add-book"} texto={"Publicar libro"} />
+
+        <hr />
+
         <h3>Mis libros</h3>
 
         {books.map((b) => (
