@@ -10,6 +10,8 @@ function BookDetailPage() {
 
   const [book, setBook] = useState(null);
 
+  const userRol = localStorage.getItem("rol") || "user";
+
   useEffect(() => {
     fetch("/data/books.json")
       .then((res) => res.json())
@@ -27,6 +29,17 @@ function BookDetailPage() {
   if (!book) {
     return <p>Cargando...</p>;
   }
+
+  const handleDelete = () => {
+    const localBooks = JSON.parse(localStorage.getItem("books")) || [];
+    const updatedBooks = localBooks.filter((b) => String(b.id) !== id);
+    localStorage.setItem("books", JSON.stringify(updatedBooks));
+    nav("/libros");
+  };
+
+  const handleEdit = () => {
+    nav(`/admin/edit-book/${id}`);
+  };
 
   return (
     <div className="main-container">
@@ -46,6 +59,17 @@ function BookDetailPage() {
       <button className="btn-volver" onClick={() => nav("/catalogo")}>
         ← Volver al catálogo
       </button>
+
+      {userRol === "admin" && (
+        <div className="admin-actions">
+          <button className="btn-edit" onClick={handleEdit}>
+            Editar
+          </button>
+          <button className="btn-delete" onClick={handleDelete}>
+            Borrar
+          </button>
+        </div>
+      )}
     </div>
   );
 }

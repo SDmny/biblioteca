@@ -3,7 +3,7 @@ import BasicInput from "../ui/BasicInput";
 import TypeInput from "../ui/TypeInput";
 import BasicButton from "../ui/BasicButton";
 
-function AddUserForm({ onSubmit }) {
+function AddUserForm({ onSubmit, isAdminContext = false }) {
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -12,6 +12,7 @@ function AddUserForm({ onSubmit }) {
     usuario: "",
     password: "",
     confirm_password: "",
+    rol: "user",
   });
 
   const handleChange = (e) => {
@@ -30,7 +31,8 @@ function AddUserForm({ onSubmit }) {
 
   return (
     <>
-      <h2>Registrarse</h2>
+      <h2>{isAdminContext ? "Crear usuario" : "Registrarse"}</h2>
+
       <form onSubmit={handleSubmit}>
         <BasicInput label={"Nombre"}>
           <TypeInput
@@ -100,6 +102,21 @@ function AddUserForm({ onSubmit }) {
             required
           />
         </BasicInput>
+
+        {isAdminContext && (
+          <BasicInput label={"Rol"}>
+            <select
+              name="rol"
+              value={formData.rol}
+              onChange={handleChange}
+              required
+            >
+              <option value="user">Usuario</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </BasicInput>
+        )}
+
         <input type="submit" value="Registrarse" className=" btn-custom" />
         <BasicButton to={"/"} texto={"Volver"} />
       </form>
