@@ -74,7 +74,7 @@ function Catalogo() {
           <button
             className="btn-main"
             style={{ marginBottom: 15 }}
-            onClick={() => nav("/dashboard")}
+            onClick={() => nav("/add-book")}
           >
             Añadir libro
           </button>
