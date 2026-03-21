@@ -11,39 +11,41 @@ function Catalogo() {
   const { filtered, search, user, filtrar, buscar } = useCatalogo();
 
   return (
-    <div className="catalog-container">
-      <SidebarFilter filtrar={filtrar} />
+    <>
+      <div className="catalog-container">
+        <SidebarFilter filtrar={filtrar} />
 
-      <div className="catalog-content">
-        <div
-          style={{
-            display: "flex",
-            gap: 10,
-            marginBottom: 10,
-            alignItems: "center",
-          }}
-        >
-          <input
-            className="form-control"
+        <div className="catalog-content">
+          <div
             style={{
-              height: 35,
-              padding: "4px 8px",
+              display: "flex",
+              gap: 10,
+              marginBottom: 10,
+              alignItems: "center",
             }}
-            placeholder="Buscar libro..."
-            value={search}
-            onChange={(e) => buscar(e.target.value)}
-          />
+          >
+            <input
+              className="form-control"
+              style={{
+                height: 35,
+                padding: "4px 8px",
+              }}
+              placeholder="Buscar libro..."
+              value={search}
+              onChange={(e) => buscar(e.target.value)}
+            />
 
-          {user && (
-            <button className="btn btn-main" onClick={() => nav("/add-book")}>
-              Añadir libro
-            </button>
-          )}
+            {user && (
+              <button className="btn btn-main" onClick={() => nav("/add-book")}>
+                Añadir libro
+              </button>
+            )}
+          </div>
+
+          <BookGrid books={filtered} />
         </div>
-
-        <BookGrid books={filtered} />
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,9 +1,11 @@
+import BackButton from "../components/ui/BackButton";
 import BasicCard from "../components/ui/BasicCard";
 
 function Contacto() {
   return (
     <>
       <div className="container main-container">
+        <BackButton ruta="/" />
         <BasicCard titulo={"Contacto"}>
           <p>
             Esta sección tiene como objetivo brindar un medio de comunicación

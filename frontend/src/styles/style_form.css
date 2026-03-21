@@ -4,9 +4,7 @@ body {
 
 /* Contenedor principal */
 .form-container {
-  border-left: 8px solid #355e3b;
-  border-right: 8px solid #355e3b;
-  padding: 60px 20px;
+  padding: 30px 20px;
   min-height: 100vh;
   display: flex;
   justify-content: center;

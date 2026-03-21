@@ -75,6 +75,7 @@ function ProfilePage() {
 
   return (
     <div className="main-container">
+      <BackButton />
       <BasicCard titulo="Modificar perfil">
         <div style={{ textAlign: "center" }}>
           <img
@@ -117,7 +118,6 @@ function ProfilePage() {
         <button className="btn-main me-2" onClick={guardar}>
           Guardar
         </button>
-        <BackButton />
         <hr />
         <button className="btn-main me-2" onClick={cerrarSesion}>
           Cerrar sesión

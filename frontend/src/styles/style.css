@@ -73,7 +73,7 @@ detalle libro
 .main-container {
   border-left: 6px solid var(--clr-azul2);
   border-right: 6px solid var(--clr-azul2);
-  padding: 50px 5%;
+  padding: 20px 5%;
 }
 
 /* titulos h */
@@ -205,6 +205,29 @@ h3 {
 }
 
 .btn-main:active {
+  transform: scale(0.98);
+}
+
+/* Boton regresar */
+
+.btn-back {
+  background: var(--clr-azul1);
+  color: white !important;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 30px;
+  border: none;
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: 0 3px 10px rgba(0, 31, 63, 0.35);
+  transition: all 0.25s ease;
+}
+
+.btn-back:hover {
+  background: var(--clr-azul2);
+}
+
+.btn-back:active {
   transform: scale(0.98);
 }
 

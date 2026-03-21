@@ -1,9 +1,11 @@
 import BasicCard from "../components/ui/BasicCard";
+import BackButton from "../components/ui/BackButton";
 
 function Conocenos() {
   return (
     <>
       <div className="container main-container">
+        <BackButton ruta="/" />
         <BasicCard titulo={"Misión"}>
           <p>
             Nuestra misión como biblioteca digital es proporcionar acceso

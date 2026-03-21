@@ -44,115 +44,121 @@ function AddBookForm({ onSubmit }) {
   };
 
   return (
-    <div className="form-container">
-      <div className="form-wrapper">
-        <h2>Agregar Libro</h2>
-        <div className="form-card">
-          <form onSubmit={submit}>
-            <div className="mb-3">
-              <label className="form-label">Título</label>
+    <div className="main-container">
+      <BackButton />
+      <div className="form-container">
+        <div className="form-wrapper">
+          <h2>Agregar Libro</h2>
+          <div className="form-card">
+            <form onSubmit={submit}>
+              <div className="mb-3">
+                <label className="form-label">Título</label>
+                <input
+                  className="form-control"
+                  name="title"
+                  value={form.title}
+                  onChange={change}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Autor</label>
+                <input
+                  className="form-control"
+                  name="author"
+                  value={form.author}
+                  onChange={change}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Edición</label>
+                <input
+                  className="form-control"
+                  name="edition"
+                  value={form.edition}
+                  onChange={change}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Género</label>
+                <input
+                  className="form-control"
+                  name="genre"
+                  value={form.genre}
+                  onChange={change}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Sinopsis</label>
+                <textarea
+                  className="form-control"
+                  name="synopsis"
+                  value={form.synopsis}
+                  onChange={change}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Páginas</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="pages"
+                  value={form.pages}
+                  onChange={change}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Fecha</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="date"
+                  value={form.date}
+                  onChange={change}
+                />
+              </div>
+
+              {/* Imagen */}
+              <div className="mb-3">
+                <label className="form-label">Imagen</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  name="image"
+                  className="form-control"
+                  onChange={handleFile}
+                />
+              </div>
+
+              {/* PDF */}
+              <div className="mb-3">
+                <label className="form-label">PDF</label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  name="file"
+                  className="form-control"
+                  onChange={handleFile}
+                />
+              </div>
+
               <input
-                className="form-control"
-                name="title"
-                value={form.title}
-                onChange={change}
-                required
+                type="submit"
+                value="Guardar Libro"
+                className="btn-custom"
               />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Autor</label>
-              <input
-                className="form-control"
-                name="author"
-                value={form.author}
-                onChange={change}
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Edición</label>
-              <input
-                className="form-control"
-                name="edition"
-                value={form.edition}
-                onChange={change}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Género</label>
-              <input
-                className="form-control"
-                name="genre"
-                value={form.genre}
-                onChange={change}
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Sinopsis</label>
-              <textarea
-                className="form-control"
-                name="synopsis"
-                value={form.synopsis}
-                onChange={change}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Páginas</label>
-              <input
-                type="number"
-                className="form-control"
-                name="pages"
-                value={form.pages}
-                onChange={change}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Fecha</label>
-              <input
-                type="date"
-                className="form-control"
-                name="date"
-                value={form.date}
-                onChange={change}
-              />
-            </div>
-
-            {/* Imagen */}
-            <div className="mb-3">
-              <label className="form-label">Imagen</label>
-              <input
-                type="file"
-                accept="image/*"
-                name="image"
-                className="form-control"
-                onChange={handleFile}
-              />
-            </div>
-
-            {/* PDF */}
-            <div className="mb-3">
-              <label className="form-label">PDF</label>
-              <input
-                type="file"
-                accept="application/pdf"
-                name="file"
-                className="form-control"
-                onChange={handleFile}
-              />
-            </div>
-
-            <input type="submit" value="Guardar Libro" className="btn-custom" />
-            <br />
-            <br />
-            <BackButton />
-          </form>
+              <br />
+              <br />
+            </form>
+          </div>
         </div>
       </div>
     </div>

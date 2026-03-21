@@ -1,6 +1,7 @@
 import { useState } from "react";
 import BasicButton from "../../components/ui/BasicButton";
 import EditProfile from "../../components/user/EditProfile";
+import BackButton from "../../components/ui/BackButton";
 
 function ProfileView() {
   const user = JSON.parse(localStorage.getItem("user")); // Usuario actual
@@ -24,6 +25,7 @@ function ProfileView() {
 
   return (
     <div className="main-container">
+      <BackButton ruta="/" />
       <EditProfile user={user}>
         <BasicButton to={"/add-book"} texto={"Publicar libro"} />
 
