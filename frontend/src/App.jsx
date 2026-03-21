@@ -10,14 +10,14 @@ function App() {
     const defaultAdmin = {
       nombre: "admin",
       apellido: "admin",
-      usuario: "admin",
-      password: "admin",
+      usuario: "a",
+      password: "a",
       rol: "admin",
       email: "admin@biblioteca.com",
     };
 
     const users = JSON.parse(localStorage.getItem("users")) || [];
-    const exists = users.find((u) => u.usuario === "admin");
+    const exists = users.find((u) => u.usuario === "a");
 
     if (!exists) {
       users.push(defaultAdmin);
