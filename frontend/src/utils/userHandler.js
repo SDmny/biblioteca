@@ -11,7 +11,7 @@ export const handleCreateUser = (user, nav, isAdminContext = false) => {
 
   if (isAdminContext) {
     alert("Usuario creado por administrador");
-    nav("/admin/usuarios"); // redirige a la lista de usuarios
+    nav("/dashboard"); // redirige a la lista de usuarios
   } else {
     localStorage.setItem("user", JSON.stringify(user));
     alert("Usuario registrado e iniciado sesión");

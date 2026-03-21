@@ -18,8 +18,6 @@ import RegisterPage from "../components/user/RegisterPage.jsx";
 
 import AdminRoute from "./AdminRoute.jsx";
 import AdminDashboard from "../interfaces/admin/AdminDashboard.jsx";
-import ManageBooksPage from "../interfaces/admin/ManageBooksPage.jsx";
-import ManageUsersPage from "../interfaces/admin/ManageUsersPage.jsx";
 
 function AppRoutes() {
   return (
@@ -39,7 +37,7 @@ function AppRoutes() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/edit-book/:id" element={<EditBook />} />
 
-      {/* Rutas protegidas para admin */}
+      {/* Rutas protegidas para admin 
 
       <Route
         path="/admin/libros"
@@ -57,6 +55,7 @@ function AppRoutes() {
           </AdminRoute>
         }
       />
+      */}
     </Routes>
   );
 }

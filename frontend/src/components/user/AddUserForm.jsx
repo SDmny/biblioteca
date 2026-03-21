@@ -1,7 +1,6 @@
 import { useState } from "react";
 import BasicInput from "../ui/BasicInput";
 import TypeInput from "../ui/TypeInput";
-import BasicButton from "../ui/BasicButton";
 
 function AddUserForm({ onSubmit, isAdminContext = false }) {
   const [formData, setFormData] = useState({
@@ -118,7 +117,6 @@ function AddUserForm({ onSubmit, isAdminContext = false }) {
         )}
 
         <input type="submit" value="Registrarse" className=" btn-custom" />
-        <BasicButton to={"/"} texto={"Volver"} />
       </form>
     </>
   );

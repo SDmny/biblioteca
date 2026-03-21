@@ -8,6 +8,8 @@ import EditProfile from "../../components/user/EditProfile.jsx";
 import BasicCard from "../../components/ui/BasicCard.jsx";
 
 import BookList from "../../components/book/BookList.jsx";
+import ManageUsersPage from "../../components/admin/ManageUsersPage.jsx";
+import AddUsers from "../../components/admin/AddUsers.jsx";
 
 function AdminDashboard() {
   const [selected, setSelected] = useState(null);
@@ -18,9 +20,11 @@ function AdminDashboard() {
       case "usuarios-list":
         return <UserList />;
       case "usuarios-add":
-        return <p>Aquí iría el formulario para crear usuario</p>;
+        return <AddUsers></AddUsers>;
       case "usuarios-edit":
-        return <p>Aquí iría el formulario para editar usuario</p>;
+        return (
+          <p>editar usuario, ManageUsersPage es una base, no es funcional</p>
+        );
       case "usuarios-delete":
         return <p>Aquí iría la opción para eliminar usuario</p>;
       case "libros-list":

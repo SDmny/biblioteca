@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import AddUserForm from "../user/AddUserForm.jsx";
 import { handleCreateUser } from "../../utils/userHandler.js";
 
-function ManageUsers() {
+function AddUsers() {
   const nav = useNavigate();
 
   return (
@@ -16,4 +16,4 @@ function ManageUsers() {
   );
 }
 
-export default ManageUsers;
+export default AddUsers;
