@@ -11,6 +11,7 @@ function Header() {
     if (!ok) return;
 
     localStorage.removeItem("user");
+    localStorage.removeItem("adminSelected");
 
     nav("/");
   };
@@ -68,7 +69,15 @@ function Header() {
 
               {user && (
                 <div className="user-box">
-                  <Link to="/dashboard" className="user-link">
+                  <Link
+                    to="/dashboard"
+                    className="user-link"
+                    onClick={() => {
+                      if (user.rol === "admin") {
+                        localStorage.setItem("adminSelected", "user-list");
+                      }
+                    }}
+                  >
                     <img
                       src={user.img || "/src/assets/images/user.png"}
                       className="user-img"
