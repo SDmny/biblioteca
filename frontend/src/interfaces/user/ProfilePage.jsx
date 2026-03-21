@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import BasicCard from "../../components/ui/BasicCard";
+
 function ProfilePage() {
 
   const nav = useNavigate();
@@ -9,7 +11,6 @@ function ProfilePage() {
     JSON.parse(
       localStorage.getItem("user")
     );
-
 
   const [form, setForm] =
     useState(user);
@@ -26,6 +27,7 @@ function ProfilePage() {
     });
 
   };
+
 
   const changeImg = (e) => {
 
@@ -50,51 +52,45 @@ function ProfilePage() {
 
   };
 
+
   const guardar = () => {
 
-  let users =
-    JSON.parse(
-      localStorage.getItem("users")
-    ) || [];
+    let users =
+      JSON.parse(
+        localStorage.getItem("users")
+      ) || [];
 
 
-  const nuevos = users.map(u => {
+    const nuevos =
+      users.map(u => {
 
-    if (u.usuario === user.usuario) {
+        if (
+          u.usuario === user.usuario
+        ) {
+          return form;
+        }
 
-      return form;
+        return u;
 
-    }
-
-    return u;
-
-  });
-
-
-  localStorage.setItem(
-    "users",
-    JSON.stringify(nuevos)
-  );
+      });
 
 
-  localStorage.setItem(
-    "user",
-    JSON.stringify(form)
-  );
+    localStorage.setItem(
+      "users",
+      JSON.stringify(nuevos)
+    );
 
+    localStorage.setItem(
+      "user",
+      JSON.stringify(form)
+    );
 
-  alert("Datos guardados");
+    alert("Guardado");
 
-};
+  };
+
 
   const cerrarSesion = () => {
-
-    const ok =
-      confirm(
-        "¿Deseas cerrar sesión?"
-      );
-
-    if (!ok) return;
 
     localStorage.removeItem("user");
 
@@ -105,37 +101,23 @@ function ProfilePage() {
 
   const borrarCuenta = () => {
 
-    const ok =
-      confirm(
-        "¿Seguro que deseas borrar la cuenta? Este cambio es permanente."
-      );
-
-    if (!ok) return;
-
-
     let users =
       JSON.parse(
         localStorage.getItem("users")
       ) || [];
 
-
-    const nuevos =
+    users =
       users.filter(
         u =>
           u.usuario !== user.usuario
       );
 
-
     localStorage.setItem(
       "users",
-      JSON.stringify(nuevos)
+      JSON.stringify(users)
     );
 
-
     localStorage.removeItem("user");
-
-
-    alert("Cuenta eliminada");
 
     nav("/");
 
@@ -146,122 +128,95 @@ function ProfilePage() {
 
     <div className="main-container">
 
-      <div className="card-section">
+      <BasicCard titulo="Modificar perfil">
 
+        <div style={{ textAlign:"center" }}>
 
-        <div className="card-box">
-
-
-          <div
+          <img
+            src={
+              form.img ||
+              "/src/assets/images/user.png"
+            }
+            width="90"
             style={{
-              textAlign: "center",
-              marginBottom: 20,
+              borderRadius:"50%"
             }}
-          >
-
-            <img
-              src={
-                form.img ||
-                "/img/user.png"
-              }
-              width="120"
-              style={{
-                borderRadius: "50%",
-                border:
-                  "3px solid var(--clr-azul2)",
-              }}
-            />
-
-
-            <br />
-
-            <input
-              type="file"
-              onChange={changeImg}
-            />
-
-          </div>
-
-
-          Nombre
-
-          <input
-            className="form-control"
-            name="nombre"
-            value={form.nombre || ""}
-            onChange={change}
           />
-
 
           <br />
 
-
-          Apellido
-
           <input
-            className="form-control"
-            name="apellido"
-            value={form.apellido || ""}
-            onChange={change}
+            type="file"
+            onChange={changeImg}
           />
-
-
-          <br />
-
-
-          Usuario
-
-          <input
-            className="form-control"
-            name="usuario"
-            value={form.usuario || ""}
-            onChange={change}
-          />
-
-
-          <br />
-
-
-          <button
-            className="btn-main"
-            onClick={guardar}
-          >
-            Guardar cambios
-          </button>
-
-
-          <hr />
-
-
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              flexWrap: "wrap",
-            }}
-          >
-
-            <button
-              className="btn-main"
-              onClick={cerrarSesion}
-            >
-              Cerrar sesión
-            </button>
-
-
-            <button
-              className="btn-volver"
-              onClick={borrarCuenta}
-            >
-              Borrar cuenta
-            </button>
-
-          </div>
-
 
         </div>
 
-      </div>
+
+        <br />
+
+        Nombre
+
+        <input
+          className="form-control"
+          name="nombre"
+          value={form.nombre || ""}
+          onChange={change}
+        />
+
+        <br />
+
+        Apellido
+
+        <input
+          className="form-control"
+          name="apellido"
+          value={form.apellido || ""}
+          onChange={change}
+        />
+
+        <br />
+
+        Usuario
+
+        <input
+          className="form-control"
+          name="usuario"
+          value={form.usuario || ""}
+          onChange={change}
+        />
+
+        <br />
+
+
+        <button
+          className="btn-main me-2"
+          onClick={guardar}
+        >
+          Guardar
+        </button>
+
+
+        <button
+          className="btn-main me-2"
+          onClick={() =>
+            nav("/perfil")
+          }
+        >
+          Volver
+        </button>
+
+
+        <hr />
+
+        <button
+          className="btn-main me-2"
+          onClick={borrarCuenta}
+        >
+          Borrar cuenta
+        </button>
+
+      </BasicCard>
 
     </div>
 

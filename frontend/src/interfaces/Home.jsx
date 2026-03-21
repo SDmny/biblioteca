@@ -24,7 +24,7 @@ function Home() {
         </p>
 
         <BasicButton
-          to={"/catalogo"}
+          to={"/libros"}
           texto={"Ver catálogo"}
         />
 

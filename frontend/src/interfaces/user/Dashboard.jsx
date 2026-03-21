@@ -1,11 +1,9 @@
 import AddBookForm from "../../components/book/AddBookForm";
-
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
 
   const nav = useNavigate();
-
 
   const user =
     JSON.parse(
@@ -22,10 +20,12 @@ function Dashboard() {
         <h2>No autorizado</h2>
 
         <button
-          className="btn-main"
-          onClick={() => nav("/login")}
+          className="btn btn-primary"
+          onClick={() =>
+            nav("/login")
+          }
         >
-          Ir a login
+          Login
         </button>
 
       </div>
@@ -35,7 +35,6 @@ function Dashboard() {
   }
 
 
-
   const guardarLibro = (book) => {
 
     const libros =
@@ -43,36 +42,31 @@ function Dashboard() {
         localStorage.getItem("books")
       ) || [];
 
+    book.id =
+      Date.now();
 
-    book.id = Date.now();
-
+    book.usuario =
+      user.usuario;
 
     libros.push(book);
-
 
     localStorage.setItem(
       "books",
       JSON.stringify(libros)
     );
 
-
     alert("Libro guardado");
 
   };
-
 
 
   return (
 
     <div className="main-container">
 
-      <h2>Panel de administración</h2>
-
-
       <AddBookForm
         onSubmit={guardarLibro}
       />
-
 
     </div>
 

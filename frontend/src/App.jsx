@@ -8,6 +8,7 @@ import Catalogo from "./interfaces/book/Catalogo.jsx";
 import BookDetailPage from "./interfaces/book/BookDetailPage.jsx";
 
 import ProfilePage from "./interfaces/user/ProfilePage.jsx";
+import ProfileView from "./interfaces/user/ProfileView.jsx";
 import Dashboard from "./interfaces/user/Dashboard.jsx";
 
 import LoginPage from "./components/user/LoginPage.jsx";
@@ -19,9 +20,13 @@ import Footer from "./components/Footer.jsx";
 function App() {
   return (
     <Router>
+
       <Header />
+
       <div id="contenido">
+
         <Routes>
+
           <Route path="/" element={<Home />} />
 
           <Route path="/conocenos" element={<Conocenos />} />
@@ -30,18 +35,34 @@ function App() {
 
           <Route path="/libros" element={<Catalogo />} />
 
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/libro/:id" element={<BookDetailPage />} />
 
           <Route path="/login" element={<LoginPage />} />
 
           <Route path="/register" element={<RegisterPage />} />
 
-          <Route path="/perfil" element={<ProfilePage />} />
+          <Route
+            path="/perfil"
+            element={<ProfileView />}
+          />
 
-          <Route path="/libro/:id" element={<BookDetailPage />} />
+          <Route
+            path="/profile-edit"
+            element={<ProfilePage />}
+          />
+
+          <Route
+            path="/dashboard"
+            element={<Dashboard />}
+          />
+
+
         </Routes>
+
       </div>
+
       <Footer />
+
     </Router>
   );
 }
