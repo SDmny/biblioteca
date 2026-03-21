@@ -26,9 +26,8 @@ function ManageUsersPage() {
 
   return (
     <div className="main-container catalog-container">
-      {/* Sidebar */}
+      w{/* Sidebar */}
       <UserSidebar onSelect={setSelected} />
-
       {/* Contenido principal */}
       <div className="catalog-content">
         <h2>Administrar usuarios</h2>

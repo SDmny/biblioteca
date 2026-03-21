@@ -1,26 +1,41 @@
-import BasicCard from "../../components/ui/BasicCard";
-import BasicButton from "../../components/ui/BasicButton";
+import { useState } from "react";
+
+import AdminSidebar from "../../components/admin/AdminSidebar.jsx";
+import UserList from "../../components/user/UserList.jsx";
+
+import BasicButton from "../../components/ui/BasicButton.jsx";
+import BasicCard from "../../components/ui/BasicCard.jsx";
 
 function AdminDashboard() {
+  const [selected, setSelected] = useState(null);
+
+  const renderContent = () => {
+    switch (selected) {
+      case "usuarios-list":
+        return <UserList></UserList>;
+      case "usuarios-add":
+        return <p>Aquí iría el formulario para crear usuario</p>;
+      case "usuarios-edit":
+        return <p>Aquí iría el formulario para editar usuario</p>;
+      case "usuarios-delete":
+        return <p>Aquí iría la opción para eliminar usuario</p>;
+      case "perfil":
+        return <p>Aquí iría la edición de perfil</p>;
+      default:
+        return <p>Selecciona una opción del menú</p>;
+    }
+  };
+
   return (
-    <div className="main-container">
-      <h2>Panel de Administración</h2>
-
-      <div className="card-section">
-        {/* Tarjeta Usuarios */}
-        <BasicCard titulo="Gestionar Usuarios">
-          <BasicButton to={"/admin/usuarios"} texto={"Administrar usuarios"} />
-        </BasicCard>
-
-        {/* Tarjeta Libros */}
-        <BasicCard titulo="Gestionar Libros">
-          <BasicButton to={"/admin/libros"} texto={"Administrar libros"} />
-        </BasicCard>
-
-        {/* Tarjeta Más Opciones */}
-        <BasicCard titulo="Más Opciones">
-          <BasicButton to={"/profile-edit"} texto={"Editar perfil"} />
-        </BasicCard>
+    <div className="catalog-container">
+      {/* Sidebar */}
+      <AdminSidebar onSelect={setSelected} />
+      {/* Contenido principal */}
+      <div className="catalog-content">
+        <h2>Administrar usuarios</h2>
+        <div className="">
+          <BasicCard titulo="Contenido">{renderContent()}</BasicCard>
+        </div>
       </div>
     </div>
   );
