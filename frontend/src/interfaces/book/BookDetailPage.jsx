@@ -1,12 +1,11 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import DetailBook from "../../components/book/DetailBook";
+import BackButton from "../../components/ui/BackButton";
 
 function BookDetailPage() {
   const { id } = useParams();
-  const nav = useNavigate();
   const [book, setBook] = useState(null);
-  const userRol = localStorage.getItem("rol") || "user";
 
   useEffect(() => {
     const localBooks = JSON.parse(localStorage.getItem("books")) || [];
@@ -22,17 +21,6 @@ function BookDetailPage() {
   }, [id]);
 
   if (!book) return <p>Cargando...</p>;
-
-  const handleDelete = () => {
-    const localBooks = JSON.parse(localStorage.getItem("books")) || [];
-    const updatedBooks = localBooks.filter((b) => String(b.id) !== String(id));
-    localStorage.setItem("books", JSON.stringify(updatedBooks));
-    nav("/libros");
-  };
-
-  const handleEdit = () => {
-    nav(`/admin/edit-book/${id}`);
-  };
 
   return (
     <div className="main-container">
@@ -51,20 +39,7 @@ function BookDetailPage() {
 
       <br />
 
-      <button className="btn-volver" onClick={() => nav("/libros")}>
-        ← Volver al catálogo
-      </button>
-
-      {userRol === "admin" && (
-        <div className="admin-actions">
-          <button className="btn-edit" onClick={handleEdit}>
-            Editar
-          </button>
-          <button className="btn-delete" onClick={handleDelete}>
-            Borrar
-          </button>
-        </div>
-      )}
+      <BackButton texto="← Volver" />
     </div>
   );
 }
