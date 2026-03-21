@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "../interfaces/Home.jsx";
 import Contacto from "../interfaces/Contacto.jsx";
 import Conocenos from "../interfaces/Conocenos.jsx";
+import Dashboard from "../interfaces/Dashboard.jsx";
 
 import Catalogo from "../interfaces/book/Catalogo.jsx";
 import BookDetailPage from "../interfaces/book/BookDetailPage.jsx";
@@ -34,17 +35,10 @@ function AppRoutes() {
       <Route path="/perfil" element={<ProfileView />} />
       <Route path="/profile-edit" element={<ProfilePage />} />
       <Route path="/add-book" element={<AddBook />} />
+      <Route path="/dashboard" element={<Dashboard />} />
 
       {/* Rutas protegidas para admin */}
 
-      <Route
-        path="/admin/dashboard"
-        element={
-          <AdminRoute>
-            <AdminDashboard />
-          </AdminRoute>
-        }
-      />
       <Route
         path="/admin/libros"
         element={

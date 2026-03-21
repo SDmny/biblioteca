@@ -19,7 +19,7 @@ function LoginPage() {
     if (encontrado) {
       localStorage.setItem("user", JSON.stringify(encontrado));
 
-      nav("/libros");
+      nav("/dashboard");
     } else {
       alert("Datos incorrectos");
     }
