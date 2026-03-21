@@ -11,6 +11,7 @@ import BookDetailPage from "../interfaces/book/BookDetailPage.jsx";
 import ProfilePage from "../interfaces/user/ProfilePage.jsx";
 import ProfileView from "../interfaces/user/ProfileView.jsx";
 import AddBook from "../interfaces/user/AddBook.jsx";
+import EditBook from "../interfaces/user/EditBook.jsx";
 
 import LoginPage from "../components/user/LoginPage.jsx";
 import RegisterPage from "../components/user/RegisterPage.jsx";
@@ -36,6 +37,7 @@ function AppRoutes() {
       <Route path="/profile-edit" element={<ProfilePage />} />
       <Route path="/add-book" element={<AddBook />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/edit-book/:id" element={<EditBook />} />
 
       {/* Rutas protegidas para admin */}
 

@@ -1,7 +1,9 @@
-import { useState } from "react";
-import BasicButton from "../ui/BasicButton";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import BasicButton from "../../components/ui/BasicButton";
 
-function AddBookForm({ onSubmit }) {
+function EditBook() {
+  const { id } = useParams();
   const [form, setForm] = useState({
     title: "",
     author: "",
@@ -14,22 +16,34 @@ function AddBookForm({ onSubmit }) {
     file: "",
   });
 
-  const change = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [bookOwner, setBookOwner] = useState("");
+
+  // Cargar libro existente
+  useEffect(() => {
+    const libros = JSON.parse(localStorage.getItem("books")) || [];
+    const book = libros.find((b) => String(b.id) === String(id));
+    if (book) {
+      setForm({
+        title: book.title,
+        author: book.author,
+        edition: book.edition || "",
+        genre: book.genre,
+        synopsis: book.description,
+        pages: book.pages,
+        date: book.date || "",
+        image: book.image || "",
+        file: book.file || "",
+      });
+      setBookOwner(book.usuario || "");
+    }
+  }, [id]);
+
+  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const fileToBase64 = (file, name) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => {
-      setForm((prev) => ({
-        ...prev,
-        [name]: reader.result,
-      }));
-    };
+    reader.onload = () => setForm((prev) => ({ ...prev, [name]: reader.result }));
   };
 
   const handleFile = (e) => {
@@ -38,17 +52,45 @@ function AddBookForm({ onSubmit }) {
     if (file) fileToBase64(file, name);
   };
 
+  // Guardar cambios
   const submit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+
+    const currentUser = JSON.parse(localStorage.getItem("user")) || {}; // Usuario actual
+
+    if (bookOwner && bookOwner !== currentUser.usuario) {
+      alert("No tienes permiso para editar este libro.");
+      return;
+    }
+
+    const libros = JSON.parse(localStorage.getItem("books")) || [];
+    const index = libros.findIndex((b) => String(b.id) === String(id));
+
+    if (index >= 0) {
+      libros[index] = {
+        ...libros[index],
+        title: form.title,
+        author: form.author,
+        edition: form.edition,
+        genre: form.genre,
+        description: form.synopsis,
+        pages: form.pages,
+        date: form.date,
+        image: form.image,
+        file: form.file,
+      };
+      localStorage.setItem("books", JSON.stringify(libros));
+      alert("Libro actualizado");
+    }
   };
 
   return (
     <div className="form-container">
       <div className="form-wrapper">
-        <h2>Agregar Libro</h2>
+        <h2>Editar Libro</h2>
         <div className="form-card">
           <form onSubmit={submit}>
+
             <div className="mb-3">
               <label className="form-label">Título</label>
               <input
@@ -88,7 +130,6 @@ function AddBookForm({ onSubmit }) {
                 name="genre"
                 value={form.genre}
                 onChange={change}
-                required
               />
             </div>
 
@@ -134,6 +175,13 @@ function AddBookForm({ onSubmit }) {
                 className="form-control"
                 onChange={handleFile}
               />
+              {form.image && (
+                <img
+                  src={form.image}
+                  alt="preview"
+                  style={{ maxWidth: 150, marginTop: 10 }}
+                />
+              )}
             </div>
 
             {/* PDF */}
@@ -148,14 +196,9 @@ function AddBookForm({ onSubmit }) {
               />
             </div>
 
-            <input
-              type="submit"
-              value="Guardar Libro"
-              className="btn-custom"
-            />
-            <br />
-            <br />
-            <BasicButton to="/libros" texto="Volver" />
+            <input type="submit" value="Guardar Cambios" className="btn-custom" />
+            <br /><br />
+            <BasicButton to="/perfil" texto="Volver" />
           </form>
         </div>
       </div>
@@ -163,4 +206,4 @@ function AddBookForm({ onSubmit }) {
   );
 }
 
-export default AddBookForm;
+export default EditBook;
