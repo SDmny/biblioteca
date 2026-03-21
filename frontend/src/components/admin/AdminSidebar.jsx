@@ -1,70 +1,29 @@
 function AdminSidebar({ onSelect }) {
   return (
-    <>
-      <aside className="sidebar">
-        <h3>Panel Admin</h3>
-
-        {/* Sección Usuarios */}
-        <h5>Gestionar Usuarios</h5>
-        <ul className="list-group mb-3">
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("usuarios-list")}>
-              Ver Usuarios
-            </a>
-          </li>
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("usuarios-add")}>
-              Crear Usuario
-            </a>
-          </li>
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("usuarios-edit")}>
-              Editar Usuario
-            </a>
-          </li>
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("usuarios-delete")}>
-              Eliminar Usuario
-            </a>
-          </li>
-        </ul>
-
-        {/* Sección Libros */}
-        <h5>Gestionar Libros</h5>
-        <ul className="list-group mb-3">
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("libros-list")}>
-              Ver Libros
-            </a>
-          </li>
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("libros-add")}>
-              Agregar Libro
-            </a>
-          </li>
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("libros-edit")}>
-              Editar Libro
-            </a>
-          </li>
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("libros-delete")}>
-              Eliminar Libro
-            </a>
-          </li>
-        </ul>
-
-        {/* Sección Más Opciones */}
-        <h5>Más Opciones</h5>
-        <ul className="list-group">
-          <li className="list-group-item">
-            <a href="#" onClick={() => onSelect("perfil")}>
-              Editar Perfil
-            </a>
-          </li>
-        </ul>
-      </aside>
-    </>
+    <div className="sidebar">
+      <h3>Panel Admin</h3>
+      {/* Sección Usuarios */}
+      <h5>Gestionar Usuarios</h5>
+      <button onClick={() => onSelect("usuarios-list")}>Ver Usuarios</button>
+      <button onClick={() => onSelect("usuarios-add")}>Crear Usuario</button>
+      <button onClick={() => onSelect("usuarios-edit")}>Editar Usuario</button>
+      <button onClick={() => onSelect("usuarios-delete")}>
+        Eliminar Usuario
+      </button>
+      <br />
+      <br />
+      {/* Sección Libros */}
+      <h5>Gestionar Libros</h5>
+      <button onClick={() => onSelect("libros-list")}>Ver Libros</button>
+      <button onClick={() => onSelect("libros-add")}>Agregar Libro</button>
+      <button onClick={() => onSelect("libros-edit")}>Editar Libro</button>
+      <button onClick={() => onSelect("libros-delete")}>Eliminar Libro</button>
+      <br />
+      <br />
+      {/* Sección Más Opciones */}
+      <h5>Más Opciones</h5>
+      <button onClick={() => onSelect("perfil")}>Editar Perfil</button>
+    </div>
   );
 }
 

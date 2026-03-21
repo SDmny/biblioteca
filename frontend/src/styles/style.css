@@ -306,6 +306,31 @@ h3 {
   background-color: var(--clr-azul2);
 }
 
+/* Nav de filtros del catálogo */
+.filters-navbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+
+/* Botones dentro del nav */
+.filters-navbar button {
+  background-color: var(--clr-azul1);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
 /* zona libros */
 
 .catalog-content {

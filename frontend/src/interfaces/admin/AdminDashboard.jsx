@@ -1,10 +1,13 @@
 import { useState } from "react";
 
 import AdminSidebar from "../../components/admin/AdminSidebar.jsx";
+
 import UserList from "../../components/user/UserList.jsx";
+import EditProfile from "../../components/user/EditProfile.jsx";
 
 import BasicCard from "../../components/ui/BasicCard.jsx";
-import EditProfile from "../../components/user/EditProfile.jsx";
+
+import BookList from "../../components/book/BookList.jsx";
 
 function AdminDashboard() {
   const [selected, setSelected] = useState(null);
@@ -20,8 +23,16 @@ function AdminDashboard() {
         return <p>Aquí iría el formulario para editar usuario</p>;
       case "usuarios-delete":
         return <p>Aquí iría la opción para eliminar usuario</p>;
+      case "libros-list":
+        return <BookList />;
+      case "libros-add":
+        return <p>Aquí iría el formulario para crear libro</p>;
+      case "libros-edit":
+        return <p>Aquí iría el formulario para editar libro</p>;
+      case "libros-delete":
+        return <p>Aquí iría la opción para eliminar libro</p>;
       case "perfil":
-        return <EditProfile user={user} />; // aquí ya no va dentro de BasicCard
+        return <EditProfile user={user} />;
       default:
         return <p>Selecciona una opción del menú</p>;
     }
@@ -36,7 +47,7 @@ function AdminDashboard() {
       <div className="catalog-content">
         <h2>Administrar usuarios</h2>
 
-        {selected === "perfil" ? (
+        {selected === "perfil" || selected === "libros-list" ? (
           // Renderiza EditProfile directamente
           renderContent()
         ) : (
