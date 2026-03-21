@@ -2,8 +2,8 @@ export const handleCreateUser = (user, nav, isAdminContext = false) => {
   const users = JSON.parse(localStorage.getItem("users")) || [];
 
   // Si no trae rol, lo forzamos a "user"
-  if (!user.role) {
-    user.role = "user";
+  if (!user.rol) {
+    user.rol = "user";
   }
 
   users.push(user);

@@ -10,6 +10,7 @@ import BasicCard from "../../components/ui/BasicCard.jsx";
 import BookList from "../../components/book/BookList.jsx";
 import ManageUsersPage from "../../components/admin/ManageUsersPage.jsx";
 import AddUsers from "../../components/admin/AddUsers.jsx";
+import AddBook from "../user/AddBook.jsx";
 
 function AdminDashboard() {
   const [selected, setSelected] = useState(null);
@@ -30,7 +31,7 @@ function AdminDashboard() {
       case "book-list":
         return <BookList />;
       case "book-add":
-        return <p>Aquí iría el formulario para crear libro</p>;
+        return <AddBook noMove={true} />;
       case "book-edit":
         return <p>Aquí iría el formulario para editar libro</p>;
       case "book-delete":
