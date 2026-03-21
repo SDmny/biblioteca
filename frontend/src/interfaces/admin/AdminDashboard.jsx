@@ -17,25 +17,25 @@ function AdminDashboard() {
 
   const renderContent = () => {
     switch (selected) {
-      case "usuarios-list":
+      case "user-list":
         return <UserList />;
-      case "usuarios-add":
+      case "user-add":
         return <AddUsers></AddUsers>;
-      case "usuarios-edit":
+      case "user-edit":
         return (
           <p>editar usuario, ManageUsersPage es una base, no es funcional</p>
         );
-      case "usuarios-delete":
+      case "user-delete":
         return <p>Aquí iría la opción para eliminar usuario</p>;
-      case "libros-list":
+      case "book-list":
         return <BookList />;
-      case "libros-add":
+      case "book-add":
         return <p>Aquí iría el formulario para crear libro</p>;
-      case "libros-edit":
+      case "book-edit":
         return <p>Aquí iría el formulario para editar libro</p>;
-      case "libros-delete":
+      case "book-delete":
         return <p>Aquí iría la opción para eliminar libro</p>;
-      case "perfil":
+      case "profile":
         return <EditProfile user={user} />;
       default:
         return <p>Selecciona una opción del menú</p>;
@@ -51,7 +51,9 @@ function AdminDashboard() {
       <div className="catalog-content">
         <h2>Administrar usuarios</h2>
 
-        {selected === "perfil" || selected === "libros-list" ? (
+        {selected === "profile" ||
+        selected === "book-list" ||
+        selected === "user-add" ? (
           // Renderiza EditProfile directamente
           renderContent()
         ) : (
