@@ -8,6 +8,7 @@ import Catalogo from "../interfaces/book/Catalogo.jsx";
 import BookDetailPage from "../interfaces/book/BookDetailPage.jsx";
 
 import ProfilePage from "../interfaces/user/ProfilePage.jsx";
+import ProfileView from "./interfaces/user/ProfileView.jsx";
 import Dashboard from "../interfaces/user/Dashboard.jsx";
 
 import LoginPage from "../components/user/LoginPage.jsx";
@@ -28,10 +29,11 @@ function AppRoutes() {
       <Route path="/contacto" element={<Contacto />} />
       <Route path="/libros" element={<Catalogo />} />
       <Route path="/libro/:id" element={<BookDetailPage />} />
-      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/perfil" element={<ProfilePage />} />
+      <Route path="/perfil" element={<ProfileView />} />
+      <Route path="/profile-edit" element={<ProfilePage />} />
+      <Route path="/dashboard" element={<Dashboard />} />
 
       {/* Rutas protegidas para admin */}
 
