@@ -56,7 +56,7 @@ function BookDetailPage() {
 
       <br />
 
-      <button className="btn-volver" onClick={() => nav("/catalogo")}>
+      <button className="btn-volver" onClick={() => nav("/libros")}>
         ← Volver al catálogo
       </button>
 
