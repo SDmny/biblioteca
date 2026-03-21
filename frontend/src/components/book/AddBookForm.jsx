@@ -1,128 +1,212 @@
 import { useState } from "react";
-import BasicInput from "../ui/BasicInput";
-import TypeInput from "../ui/TypeInput";
 import BasicButton from "../ui/BasicButton";
 
 function AddBookForm({ onSubmit }) {
-  const [formData, setFormData] = useState({
+
+  const [form, setForm] = useState({
     title: "",
     author: "",
     genre: "",
     synopsis: "",
-    publishDate: "",
     pages: "",
-    cover: null,
-    pdf: null,
+    date: "",
+    image: "",
+    file: ""
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const change = (e) => {
+
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    setFormData({ ...formData, [name]: files[0] });
+  const fileToBase64 = (file, name) => {
+
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+
+      setForm(prev => ({
+        ...prev,
+        [name]: reader.result
+      }));
+
+    };
+
   };
 
-  const handleSubmit = (e) => {
+  const handleFile = (e) => {
+
+    const file = e.target.files[0];
+
+    const name = e.target.name;
+
+    if (file) {
+
+      fileToBase64(file, name);
+
+    }
+
+  };
+
+  const submit = (e) => {
+
     e.preventDefault();
-    onSubmit(formData);
+
+    onSubmit(form);
+
   };
 
   return (
-    <>
-      <h2>Agregar Libro</h2>
-      <form onSubmit={handleSubmit}>
-        <BasicInput label={"Título"}>
-          <TypeInput
-            type="text"
-            name="title"
-            placeholder="Título del libro"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
-        </BasicInput>
 
-        <BasicInput label={"Autor"}>
-          <TypeInput
-            type="text"
-            name="author"
-            placeholder="Autor(es)"
-            value={formData.author}
-            onChange={handleChange}
-            required
-          />
-        </BasicInput>
+    <div className="form-container">
 
-        <BasicInput label={"Género"}>
-          <TypeInput
-            type="text"
-            name="genre"
-            placeholder="Ej: Ficción, Misterio..."
-            value={formData.genre}
-            onChange={handleChange}
-            required
-          />
-        </BasicInput>
+      <div className="form-wrapper">
 
-        <BasicInput label={"Sinopsis"}>
-          <textarea
-            className="form-control"
-            name="synopsis"
-            value={formData.synopsis}
-            onChange={handleChange}
-            placeholder="Breve descripción del libro"
-            required
-          />
-        </BasicInput>
+        <h2>Agregar Libro</h2>
 
-        <BasicInput label={"Fecha de Publicación"}>
-          <TypeInput
-            type="date"
-            name="publishDate"
-            value={formData.publishDate}
-            onChange={handleChange}
-            required
-          />
-        </BasicInput>
+        <div className="form-card">
 
-        <BasicInput label={"Número de páginas"}>
-          <TypeInput
-            type="number"
-            name="pages"
-            value={formData.pages}
-            onChange={handleChange}
-            required
-          />
-        </BasicInput>
+          <form onSubmit={submit}>
 
-        <BasicInput label={"Portada"}>
-          <input
-            type="file"
-            name="cover"
-            accept="image/*"
-            className="form-control"
-            onChange={handleFileChange}
-          />
-        </BasicInput>
+            <div className="mb-3">
+              <label className="form-label">
+                Título
+              </label>
 
-        <BasicInput label={"Archivo PDF"}>
-          <input
-            type="file"
-            name="pdf"
-            accept="application/pdf"
-            className="form-control"
-            onChange={handleFileChange}
-          />
-        </BasicInput>
+              <input
+                className="form-control"
+                name="title"
+                onChange={change}
+                required
+              />
+            </div>
 
-        <input type="submit" value="Guardar Libro" className="btn-custom" />
-        <BasicButton to={"/libros"} texto={"Volver"} />
-      </form>
-    </>
+            <div className="mb-3">
+              <label className="form-label">
+                Autor
+              </label>
+
+              <input
+                className="form-control"
+                name="author"
+                onChange={change}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Género
+              </label>
+
+              <input
+                className="form-control"
+                name="genre"
+                onChange={change}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Sinopsis
+              </label>
+
+              <textarea
+                className="form-control"
+                name="synopsis"
+                onChange={change}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Páginas
+              </label>
+
+              <input
+                type="number"
+                className="form-control"
+                name="pages"
+                onChange={change}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Fecha
+              </label>
+
+              <input
+                type="date"
+                className="form-control"
+                name="date"
+                onChange={change}
+              />
+            </div>
+
+            <div className="mb-3">
+
+              <label className="form-label">
+                Imagen
+              </label>
+
+              <input
+                type="file"
+                accept="image/*"
+                name="image"
+                className="form-control"
+                onChange={handleFile}
+              />
+
+            </div>
+
+            <div className="mb-3">
+
+              <label className="form-label">
+                PDF
+              </label>
+
+              <input
+                type="file"
+                accept="application/pdf"
+                name="file"
+                className="form-control"
+                onChange={handleFile}
+              />
+
+            </div>
+
+
+            <input
+              type="submit"
+              value="Guardar Libro"
+              className="btn-custom"
+            />
+
+            <br /><br />
+
+            <BasicButton
+              to="/libros"
+              texto="Volver"
+            />
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
   );
+
 }
 
 export default AddBookForm;

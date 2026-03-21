@@ -114,7 +114,7 @@ function ProfileView() {
         <button
           className="btn-main me-2"
           onClick={() =>
-            nav("/dashboard")
+            nav("/add-book")
           }
         >
           Publicar libro
