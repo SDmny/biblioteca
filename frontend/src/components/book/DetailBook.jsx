@@ -15,6 +15,9 @@ function DetailBook({
 }) {
   const [stars, setStars] = useState(rating || 0);
 
+  // Usuario logueado
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const calificar = (num) => {
     setStars(num);
     let localBooks = JSON.parse(localStorage.getItem("books")) || [];
@@ -46,7 +49,6 @@ function DetailBook({
   };
 
   const imgSrc = imageSrc || "/img/default.jpg";
-
   const pdfSrc = file;
 
   return (
@@ -67,15 +69,19 @@ function DetailBook({
             </div>
 
             <div className="mt-3">
-              {pdfSrc && (
-                <a href={pdfSrc} target="_blank" rel="noopener noreferrer" className="btn btn-main me-2">
-                  Leer
-                </a>
+              {user && pdfSrc && (
+                <>
+                  <a href={pdfSrc} target="_blank" rel="noopener noreferrer" className="btn btn-main me-2">
+                    Leer
+                  </a>
+                  <a href={pdfSrc} download={`${title}.pdf`} className="btn btn-main">
+                    Descargar
+                  </a>
+                </>
               )}
-              {pdfSrc && (
-                <a href={pdfSrc} download={`${title}.pdf`} className="btn btn-main">
-                  Descargar
-                </a>
+
+              {!user && pdfSrc && (
+                <p className="text-muted">Inicia sesión para leer o descargar este libro.</p>
               )}
             </div>
           </div>
