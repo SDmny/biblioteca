@@ -8,7 +8,7 @@ import Catalogo from "../interfaces/book/Catalogo.jsx";
 import BookDetailPage from "../interfaces/book/BookDetailPage.jsx";
 
 import ProfilePage from "../interfaces/user/ProfilePage.jsx";
-import ProfileView from "./interfaces/user/ProfileView.jsx";
+import ProfileView from "../interfaces/user/ProfileView.jsx";
 import Dashboard from "../interfaces/user/Dashboard.jsx";
 
 import LoginPage from "../components/user/LoginPage.jsx";
