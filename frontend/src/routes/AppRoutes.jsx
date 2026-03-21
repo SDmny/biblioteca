@@ -1,0 +1,66 @@
+import { Routes, Route } from "react-router-dom";
+
+import Home from "../interfaces/Home.jsx";
+import Contacto from "../interfaces/Contacto.jsx";
+import Conocenos from "../interfaces/Conocenos.jsx";
+
+import Catalogo from "../interfaces/book/Catalogo.jsx";
+import BookDetailPage from "../interfaces/book/BookDetailPage.jsx";
+
+import ProfilePage from "../interfaces/user/ProfilePage.jsx";
+import Dashboard from "../interfaces/user/Dashboard.jsx";
+
+import LoginPage from "../components/user/LoginPage.jsx";
+import RegisterPage from "../components/user/RegisterPage.jsx";
+
+import AdminRoute from "./AdminRoute.jsx";
+import AdminDashboard from "../interfaces/admin/AdminDashboard.jsx";
+import ManageBooksPage from "../interfaces/admin/ManageBooksPage.jsx";
+import ManageUsersPage from "../interfaces/admin/ManageUsersPage.jsx";
+
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Rutas públicas */}
+
+      <Route path="/" element={<Home />} />
+      <Route path="/conocenos" element={<Conocenos />} />
+      <Route path="/contacto" element={<Contacto />} />
+      <Route path="/libros" element={<Catalogo />} />
+      <Route path="/libro/:id" element={<BookDetailPage />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/perfil" element={<ProfilePage />} />
+
+      {/* Rutas protegidas para admin */}
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/libros"
+        element={
+          <AdminRoute>
+            <ManageBooksPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/usuarios"
+        element={
+          <AdminRoute>
+            <ManageUsersPage />
+          </AdminRoute>
+        }
+      />
+    </Routes>
+  );
+}
+
+export default AppRoutes;
