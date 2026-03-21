@@ -127,16 +127,21 @@ function DetailBook({
                 </>
               )}
 
-              <hr />
               {userRol === "admin" && (
-                <div className="admin-actions">
-                  <button className="btn btn-main me-2" onClick={handleEdit}>
-                    Editar
-                  </button>
-                  <button className="btn btn-main me-2" onClick={handleDelete}>
-                    Borrar
-                  </button>
-                </div>
+                <>
+                  <hr />
+                  <div className="admin-actions">
+                    <button className="btn btn-main me-2" onClick={handleEdit}>
+                      Editar
+                    </button>
+                    <button
+                      className="btn btn-main me-2"
+                      onClick={handleDelete}
+                    >
+                      Borrar
+                    </button>
+                  </div>
+                </>
               )}
 
               {!user && pdfSrc && (
