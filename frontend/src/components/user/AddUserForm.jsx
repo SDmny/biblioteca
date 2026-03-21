@@ -30,7 +30,7 @@ function AddUserForm({ onSubmit, isAdminContext = false }) {
 
   return (
     <>
-      <h2>{isAdminContext ? "Crear usuario" : "Registrarse"}</h2>
+      <h2>{isAdminContext ? "" : "Registrarse"}</h2>
 
       <form onSubmit={handleSubmit}>
         <BasicInput label={"Nombre"}>

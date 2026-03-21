@@ -20,7 +20,7 @@ function AdminDashboard() {
       case "user-list":
         return <UserList />;
       case "user-add":
-        return <AddUsers></AddUsers>;
+        return <AddUsers />;
       case "user-edit":
         return (
           <p>editar usuario, ManageUsersPage es una base, no es funcional</p>
@@ -48,19 +48,7 @@ function AdminDashboard() {
       <AdminSidebar onSelect={setSelected} />
 
       {/* Contenido principal */}
-      <div className="catalog-content">
-        <h2>Administrar usuarios</h2>
-
-        {selected === "profile" ||
-        selected === "book-list" ||
-        selected === "user-add" ? (
-          // Renderiza EditProfile directamente
-          renderContent()
-        ) : (
-          // Para todo lo demás, usa BasicCard
-          <BasicCard titulo="Contenido">{renderContent()}</BasicCard>
-        )}
-      </div>
+      <div className="catalog-content">{renderContent()}</div>
     </div>
   );
 }
