@@ -119,7 +119,7 @@ function AddBookForm({ onSubmit }) {
         </BasicInput>
 
         <input type="submit" value="Guardar Libro" className="btn-custom" />
-        <BasicButton to={"/dashboard"} texto={"Volver"} />
+        <BasicButton to={"/libros"} texto={"Volver"} />
       </form>
     </>
   );
