@@ -235,12 +235,12 @@ h3 {
 
 .detalle-libro-container {
   display: flex;
-  gap: 40px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
 .detalle-libro-info {
-  flex: 1 1 500px;
+  flex: 1 1 auto;
 }
 
 .detalle-libro-imagen {
@@ -412,23 +412,16 @@ h3 {
 
 .detalle-libro-container {
   display: flex;
-
   gap: 40px;
-
   flex-wrap: wrap;
-
   padding: 20px;
 }
 
 .detalle-libro-info {
   flex: 1;
-
   background-color: var(--clr-beige2);
-
   padding: 20px;
-
   border-radius: 10px;
-
   border: 2px solid var(--clr-azul3);
 }
 

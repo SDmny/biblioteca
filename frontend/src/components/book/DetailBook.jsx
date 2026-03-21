@@ -80,7 +80,7 @@ function DetailBook({
   };
 
   return (
-    <main className="container my-5">
+    <main className="container my-3">
       <div className="card p-4 shadow detalle-libro-card">
         <div className="detalle-libro-container">
           <div className="detalle-libro-info">
@@ -120,29 +120,23 @@ function DetailBook({
                   <a
                     href={pdfSrc}
                     download={`${title}.pdf`}
-                    className="btn btn-main"
+                    className="btn btn-main me-2"
                   >
                     Descargar
                   </a>
                 </>
               )}
 
-              {userRol === "admin" && (
+              {user && pdfSrc && userRol === "admin" ? (
                 <>
-                  <hr />
-                  <div className="admin-actions">
-                    <button className="btn btn-main me-2" onClick={handleEdit}>
-                      Editar
-                    </button>
-                    <button
-                      className="btn btn-main me-2"
-                      onClick={handleDelete}
-                    >
-                      Borrar
-                    </button>
-                  </div>
+                  <button className="btn btn-main me-2" onClick={handleEdit}>
+                    Editar
+                  </button>
+                  <button className="btn btn-main me-2" onClick={handleDelete}>
+                    Borrar
+                  </button>
                 </>
-              )}
+              ) : null}
 
               {!user && pdfSrc && (
                 <p className="text-muted">
