@@ -1,5 +1,5 @@
 import { useState } from "react";
-import BasicButton from "../ui/BasicButton";
+import BackButton from "../ui/BackButton.jsx";
 
 function AddBookForm({ onSubmit }) {
   const [form, setForm] = useState({
@@ -148,14 +148,10 @@ function AddBookForm({ onSubmit }) {
               />
             </div>
 
-            <input
-              type="submit"
-              value="Guardar Libro"
-              className="btn-custom"
-            />
+            <input type="submit" value="Guardar Libro" className="btn-custom" />
             <br />
             <br />
-            <BasicButton to="/libros" texto="Volver" />
+            <BackButton />
           </form>
         </div>
       </div>

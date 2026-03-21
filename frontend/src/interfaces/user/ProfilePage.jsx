@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import BasicCard from "../../components/ui/BasicCard";
+import BackButton from "../../components/ui/BackButton";
 
 function ProfilePage() {
   const nav = useNavigate();
@@ -116,9 +117,7 @@ function ProfilePage() {
         <button className="btn-main me-2" onClick={guardar}>
           Guardar
         </button>
-        <button className="btn-main me-2" onClick={() => nav("/perfil")}>
-          Volver
-        </button>
+        <BackButton />
         <hr />
         <button className="btn-main me-2" onClick={cerrarSesion}>
           Cerrar sesión
