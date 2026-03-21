@@ -3,10 +3,14 @@ import BasicInput from "../ui/BasicInput";
 import TypeInput from "../ui/TypeInput";
 import BasicButton from "../ui/BasicButton";
 
-function EditUserForm({ user, onSubmit, isAdminContext = false, onCancel }) {
+function EditUserForm({
+  user,
+  onSubmit,
+  isAdminContext = false,
+  onCancel,
+}) {
   const [formData, setFormData] = useState(user);
 
-  // Actualiza el estado si cambia el usuario a editar
   useEffect(() => {
     setFormData(user);
   }, [user]);
@@ -28,7 +32,6 @@ function EditUserForm({ user, onSubmit, isAdminContext = false, onCancel }) {
   return (
     <>
       <h2>{isAdminContext ? "Editar usuario" : "Editar perfil"}</h2>
-
       <form onSubmit={handleSubmit}>
         <BasicInput label={"Nombre"}>
           <TypeInput
@@ -77,7 +80,7 @@ function EditUserForm({ user, onSubmit, isAdminContext = false, onCancel }) {
             value={formData.usuario}
             onChange={handleChange}
             required
-            disabled // 👈 normalmente no se cambia el username
+            disabled={!isAdminContext}
           />
         </BasicInput>
 
@@ -106,6 +109,7 @@ function EditUserForm({ user, onSubmit, isAdminContext = false, onCancel }) {
               value={formData.rol}
               onChange={handleChange}
               required
+              className="form-control"
             >
               <option value="user">Usuario</option>
               <option value="admin">Administrador</option>
@@ -113,7 +117,12 @@ function EditUserForm({ user, onSubmit, isAdminContext = false, onCancel }) {
           </BasicInput>
         )}
 
-        <input type="submit" value="Guardar cambios" className="btn-custom" />
+        <input
+          type="submit"
+          value="Guardar cambios"
+          className="btn-custom"
+        />
+
         {onCancel && <BasicButton onClick={onCancel} texto="Cancelar" />}
       </form>
     </>

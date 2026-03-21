@@ -18,24 +18,56 @@ import RegisterPage from "../components/user/RegisterPage.jsx";
 
 import AdminRoute from "./AdminRoute.jsx";
 import AdminDashboard from "../interfaces/admin/AdminDashboard.jsx";
+import AdminUserForm from "../components/admin/AdminUserForm.jsx";
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* Rutas públicas */}
-
+      {/* PUBLICAS */}
       <Route path="/" element={<Home />} />
       <Route path="/conocenos" element={<Conocenos />} />
       <Route path="/contacto" element={<Contacto />} />
       <Route path="/libros" element={<Catalogo />} />
       <Route path="/libro/:id" element={<BookDetailPage />} />
+
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
       <Route path="/perfil" element={<ProfileView />} />
       <Route path="/profile-edit" element={<ProfilePage />} />
+
       <Route path="/add-book" element={<AddBook />} />
-      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/edit-book/:id" element={<EditBook />} />
+
+      <Route path="/dashboard" element={<Dashboard />} />
+
+      {/* ADMIN */}
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin/usuarios/add"
+        element={
+          <AdminRoute>
+            <AdminUserForm />
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin/usuarios/edit/:usuario"
+        element={
+          <AdminRoute>
+            <AdminUserForm />
+          </AdminRoute>
+        }
+      />
 
       {/* Rutas protegidas para admin 
 

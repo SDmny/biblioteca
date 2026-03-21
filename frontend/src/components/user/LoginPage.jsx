@@ -10,14 +10,20 @@ function LoginPage() {
   const [password, setPassword] = useState("");
 
   const login = () => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const users =
+      JSON.parse(localStorage.getItem("users")) || [];
 
     const encontrado = users.find(
-      (u) => u.usuario === usuario && u.password === password,
+      (u) =>
+        u.usuario === usuario &&
+        u.password === password
     );
 
     if (encontrado) {
-      localStorage.setItem("user", JSON.stringify(encontrado));
+      localStorage.setItem(
+        "user",
+        JSON.stringify(encontrado)
+      );
 
       nav("/dashboard");
     } else {
@@ -32,30 +38,44 @@ function LoginPage() {
 
         <div className="form-card">
           <div className="mb-3">
-            <label className="form-label">Usuario</label>
+            <label className="form-label">
+              Usuario
+            </label>
 
             <input
               className="form-control"
-              onChange={(e) => setUsuario(e.target.value)}
+              onChange={(e) =>
+                setUsuario(e.target.value)
+              }
             />
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Contraseña</label>
+            <label className="form-label">
+              Contraseña
+            </label>
 
             <input
               type="password"
               className="form-control"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
             />
           </div>
 
-          <button className="btn-custom" onClick={login}>
+          <button
+            className="btn-custom"
+            onClick={login}
+          >
             Iniciar sesión
           </button>
 
           <p style={{ marginTop: 15 }}>
-            No tienes una cuenta? <Link to="/register">Regístrate</Link>
+            No tienes una cuenta?{" "}
+            <Link to="/register">
+              Regístrate
+            </Link>
           </p>
         </div>
       </div>

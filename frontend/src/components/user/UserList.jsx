@@ -1,70 +1,54 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function UserList({ onEdit, onDelete }) {
-  // Inicializa directamente desde localStorage
-  const [users] = useState(() => {
-    return JSON.parse(localStorage.getItem("users")) || [];
-  });
+function UserList({ mode = "all" }) {
+  const nav = useNavigate();
 
-  const [filter, setFilter] = useState("");
+  const users = JSON.parse(localStorage.getItem("users")) || [];
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.nombre.toLowerCase().includes(filter.toLowerCase()) ||
-      u.apellido.toLowerCase().includes(filter.toLowerCase()) ||
-      u.usuario.toLowerCase().includes(filter.toLowerCase()) ||
-      u.rol.toLowerCase().includes(filter.toLowerCase()),
-  );
+  const borrar = (usuario) => {
+    const ok = window.confirm("¿Eliminar usuario?");
+    if (!ok) return;
 
-  if (users.length === 0) {
-    return <p>No hay usuarios registrados.</p>;
-  }
+    const updated = users.filter((u) => u.usuario !== usuario);
+
+    localStorage.setItem("users", JSON.stringify(updated));
+
+    window.location.reload();
+  };
 
   return (
     <div>
-      {/* Barra de filtros */}
-      <nav className="navbar bg-main mb-3 p-2">
-        <input
-          type="text"
-          placeholder="Filtrar usuarios..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "6px 10px",
-            borderRadius: "6px",
-            border: "1px solid var(--clr-azul2)",
-          }}
-        />
-      </nav>
+      <h3>Usuarios</h3>
 
-      {/* Tabla de usuarios */}
-      <table className="table table-striped">
+      <table className="table">
         <thead>
           <tr>
-            <th>Nombre</th>
             <th>Usuario</th>
-            <th>Email</th>
             <th>Rol</th>
-            <th>Acciones</th>
+            <th></th>
           </tr>
         </thead>
+
         <tbody>
-          {filteredUsers.map((u, index) => (
-            <tr key={index}>
-              <td>
-                {u.nombre} {u.apellido}
-              </td>
+          {users.map((u) => (
+            <tr key={u.usuario}>
               <td>{u.usuario}</td>
-              <td>{u.email}</td>
               <td>{u.rol}</td>
               <td>
-                <button className="btn-main me-2" onClick={() => onEdit(u)}>
-                  Editar
-                </button>
-                <button className="btn-main" onClick={() => onDelete(u)}>
-                  Borrar
-                </button>
+                {(mode === "all" || mode === "edit") && (
+                  <button
+                    className="btn-main me-2"
+                    onClick={() => nav(`/admin/usuarios/edit/${u.usuario}`)}
+                  >
+                    Editar
+                  </button>
+                )}
+
+                {(mode === "all" || mode === "delete") && (
+                  <button className="btn-main" onClick={() => borrar(u.usuario)}>
+                    Borrar
+                  </button>
+                )}
               </td>
             </tr>
           ))}

@@ -198,7 +198,7 @@ function EditBook() {
 
             <input type="submit" value="Guardar Cambios" className="btn-custom" />
             <br /><br />
-            <BasicButton to="/perfil" texto="Volver" />
+            import BackButton from "../../components/ui/BackButton"; <BackButton/>
           </form>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -7,7 +8,18 @@ import BackButton from "../../components/ui/BackButton";
 function EditProfile({ noExtras = false }) {
   const nav = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const location = useLocation();
+
+    const logged =
+    JSON.parse(
+     localStorage.getItem("user")
+  );
+
+const user =
+  location.state?.user || logged;
+
+const isAdminEdit =
+  location.state?.adminEdit;
 
   const [form, setForm] = useState(user);
 
@@ -38,22 +50,42 @@ function EditProfile({ noExtras = false }) {
   };
 
   const guardar = () => {
-    let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    const nuevos = users.map((u) => {
-      if (u.usuario === user.usuario) {
+  let users =
+    JSON.parse(
+      localStorage.getItem("users")
+    ) || [];
+
+  const nuevos =
+    users.map((u) => {
+
+      if (
+        u.usuario === user.usuario
+      ) {
         return form;
       }
 
       return u;
+
     });
 
-    localStorage.setItem("users", JSON.stringify(nuevos));
+  localStorage.setItem(
+    "users",
+    JSON.stringify(nuevos)
+  );
 
-    localStorage.setItem("user", JSON.stringify(form));
+  if (!isAdminEdit) {
 
-    alert("Guardado");
-  };
+    localStorage.setItem(
+      "user",
+      JSON.stringify(form)
+    );
+
+  }
+
+  alert("Guardado");
+
+};
 
   const cerrarSesion = () => {
     localStorage.removeItem("user");

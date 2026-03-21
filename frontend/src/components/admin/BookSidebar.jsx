@@ -1,44 +1,56 @@
-function BookSidebar({ onSelect }) {
+function AdminSidebar({ onSelect }) {
   return (
     <div className="sidebar">
       <h3>Panel Admin</h3>
 
+      {/* Sección Usuarios */}
+      <h5>Gestionar Usuarios</h5>
+
+      <button onClick={() => onSelect("user-list")}>
+        Ver Usuarios
+      </button>
+
+      <button onClick={() => onSelect("user-add")}>
+        Crear Usuario
+      </button>
+
+      <button onClick={() => onSelect("user-edit")}>
+        Editar Usuario
+      </button>
+
+      <br />
+      <br />
+
       {/* Sección Libros */}
       <h5>Gestionar Libros</h5>
-      <ul className="list-group mb-3">
-        <li className="list-group-item">
-          <a href="#" onClick={() => onSelect("libros-list")}>
-            Ver Libros
-          </a>
-        </li>
-        <li className="list-group-item">
-          <a href="#" onClick={() => onSelect("libros-add")}>
-            Agregar Libro
-          </a>
-        </li>
-        <li className="list-group-item">
-          <a href="#" onClick={() => onSelect("libros-edit")}>
-            Editar Libro
-          </a>
-        </li>
-        <li className="list-group-item">
-          <a href="#" onClick={() => onSelect("libros-delete")}>
-            Eliminar Libro
-          </a>
-        </li>
-      </ul>
 
-      {/* Sección Más Opciones */}
+      <button onClick={() => onSelect("book-list")}>
+        Ver Libros
+      </button>
+
+      <button onClick={() => onSelect("book-add")}>
+        Agregar Libro
+      </button>
+
+      <button onClick={() => onSelect("book-edit")}>
+        Editar Libro
+      </button>
+
+      <button onClick={() => onSelect("book-delete")}>
+        Eliminar Libro
+      </button>
+
+      <br />
+      <br />
+
+      {/* Perfil */}
       <h5>Más Opciones</h5>
-      <ul className="list-group">
-        <li className="list-group-item">
-          <a href="#" onClick={() => onSelect("perfil")}>
-            Editar Perfil
-          </a>
-        </li>
-      </ul>
+
+      <button onClick={() => onSelect("profile")}>
+        Editar Perfil
+      </button>
     </div>
   );
 }
 
-export default BookSidebar;
+export default AdminSidebar;

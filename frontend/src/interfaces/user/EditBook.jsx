@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import BasicButton from "../../components/ui/BasicButton";
-
+import BackButton from "../../components/ui/BackButton";
 function EditBook() {
   const { id } = useParams();
   const [form, setForm] = useState({
@@ -18,7 +18,6 @@ function EditBook() {
 
   const [bookOwner, setBookOwner] = useState("");
 
-  // Cargar libro existente
   useEffect(() => {
     const libros = JSON.parse(localStorage.getItem("books")) || [];
     const book = libros.find((b) => String(b.id) === String(id));
@@ -38,12 +37,17 @@ function EditBook() {
     }
   }, [id]);
 
-  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const change = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const fileToBase64 = (file, name) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => setForm((prev) => ({ ...prev, [name]: reader.result }));
+    reader.onload = () =>
+      setForm((prev) => ({
+        ...prev,
+        [name]: reader.result,
+      }));
   };
 
   const handleFile = (e) => {
@@ -55,15 +59,25 @@ function EditBook() {
   const submit = (e) => {
     e.preventDefault();
 
-    const currentUser = JSON.parse(localStorage.getItem("user")) || {}; // Usuario actual
+    const currentUser =
+      JSON.parse(localStorage.getItem("user")) || {};
 
-    if (bookOwner && bookOwner !== currentUser.usuario) {
+    if (
+      bookOwner &&
+      bookOwner !== currentUser.usuario &&
+      currentUser.rol !== "admin"
+    ) {
       alert("No tienes permiso para editar este libro.");
       return;
     }
 
-    const libros = JSON.parse(localStorage.getItem("books")) || [];
-    const index = libros.findIndex((b) => String(b.id) === String(id));
+    const libros =
+      JSON.parse(localStorage.getItem("books")) || [];
+
+    const index =
+      libros.findIndex(
+        (b) => String(b.id) === String(id)
+      );
 
     if (index >= 0) {
       libros[index] = {
@@ -78,7 +92,12 @@ function EditBook() {
         image: form.image,
         file: form.file,
       };
-      localStorage.setItem("books", JSON.stringify(libros));
+
+      localStorage.setItem(
+        "books",
+        JSON.stringify(libros)
+      );
+
       alert("Libro actualizado");
     }
   };
@@ -87,8 +106,11 @@ function EditBook() {
     <div className="form-container">
       <div className="form-wrapper">
         <h2>Editar Libro</h2>
+
         <div className="form-card">
+
           <form onSubmit={submit}>
+
             <div className="mb-3">
               <label className="form-label">Título</label>
               <input
@@ -163,7 +185,6 @@ function EditBook() {
               />
             </div>
 
-            {/* Imagen */}
             <div className="mb-3">
               <label className="form-label">Imagen</label>
               <input
@@ -177,12 +198,14 @@ function EditBook() {
                 <img
                   src={form.image}
                   alt="preview"
-                  style={{ maxWidth: 150, marginTop: 10 }}
+                  style={{
+                    maxWidth: 150,
+                    marginTop: 10,
+                  }}
                 />
               )}
             </div>
 
-            {/* PDF */}
             <div className="mb-3">
               <label className="form-label">PDF</label>
               <input
@@ -194,10 +217,19 @@ function EditBook() {
               />
             </div>
 
-            <input type="submit" value="Guardar Cambios" className="btn-custom" />
-            <br /><br />
-            <BasicButton to="/perfil" texto="Volver" />
+            <input
+              type="submit"
+              value="Guardar Cambios"
+              className="btn-custom"
+            />
+
+            <br />
+            <br />
+
+            <BackButton />
+
           </form>
+
         </div>
       </div>
     </div>
