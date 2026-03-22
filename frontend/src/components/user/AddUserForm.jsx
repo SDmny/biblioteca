@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import BasicInput from "../ui/BasicInput.jsx";
 import TypeInput from "../ui/TypeInput.jsx";
 
-function AddUsers({ user = null, onBack, onSubmit, isAdminContext = false }) {
+function AddUsers({ onSubmit, isAdminContext = false }) {
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
@@ -41,10 +41,21 @@ function AddUsers({ user = null, onBack, onSubmit, isAdminContext = false }) {
       );
       return;
     }
+
     if (!/\S+@\S+\.\S+/.test(form.email)) {
       Swal.fire("Error", "Correo electrónico inválido", "error");
       return;
     }
+
+    if (!/^[A-Za-z0-9_-]+$/.test(form.usuario)) {
+      Swal.fire(
+        "Error",
+        "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
+        "error",
+      );
+      return;
+    }
+
     if (form.password.length < 6) {
       Swal.fire(
         "Error",
@@ -53,30 +64,17 @@ function AddUsers({ user = null, onBack, onSubmit, isAdminContext = false }) {
       );
       return;
     }
+
     if (form.password !== form.confirm_password) {
       Swal.fire("Error", "Las contraseñas no coinciden", "error");
       return;
     }
 
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-
-    if (user) {
-      users = users.map((u) => (u.usuario === user.usuario ? { ...form } : u));
-      localStorage.setItem("users", JSON.stringify(users));
-      Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
-    } else {
-      if (users.some((u) => u.usuario === form.usuario)) {
-        Swal.fire("Error", "Ese usuario ya existe", "error");
-        return;
-      }
-      users.push({ ...form });
-      localStorage.setItem("users", JSON.stringify(users));
-      Swal.fire("Éxito", "Usuario creado correctamente", "success");
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    if (users.some((u) => u.usuario === form.usuario)) {
+      Swal.fire("Error", "Ese usuario ya existe", "error");
+      return;
     }
-
-    setTimeout(() => {
-      onBack();
-    }, 100);
 
     onSubmit(form);
   };
@@ -89,7 +87,7 @@ function AddUsers({ user = null, onBack, onSubmit, isAdminContext = false }) {
           <TypeInput
             type="text"
             name="nombre"
-            placeholder={"Nombres(s)"}
+            placeholder="Nombres(s)"
             value={form.nombre}
             onChange={change}
             required
@@ -99,7 +97,7 @@ function AddUsers({ user = null, onBack, onSubmit, isAdminContext = false }) {
           <TypeInput
             type="text"
             name="apellido"
-            placeholder={"Apellido(s)"}
+            placeholder="Apellido(s)"
             value={form.apellido}
             onChange={change}
             required
@@ -118,7 +116,7 @@ function AddUsers({ user = null, onBack, onSubmit, isAdminContext = false }) {
           <TypeInput
             type="email"
             name="email"
-            placeholder={"correo@ejemplo.com"}
+            placeholder="correo@ejemplo.com"
             value={form.email}
             onChange={change}
             required
@@ -128,7 +126,7 @@ function AddUsers({ user = null, onBack, onSubmit, isAdminContext = false }) {
           <TypeInput
             type="text"
             name="usuario"
-            placeholder={"Usuario"}
+            placeholder="Usuario"
             value={form.usuario}
             onChange={change}
             required
@@ -155,13 +153,20 @@ function AddUsers({ user = null, onBack, onSubmit, isAdminContext = false }) {
 
         {isAdminContext && (
           <BasicInput label="Rol">
-            <select name="rol" value={form.rol} onChange={change} required>
+            <select
+              name="rol"
+              value={form.rol}
+              onChange={change}
+              className="form-control"
+              required
+            >
               <option value="user">Usuario</option>
               <option value="admin">Administrador</option>
             </select>
           </BasicInput>
         )}
-        <input type="submit" value="Registrarse" className=" btn-custom" />
+
+        <input type="submit" value="Registrarse" className="btn-custom" />
       </form>
     </>
   );
