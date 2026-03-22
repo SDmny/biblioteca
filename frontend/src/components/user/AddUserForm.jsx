@@ -12,7 +12,6 @@ function AddUsers({ user = null, onBack }) {
     usuario: "",
     email: "",
     password: "",
-    rol: "user",
   });
 
   useEffect(() => {
@@ -49,7 +48,7 @@ function AddUsers({ user = null, onBack }) {
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
     if (user) {
-      users = users.map((u) => (u.usuario === user.usuario ? form : u));
+      users = users.map((u) => (u.usuario === user.usuario ? { ...form, rol: "user" } : u));
       localStorage.setItem("users", JSON.stringify(users));
       Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
     } else {
@@ -57,7 +56,7 @@ function AddUsers({ user = null, onBack }) {
         Swal.fire("Error", "Ese usuario ya existe", "error");
         return;
       }
-      users.push(form);
+      users.push({ ...form, rol: "user" });
       localStorage.setItem("users", JSON.stringify(users));
       Swal.fire("Éxito", "Usuario creado correctamente", "success");
     }
@@ -83,14 +82,8 @@ function AddUsers({ user = null, onBack }) {
         <BasicInput label="Email">
           <TypeInput type="email" name="email" value={form.email} onChange={change} />
         </BasicInput>
-        <BasicInput label="Password">
-          <TypeInput type="text" name="password" value={form.password} onChange={change} />
-        </BasicInput>
-        <BasicInput label="Rol">
-          <select name="rol" value={form.rol} onChange={change} className="form-control">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
+        <BasicInput label="Contraseña">
+          <TypeInput type="password" name="password" value={form.password} onChange={change} />
         </BasicInput>
         <button className="btn-main" type="submit">
           Guardar
