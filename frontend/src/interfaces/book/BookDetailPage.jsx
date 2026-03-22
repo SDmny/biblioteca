@@ -9,15 +9,8 @@ function BookDetailPage() {
 
   useEffect(() => {
     const localBooks = JSON.parse(localStorage.getItem("books")) || [];
-
-    fetch("/data/books.json")
-      .then((res) => res.json())
-      .then((jsonBooks) => {
-        const allBooks = [...jsonBooks, ...localBooks];
-        const foundBook = allBooks.find((b) => String(b.id) === String(id));
-        setBook(foundBook);
-      })
-      .catch((err) => console.error("Error cargando libros:", err));
+    const foundBook = localBooks.find((b) => String(b.id) === String(id));
+    setBook(foundBook);
   }, [id]);
 
   if (!book) return <p>Cargando...</p>;
@@ -36,9 +29,7 @@ function BookDetailPage() {
         file={book.file}
         rating={book.rating}
       />
-
       <br />
-
       <BackButton texto="← Volver" />
     </div>
   );

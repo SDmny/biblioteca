@@ -8,24 +8,9 @@ export function useCatalogo() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    fetch("/data/books.json")
-      .then((res) => res.json())
-      .then((jsonBooks) => {
-        const localBooks = JSON.parse(localStorage.getItem("books")) || [];
-
-        const merged = jsonBooks.map((b) => {
-          const local = localBooks.find((l) => String(l.id) === String(b.id));
-          return local ? { ...b, ...local } : b;
-        });
-
-        const extras = localBooks.filter(
-          (l) => !jsonBooks.find((j) => String(j.id) === String(l.id)),
-        );
-
-        const allBooks = [...merged, ...extras];
-        setBooks(allBooks);
-        setFiltered(allBooks);
-      });
+    const localBooks = JSON.parse(localStorage.getItem("books")) || [];
+    setBooks(localBooks);
+    setFiltered(localBooks);
   }, []);
 
   const filtrar = (tipo, valor) => {
