@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
+import BackButton from "../../components/ui/BackButton"; // importar el botón
 
 function AddBook() {
   const user = JSON.parse(localStorage.getItem("user")) || {};
@@ -241,7 +242,9 @@ function AddBook() {
               />
             </div>
 
-            <input type="submit" value="Guardar" className="btn-custom" />
+          <input type="submit" value="Guardar" className="btn-custom" />
+          <br /><br />
+          {user.rol !== "admin" && <BackButton />}
           </form>
         </div>
       </div>
