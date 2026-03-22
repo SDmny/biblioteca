@@ -16,6 +16,8 @@ function AddBook() {
     file: "",
   });
 
+  const [loadingFile, setLoadingFile] = useState(false);
+
   const change = (e) =>
     setForm({
       ...form,
@@ -24,6 +26,7 @@ function AddBook() {
 
   const fileToBase64 = (file, name) => {
     const reader = new FileReader();
+    setLoadingFile(true);
     reader.readAsDataURL(file);
 
     reader.onload = () => {
@@ -32,6 +35,12 @@ function AddBook() {
         ...prev,
         [name]: result,
       }));
+      setLoadingFile(false);
+    };
+
+    reader.onerror = () => {
+      Swal.fire("Error", "No se pudo leer el archivo", "error");
+      setLoadingFile(false);
     };
   };
 
@@ -43,6 +52,11 @@ function AddBook() {
 
   const submit = (e) => {
     e.preventDefault();
+
+    if (loadingFile) {
+      Swal.fire("Espera", "El archivo aún se está cargando", "info");
+      return;
+    }
 
     // Validaciones
     if (
@@ -188,6 +202,7 @@ function AddBook() {
               />
             </div>
 
+            {/* Imagen */}
             <div className="mb-3">
               <label className="form-label">Imagen</label>
               <input
@@ -207,6 +222,7 @@ function AddBook() {
               )}
             </div>
 
+            {/* PDF */}
             <div className="mb-3">
               <label className="form-label">PDF</label>
               <input
@@ -217,11 +233,6 @@ function AddBook() {
                 onChange={handleFile}
                 required
               />
-              {form.file && (
-                <a href={form.file} target="_blank" rel="noopener noreferrer">
-                  Ver/Descargar PDF
-                </a>
-              )}
             </div>
 
             <input type="submit" value="Guardar" className="btn-custom" />
