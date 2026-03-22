@@ -11,6 +11,7 @@ function Header() {
     if (!ok) return;
 
     localStorage.removeItem("user");
+    localStorage.removeItem("adminSelected");
 
     nav("/");
   };
@@ -60,7 +61,13 @@ function Header() {
 
               {user && user.rol === "admin" && (
                 <li className="nav-item">
-                  <Link className="nav-link" to="/admin">
+                  <Link
+                    className="nav-link"
+                    to="/admin"
+                    onClick={() => {
+                      localStorage.setItem("adminSelected", "user-list");
+                    }}
+                  >
                     Administrar
                   </Link>
                 </li>

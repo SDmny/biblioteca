@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import AdminSidebar from "../../components/admin/AdminSidebar.jsx";
 
@@ -11,15 +11,17 @@ import AddBook from "../user/AddBook.jsx";
 import EditProfile from "../../components/user/EditProfile.jsx";
 
 function AdminDashboard() {
-
-  const [selected, setSelected] =
-    useState("book-list");
-
+  const [selected, setSelected] = useState(
+    localStorage.getItem("adminSelected") || "user-list",
+  );
+  useEffect(() => {
+    if (selected) {
+      localStorage.setItem("adminSelected", selected);
+    }
+  }, [selected]);
 
   const renderContent = () => {
-
     switch (selected) {
-
       case "user-list":
         return <UserList />;
 
@@ -49,30 +51,16 @@ function AdminDashboard() {
 
       default:
         return <BookList />;
-
     }
-
   };
 
-
   return (
-
     <div className="catalog-container">
+      <AdminSidebar onSelect={setSelected} />
 
-      <AdminSidebar
-        onSelect={setSelected}
-      />
-
-      <div className="catalog-content">
-
-        {renderContent()}
-
-      </div>
-
+      <div className="catalog-content">{renderContent()}</div>
     </div>
-
   );
-
 }
 
 export default AdminDashboard;
