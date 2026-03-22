@@ -27,12 +27,7 @@ function AddBook() {
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      let result = reader.result;
-
-      if (name === "file" && !result.startsWith("data:application/pdf")) {
-        result = "data:application/pdf;base64," + result.split(",")[1];
-      }
-
+      const result = reader.result;
       setForm((prev) => ({
         ...prev,
         [name]: result,
@@ -43,7 +38,6 @@ function AddBook() {
   const handleFile = (e) => {
     const file = e.target.files[0];
     const name = e.target.name;
-
     if (file) fileToBase64(file, name);
   };
 
@@ -51,7 +45,15 @@ function AddBook() {
     e.preventDefault();
 
     // Validaciones
-    if (!form.title || !form.author || !form.edition || !form.genre || !form.synopsis || !form.pages || !form.date) {
+    if (
+      !form.title ||
+      !form.author ||
+      !form.edition ||
+      !form.genre ||
+      !form.synopsis ||
+      !form.pages ||
+      !form.date
+    ) {
       Swal.fire("Campos incompletos", "Debes llenar todos los campos obligatorios", "warning");
       return;
     }
@@ -196,6 +198,13 @@ function AddBook() {
                 onChange={handleFile}
                 required
               />
+              {form.image && (
+                <img
+                  src={form.image}
+                  alt="preview"
+                  style={{ maxWidth: 150, marginTop: 10 }}
+                />
+              )}
             </div>
 
             <div className="mb-3">
@@ -208,6 +217,11 @@ function AddBook() {
                 onChange={handleFile}
                 required
               />
+              {form.file && (
+                <a href={form.file} target="_blank" rel="noopener noreferrer">
+                  Ver/Descargar PDF
+                </a>
+              )}
             </div>
 
             <input type="submit" value="Guardar" className="btn-custom" />

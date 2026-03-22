@@ -20,6 +20,7 @@ function EditBook() {
 
   const [bookOwner, setBookOwner] = useState("");
 
+  // Cargar libro existente
   useEffect(() => {
     const libros = JSON.parse(localStorage.getItem("books")) || [];
     const book = libros.find((b) => String(b.id) === String(id));
@@ -39,17 +40,13 @@ function EditBook() {
     }
   }, [id]);
 
-  const change = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const fileToBase64 = (file, name) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () =>
-      setForm((prev) => ({
-        ...prev,
-        [name]: reader.result,
-      }));
+      setForm((prev) => ({ ...prev, [name]: reader.result }));
   };
 
   const handleFile = (e) => {
@@ -58,17 +55,14 @@ function EditBook() {
     if (file) fileToBase64(file, name);
   };
 
+  // Guardar cambios
   const submit = (e) => {
     e.preventDefault();
 
     const currentUser = JSON.parse(localStorage.getItem("user")) || {};
 
     // Validación de permisos
-    if (
-      bookOwner &&
-      bookOwner !== currentUser.usuario &&
-      currentUser.rol !== "admin"
-    ) {
+    if (bookOwner && bookOwner !== currentUser.usuario && currentUser.rol !== "admin") {
       Swal.fire("Acceso denegado", "No tienes permiso para editar este libro", "error");
       return;
     }
@@ -198,6 +192,7 @@ function EditBook() {
               />
             </div>
 
+            {/* Imagen */}
             <div className="mb-3">
               <label className="form-label">Imagen</label>
               <input
@@ -216,6 +211,7 @@ function EditBook() {
               )}
             </div>
 
+            {/* PDF */}
             <div className="mb-3">
               <label className="form-label">PDF</label>
               <input

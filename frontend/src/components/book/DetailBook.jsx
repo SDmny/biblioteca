@@ -1,5 +1,4 @@
 import { useState } from "react";
-import BasicButton from "../ui/BasicButton";
 import { useNavigate } from "react-router-dom";
 
 function DetailBook({
@@ -18,7 +17,6 @@ function DetailBook({
 
   // Usuario logueado
   const user = JSON.parse(localStorage.getItem("user"));
-
   const userRol = user?.rol || "user";
   const nav = useNavigate();
 
@@ -59,7 +57,7 @@ function DetailBook({
           }}
         >
           ★
-        </span>,
+        </span>
       );
     }
     return arr;
@@ -76,7 +74,7 @@ function DetailBook({
   };
 
   const handleEdit = () => {
-    nav(`/admin/edit-book/${id}`);
+    nav(`/edit-book/${id}`);
   };
 
   return (
@@ -85,21 +83,11 @@ function DetailBook({
         <div className="detalle-libro-container">
           <div className="detalle-libro-info">
             <h3>{title}</h3>
-            <p>
-              <strong>Autor:</strong> {author}
-            </p>
-            <p>
-              <strong>Páginas:</strong> {pages}
-            </p>
-            <p>
-              <strong>Edición:</strong> {edition}
-            </p>
-            <p>
-              <strong>Género:</strong> {genre}
-            </p>
-            <p>
-              <strong>Descripción:</strong> {description}
-            </p>
+            <p><strong>Autor:</strong> {author}</p>
+            <p><strong>Páginas:</strong> {pages}</p>
+            <p><strong>Edición:</strong> {edition}</p>
+            <p><strong>Género:</strong> {genre}</p>
+            <p><strong>Descripción:</strong> {description}</p>
 
             <div>
               <strong>Calificación:</strong>
@@ -107,7 +95,7 @@ function DetailBook({
             </div>
 
             <div className="mt-3">
-              {user && pdfSrc && (
+              {user && pdfSrc ? (
                 <>
                   <a
                     href={pdfSrc}
@@ -125,7 +113,7 @@ function DetailBook({
                     Descargar
                   </a>
                 </>
-              )}
+              ) : null}
 
               {user && pdfSrc && userRol === "admin" ? (
                 <>
@@ -147,11 +135,15 @@ function DetailBook({
           </div>
 
           <div className="detalle-libro-imagen">
-            <img
-              src={imgSrc}
-              alt={title}
-              className="img-fluid rounded shadow"
-            />
+            {imgSrc ? (
+              <img
+                src={imgSrc}
+                alt={title}
+                className="img-fluid rounded shadow"
+              />
+            ) : (
+              <p className="text-muted">No hay imagen disponible</p>
+            )}
           </div>
         </div>
       </div>
