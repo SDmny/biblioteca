@@ -58,17 +58,23 @@ function AddBook() {
       return;
     }
 
+    // Normalizar con trim
+    const titleTrimmed = form.title ? form.title.trim() : "";
+    const authorTrimmed = form.author ? form.author.trim() : "";
+    const genreTrimmed = form.genre ? form.genre.trim() : "";
+    const synopsisTrimmed = form.synopsis ? form.synopsis.trim() : "";
+
     // Validaciones
     if (
-      !form.title ||
-      !form.author ||
+      !titleTrimmed ||
+      !authorTrimmed ||
+      !genreTrimmed ||
+      !synopsisTrimmed ||
       !form.edition ||
-      !form.genre ||
-      !form.synopsis ||
       !form.pages ||
       !form.date
     ) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos obligatorios", "warning");
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos obligatorios y no pueden ser solo espacios", "warning");
       return;
     }
 
@@ -96,11 +102,11 @@ function AddBook() {
 
     const newBook = {
       id: Date.now(),
-      title: form.title,
-      author: form.author,
+      title: titleTrimmed,
+      author: authorTrimmed,
       edition: form.edition,
-      genre: form.genre,
-      description: form.synopsis,
+      genre: genreTrimmed,
+      description: synopsisTrimmed,
       pages: form.pages,
       date: form.date,
       image: form.image,

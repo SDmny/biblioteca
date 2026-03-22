@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import BasicButton from "../../components/ui/BasicButton";
 import BackButton from "../../components/ui/BackButton";
 
 function EditBook() {
@@ -20,7 +19,6 @@ function EditBook() {
 
   const [bookOwner, setBookOwner] = useState("");
 
-  // Cargar libro existente
   useEffect(() => {
     const libros = JSON.parse(localStorage.getItem("books")) || [];
     const book = libros.find((b) => String(b.id) === String(id));
@@ -45,8 +43,7 @@ function EditBook() {
   const fileToBase64 = (file, name) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () =>
-      setForm((prev) => ({ ...prev, [name]: reader.result }));
+    reader.onload = () => setForm((prev) => ({ ...prev, [name]: reader.result }));
   };
 
   const handleFile = (e) => {
@@ -55,7 +52,6 @@ function EditBook() {
     if (file) fileToBase64(file, name);
   };
 
-  // Guardar cambios
   const submit = (e) => {
     e.preventDefault();
 
@@ -67,9 +63,15 @@ function EditBook() {
       return;
     }
 
-    // Validaciones de campos
-    if (!form.title || !form.author || !form.edition || !form.genre || !form.synopsis || !form.pages || !form.date) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos obligatorios", "warning");
+    // Normalizar con trim
+    const titleTrimmed = form.title ? form.title.trim() : "";
+    const authorTrimmed = form.author ? form.author.trim() : "";
+    const genreTrimmed = form.genre ? form.genre.trim() : "";
+    const synopsisTrimmed = form.synopsis ? form.synopsis.trim() : "";
+
+    // Validaciones de campos obligatorios
+    if (!titleTrimmed || !authorTrimmed || !genreTrimmed || !synopsisTrimmed || !form.edition || !form.pages || !form.date) {
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos obligatorios y no pueden ser solo espacios", "warning");
       return;
     }
 
@@ -83,21 +85,22 @@ function EditBook() {
       return;
     }
 
+    // No obligamos a subir imagen/PDF: si no se adjuntan, se conserva lo anterior
     const libros = JSON.parse(localStorage.getItem("books")) || [];
     const index = libros.findIndex((b) => String(b.id) === String(id));
 
     if (index >= 0) {
       libros[index] = {
         ...libros[index],
-        title: form.title,
-        author: form.author,
+        title: titleTrimmed,
+        author: authorTrimmed,
         edition: form.edition,
-        genre: form.genre,
-        description: form.synopsis,
+        genre: genreTrimmed,
+        description: synopsisTrimmed,
         pages: form.pages,
         date: form.date,
-        image: form.image,
-        file: form.file,
+        image: form.image || libros[index].image,
+        file: form.file || libros[index].file,
       };
 
       localStorage.setItem("books", JSON.stringify(libros));
@@ -114,113 +117,52 @@ function EditBook() {
           <form onSubmit={submit}>
             <div className="mb-3">
               <label className="form-label">Título</label>
-              <input
-                className="form-control"
-                name="title"
-                value={form.title}
-                onChange={change}
-                required
-              />
+              <input className="form-control" name="title" value={form.title} onChange={change} required />
             </div>
 
             <div className="mb-3">
               <label className="form-label">Autor</label>
-              <input
-                className="form-control"
-                name="author"
-                value={form.author}
-                onChange={change}
-                required
-              />
+              <input className="form-control" name="author" value={form.author} onChange={change} required />
             </div>
 
             <div className="mb-3">
               <label className="form-label">Edición</label>
-              <input
-                type="number"
-                className="form-control"
-                name="edition"
-                value={form.edition}
-                onChange={change}
-                required
-              />
+              <input type="number" className="form-control" name="edition" value={form.edition} onChange={change} required />
             </div>
 
             <div className="mb-3">
               <label className="form-label">Género</label>
-              <input
-                className="form-control"
-                name="genre"
-                value={form.genre}
-                onChange={change}
-                required
-              />
+              <input className="form-control" name="genre" value={form.genre} onChange={change} required />
             </div>
 
             <div className="mb-3">
               <label className="form-label">Sinopsis</label>
-              <textarea
-                className="form-control"
-                name="synopsis"
-                value={form.synopsis}
-                onChange={change}
-                required
-              />
+              <textarea className="form-control" name="synopsis" value={form.synopsis} onChange={change} required />
             </div>
 
             <div className="mb-3">
               <label className="form-label">Páginas</label>
-              <input
-                type="number"
-                className="form-control"
-                name="pages"
-                value={form.pages}
-                onChange={change}
-                required
-              />
+              <input type="number" className="form-control" name="pages" value={form.pages} onChange={change} required />
             </div>
 
             <div className="mb-3">
               <label className="form-label">Fecha</label>
-              <input
-                type="date"
-                className="form-control"
-                name="date"
-                value={form.date}
-                onChange={change}
-                required
-              />
+              <input type="date" className="form-control" name="date" value={form.date} onChange={change} required />
             </div>
 
             {/* Imagen */}
             <div className="mb-3">
               <label className="form-label">Imagen</label>
-              <input
-                type="file"
-                accept="image/*"
-                name="image"
-                className="form-control"
-                onChange={handleFile}
-              />
+              <input type="file" accept="image/*" name="image" className="form-control" onChange={handleFile} />
               {form.image && (
-                <img
-                  src={form.image}
-                  alt="preview"
-                  style={{ maxWidth: 150, marginTop: 10 }}
-                />
+                <img src={form.image} alt="preview" style={{ maxWidth: 150, marginTop: 10 }} />
               )}
             </div>
 
             {/* PDF */}
             <div className="mb-3">
               <label className="form-label">PDF</label>
-              <input
-                type="file"
-                accept="application/pdf"
-                name="file"
-                className="form-control"
-                onChange={handleFile}
-              />
+              <input type="file" accept="application/pdf" name="file" className="form-control" onChange={handleFile} />
             </div>
 
             <input type="submit" value="Guardar Cambios" className="btn-custom" />

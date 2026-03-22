@@ -25,43 +25,49 @@ function AddUsers({ onSubmit, isAdminContext = false }) {
   const submit = (e) => {
     e.preventDefault();
 
+    // Normalizar con trim
+    const nombreTrimmed = form.nombre ? form.nombre.trim() : "";
+    const apellidoTrimmed = form.apellido ? form.apellido.trim() : "";
+    const usuarioTrimmed = form.usuario ? form.usuario.trim() : "";
+    const emailTrimmed = form.email ? form.email.trim() : "";
+    const fecNac = form.fec_nac;
+
+    // Validaciones
     if (
-      !form.nombre ||
-      !form.apellido ||
-      !form.usuario ||
-      !form.email ||
+      !nombreTrimmed ||
+      !apellidoTrimmed ||
+      !usuarioTrimmed ||
+      !emailTrimmed ||
       !form.password ||
       !form.confirm_password ||
-      !form.fec_nac
+      !fecNac
     ) {
-      Swal.fire(
-        "Campos incompletos",
-        "Debes llenar todos los campos",
-        "warning",
-      );
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
       return;
     }
 
-    if (!/\S+@\S+\.\S+/.test(form.email)) {
+    const year = new Date(fecNac).getFullYear();
+    if (year < 1900) {
+      Swal.fire("Error", "La fecha de nacimiento no puede ser anterior a 1900", "error");
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(emailTrimmed)) {
       Swal.fire("Error", "Correo electrónico inválido", "error");
       return;
     }
 
-    if (!/^[A-Za-z0-9_-]+$/.test(form.usuario)) {
+    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
       Swal.fire(
         "Error",
         "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
-        "error",
+        "error"
       );
       return;
     }
 
     if (form.password.length < 6) {
-      Swal.fire(
-        "Error",
-        "La contraseña debe tener al menos 6 caracteres",
-        "error",
-      );
+      Swal.fire("Error", "La contraseña debe tener al menos 6 caracteres", "error");
       return;
     }
 
@@ -71,12 +77,18 @@ function AddUsers({ onSubmit, isAdminContext = false }) {
     }
 
     const users = JSON.parse(localStorage.getItem("users")) || [];
-    if (users.some((u) => u.usuario === form.usuario)) {
+    if (users.some((u) => u.usuario === usuarioTrimmed)) {
       Swal.fire("Error", "Ese usuario ya existe", "error");
       return;
     }
 
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      nombre: nombreTrimmed,
+      apellido: apellidoTrimmed,
+      usuario: usuarioTrimmed,
+      email: emailTrimmed,
+    });
   };
 
   return (

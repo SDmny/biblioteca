@@ -65,14 +65,41 @@ function AdminUserForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Normalizar con trim
+    const nombreTrimmed = formData.nombre ? formData.nombre.trim() : "";
+    const apellidoTrimmed = formData.apellido ? formData.apellido.trim() : "";
+    const usuarioTrimmed = formData.usuario ? formData.usuario.trim() : "";
+    const emailTrimmed = formData.email ? formData.email.trim() : "";
+    const fecNac = formData.fec_nac;
+
     // Validaciones
-    if (!formData.nombre || !formData.apellido || !formData.fec_nac || !formData.email || !formData.usuario) {
-      Swal.fire("Campos incompletos", "Todos los campos son obligatorios", "warning");
+    if (!nombreTrimmed || !apellidoTrimmed || !usuarioTrimmed || !emailTrimmed || !fecNac) {
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
+      return;
+    }
+
+    const year = new Date(fecNac).getFullYear();
+    if (year < 1900) {
+      Swal.fire("Error", "La fecha de nacimiento no puede ser anterior a 1900", "error");
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(emailTrimmed)) {
+      Swal.fire("Error", "Correo electrónico inválido", "error");
+      return;
+    }
+
+    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
+      Swal.fire(
+        "Error",
+        "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
+        "error"
+      );
       return;
     }
 
     if (formData.password.length < 6) {
-      Swal.fire("Contraseña inválida", "Debe tener al menos 6 caracteres", "error");
+      Swal.fire("Error", "La contraseña debe tener al menos 6 caracteres", "error");
       return;
     }
 
@@ -87,11 +114,11 @@ function AdminUserForm() {
       const updated = users.map((u) =>
         u.usuario === usuarioParam
           ? {
-              nombre: formData.nombre,
-              apellido: formData.apellido,
-              fec_nac: formData.fec_nac,
-              email: formData.email,
-              usuario: formData.usuario,
+              nombre: nombreTrimmed,
+              apellido: apellidoTrimmed,
+              fec_nac: fecNac,
+              email: emailTrimmed,
+              usuario: usuarioTrimmed,
               password: formData.password,
               rol: formData.rol,
             }
@@ -105,11 +132,11 @@ function AdminUserForm() {
         localStorage.setItem(
           "user",
           JSON.stringify({
-            nombre: formData.nombre,
-            apellido: formData.apellido,
-            fec_nac: formData.fec_nac,
-            email: formData.email,
-            usuario: formData.usuario,
+            nombre: nombreTrimmed,
+            apellido: apellidoTrimmed,
+            fec_nac: fecNac,
+            email: emailTrimmed,
+            usuario: usuarioTrimmed,
             password: formData.password,
             rol: formData.rol,
           })
@@ -120,17 +147,17 @@ function AdminUserForm() {
       return;
     }
 
-    if (users.some((u) => u.usuario === formData.usuario)) {
+    if (users.some((u) => u.usuario === usuarioTrimmed)) {
       Swal.fire("Error", "Ese usuario ya existe", "error");
       return;
     }
 
     users.push({
-      nombre: formData.nombre,
-      apellido: formData.apellido,
-      fec_nac: formData.fec_nac,
-      email: formData.email,
-      usuario: formData.usuario,
+      nombre: nombreTrimmed,
+      apellido: apellidoTrimmed,
+      fec_nac: fecNac,
+      email: emailTrimmed,
+      usuario: usuarioTrimmed,
       password: formData.password,
       rol: formData.rol,
     });

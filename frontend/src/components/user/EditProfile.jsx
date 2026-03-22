@@ -29,16 +29,44 @@ function EditProfile({ noExtras = false }) {
   };
 
   const guardar = () => {
-    if (!form.nombre || !form.apellido || !form.usuario) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
+    // Normalizar con trim
+    const nombreTrimmed = form.nombre ? form.nombre.trim() : "";
+    const apellidoTrimmed = form.apellido ? form.apellido.trim() : "";
+    const usuarioTrimmed = form.usuario ? form.usuario.trim() : "";
+    const fecNac = form.fec_nac;
+
+    if (!nombreTrimmed || !apellidoTrimmed || !usuarioTrimmed || !fecNac) {
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos y no pueden ser solo espacios", "warning");
       return;
     }
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-    const nuevos = users.map((u) => (u.usuario === user.usuario ? form : u));
-    localStorage.setItem("users", JSON.stringify(nuevos));
-    if (!isAdminEdit) {
-      localStorage.setItem("user", JSON.stringify(form));
+
+    const year = new Date(fecNac).getFullYear();
+    if (year < 1900) {
+      Swal.fire("Error", "La fecha de nacimiento no puede ser anterior a 1900", "error");
+      return;
     }
+
+    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
+      Swal.fire(
+        "Error",
+        "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
+        "error"
+      );
+      return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    const nuevos = users.map((u) =>
+      u.usuario === user.usuario
+        ? { ...form, nombre: nombreTrimmed, apellido: apellidoTrimmed, usuario: usuarioTrimmed }
+        : u
+    );
+    localStorage.setItem("users", JSON.stringify(nuevos));
+
+    if (!isAdminEdit) {
+      localStorage.setItem("user", JSON.stringify({ ...form, nombre: nombreTrimmed, apellido: apellidoTrimmed, usuario: usuarioTrimmed }));
+    }
+
     Swal.fire("Éxito", "Perfil guardado correctamente", "success");
   };
 
@@ -97,6 +125,9 @@ function EditProfile({ noExtras = false }) {
         <br />
         Usuario
         <input className="form-control" name="usuario" value={form.usuario || ""} onChange={change} />
+        <br />
+        Fecha de nacimiento
+        <input className="form-control" type="date" name="fec_nac" value={form.fec_nac || ""} onChange={change} />
         <br />
         <button className="btn-main me-2" onClick={guardar}>
           Guardar
