@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import BasicButton from "../../components/ui/BasicButton";
+import BackButton from "../../components/ui/BackButton";
 
 function EditBook() {
   const { id } = useParams();
@@ -43,7 +45,8 @@ function EditBook() {
   const fileToBase64 = (file, name) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => setForm((prev) => ({ ...prev, [name]: reader.result }));
+    reader.onload = () =>
+      setForm((prev) => ({ ...prev, [name]: reader.result }));
   };
 
   const handleFile = (e) => {
@@ -56,10 +59,27 @@ function EditBook() {
   const submit = (e) => {
     e.preventDefault();
 
-    const currentUser = JSON.parse(localStorage.getItem("user")) || {}; // Usuario actual
+    const currentUser = JSON.parse(localStorage.getItem("user")) || {};
 
-    if (bookOwner && bookOwner !== currentUser.usuario) {
-      alert("No tienes permiso para editar este libro.");
+    // Validación de permisos
+    if (bookOwner && bookOwner !== currentUser.usuario && currentUser.rol !== "admin") {
+      Swal.fire("Acceso denegado", "No tienes permiso para editar este libro", "error");
+      return;
+    }
+
+    // Validaciones de campos
+    if (!form.title || !form.author || !form.edition || !form.genre || !form.synopsis || !form.pages || !form.date) {
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos obligatorios", "warning");
+      return;
+    }
+
+    if (isNaN(form.edition) || parseInt(form.edition) <= 0) {
+      Swal.fire("Error", "La edición debe ser un número válido", "error");
+      return;
+    }
+
+    if (isNaN(form.pages) || parseInt(form.pages) <= 0) {
+      Swal.fire("Error", "El número de páginas debe ser un número válido", "error");
       return;
     }
 
@@ -79,8 +99,10 @@ function EditBook() {
         image: form.image,
         file: form.file,
       };
+
       localStorage.setItem("books", JSON.stringify(libros));
-      alert("Libro actualizado");
+
+      Swal.fire("Éxito", "Libro actualizado correctamente", "success");
     }
   };
 
@@ -90,7 +112,6 @@ function EditBook() {
         <h2>Editar Libro</h2>
         <div className="form-card">
           <form onSubmit={submit}>
-
             <div className="mb-3">
               <label className="form-label">Título</label>
               <input
@@ -116,10 +137,12 @@ function EditBook() {
             <div className="mb-3">
               <label className="form-label">Edición</label>
               <input
+                type="number"
                 className="form-control"
                 name="edition"
                 value={form.edition}
                 onChange={change}
+                required
               />
             </div>
 
@@ -130,6 +153,7 @@ function EditBook() {
                 name="genre"
                 value={form.genre}
                 onChange={change}
+                required
               />
             </div>
 
@@ -140,6 +164,7 @@ function EditBook() {
                 name="synopsis"
                 value={form.synopsis}
                 onChange={change}
+                required
               />
             </div>
 
@@ -151,6 +176,7 @@ function EditBook() {
                 name="pages"
                 value={form.pages}
                 onChange={change}
+                required
               />
             </div>
 
@@ -162,6 +188,7 @@ function EditBook() {
                 name="date"
                 value={form.date}
                 onChange={change}
+                required
               />
             </div>
 
@@ -198,7 +225,7 @@ function EditBook() {
 
             <input type="submit" value="Guardar Cambios" className="btn-custom" />
             <br /><br />
-            import BackButton from "../../components/ui/BackButton"; <BackButton/>
+            <BackButton />
           </form>
         </div>
       </div>

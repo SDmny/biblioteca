@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import BasicButton from "../../components/ui/BasicButton";
 import BackButton from "../../components/ui/BackButton";
+
 function EditBook() {
   const { id } = useParams();
   const [form, setForm] = useState({
     title: "",
     author: "",
-    edition: "", 
+    edition: "",
     genre: "",
     synopsis: "",
     pages: "",
@@ -59,25 +61,36 @@ function EditBook() {
   const submit = (e) => {
     e.preventDefault();
 
-    const currentUser =
-      JSON.parse(localStorage.getItem("user")) || {};
+    const currentUser = JSON.parse(localStorage.getItem("user")) || {};
 
+    // Validación de permisos
     if (
       bookOwner &&
       bookOwner !== currentUser.usuario &&
       currentUser.rol !== "admin"
     ) {
-      alert("No tienes permiso para editar este libro.");
+      Swal.fire("Acceso denegado", "No tienes permiso para editar este libro", "error");
       return;
     }
 
-    const libros =
-      JSON.parse(localStorage.getItem("books")) || [];
+    // Validaciones de campos
+    if (!form.title || !form.author || !form.edition || !form.genre || !form.synopsis || !form.pages || !form.date) {
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos obligatorios", "warning");
+      return;
+    }
 
-    const index =
-      libros.findIndex(
-        (b) => String(b.id) === String(id)
-      );
+    if (isNaN(form.edition) || parseInt(form.edition) <= 0) {
+      Swal.fire("Error", "La edición debe ser un número válido", "error");
+      return;
+    }
+
+    if (isNaN(form.pages) || parseInt(form.pages) <= 0) {
+      Swal.fire("Error", "El número de páginas debe ser un número válido", "error");
+      return;
+    }
+
+    const libros = JSON.parse(localStorage.getItem("books")) || [];
+    const index = libros.findIndex((b) => String(b.id) === String(id));
 
     if (index >= 0) {
       libros[index] = {
@@ -93,12 +106,9 @@ function EditBook() {
         file: form.file,
       };
 
-      localStorage.setItem(
-        "books",
-        JSON.stringify(libros)
-      );
+      localStorage.setItem("books", JSON.stringify(libros));
 
-      alert("Libro actualizado");
+      Swal.fire("Éxito", "Libro actualizado correctamente", "success");
     }
   };
 
@@ -106,11 +116,8 @@ function EditBook() {
     <div className="form-container">
       <div className="form-wrapper">
         <h2>Editar Libro</h2>
-
         <div className="form-card">
-
           <form onSubmit={submit}>
-
             <div className="mb-3">
               <label className="form-label">Título</label>
               <input
@@ -136,10 +143,12 @@ function EditBook() {
             <div className="mb-3">
               <label className="form-label">Edición</label>
               <input
+                type="number"
                 className="form-control"
                 name="edition"
                 value={form.edition}
                 onChange={change}
+                required
               />
             </div>
 
@@ -150,6 +159,7 @@ function EditBook() {
                 name="genre"
                 value={form.genre}
                 onChange={change}
+                required
               />
             </div>
 
@@ -160,6 +170,7 @@ function EditBook() {
                 name="synopsis"
                 value={form.synopsis}
                 onChange={change}
+                required
               />
             </div>
 
@@ -171,6 +182,7 @@ function EditBook() {
                 name="pages"
                 value={form.pages}
                 onChange={change}
+                required
               />
             </div>
 
@@ -182,6 +194,7 @@ function EditBook() {
                 name="date"
                 value={form.date}
                 onChange={change}
+                required
               />
             </div>
 
@@ -198,10 +211,7 @@ function EditBook() {
                 <img
                   src={form.image}
                   alt="preview"
-                  style={{
-                    maxWidth: 150,
-                    marginTop: 10,
-                  }}
+                  style={{ maxWidth: 150, marginTop: 10 }}
                 />
               )}
             </div>
@@ -217,19 +227,10 @@ function EditBook() {
               />
             </div>
 
-            <input
-              type="submit"
-              value="Guardar Cambios"
-              className="btn-custom"
-            />
-
-            <br />
-            <br />
-
+            <input type="submit" value="Guardar Cambios" className="btn-custom" />
+            <br /><br />
             <BackButton />
-
           </form>
-
         </div>
       </div>
     </div>

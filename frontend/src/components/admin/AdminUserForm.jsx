@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import BasicInput from "../ui/BasicInput";
 import TypeInput from "../ui/TypeInput";
 import BasicCard from "../ui/BasicCard.jsx";
@@ -64,8 +65,19 @@ function AdminUserForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validaciones
+    if (!formData.nombre || !formData.apellido || !formData.fec_nac || !formData.email || !formData.usuario) {
+      Swal.fire("Campos incompletos", "Todos los campos son obligatorios", "warning");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      Swal.fire("Contraseña inválida", "Debe tener al menos 6 caracteres", "error");
+      return;
+    }
+
     if (formData.password !== formData.confirm_password) {
-      alert("Las contraseñas no coinciden");
+      Swal.fire("Error", "Las contraseñas no coinciden", "error");
       return;
     }
 
@@ -104,13 +116,12 @@ function AdminUserForm() {
         );
       }
 
-      alert("Usuario actualizado");
-      navigate("/admin");
+      Swal.fire("Éxito", "Usuario actualizado correctamente", "success").then(() => navigate("/admin"));
       return;
     }
 
     if (users.some((u) => u.usuario === formData.usuario)) {
-      alert("Ese usuario ya existe");
+      Swal.fire("Error", "Ese usuario ya existe", "error");
       return;
     }
 
@@ -126,8 +137,7 @@ function AdminUserForm() {
 
     localStorage.setItem("users", JSON.stringify(users));
 
-    alert("Usuario creado");
-    navigate("/admin");
+    Swal.fire("Éxito", "Usuario creado correctamente", "success").then(() => navigate("/admin"));
   };
 
   if (!loaded) {
@@ -150,97 +160,43 @@ function AdminUserForm() {
     <BasicCard titulo={isEdit ? "Editar usuario" : "Crear usuario"}>
       <form onSubmit={handleSubmit}>
         <BasicInput label={"Nombre"}>
-          <TypeInput
-            type="text"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-            required
-          />
+          <TypeInput type="text" name="nombre" value={formData.nombre} onChange={handleChange} required />
         </BasicInput>
 
         <BasicInput label={"Apellido"}>
-          <TypeInput
-            type="text"
-            name="apellido"
-            value={formData.apellido}
-            onChange={handleChange}
-            required
-          />
+          <TypeInput type="text" name="apellido" value={formData.apellido} onChange={handleChange} required />
         </BasicInput>
 
         <BasicInput label={"Fecha de nacimiento"}>
-          <TypeInput
-            type="date"
-            name="fec_nac"
-            value={formData.fec_nac}
-            onChange={handleChange}
-            required
-          />
+          <TypeInput type="date" name="fec_nac" value={formData.fec_nac} onChange={handleChange} required />
         </BasicInput>
 
         <BasicInput label={"Correo electrónico"}>
-          <TypeInput
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+          <TypeInput type="email" name="email" value={formData.email} onChange={handleChange} required />
         </BasicInput>
 
         <BasicInput label={"Nombre de usuario"}>
-          <TypeInput
-            type="text"
-            name="usuario"
-            value={formData.usuario}
-            onChange={handleChange}
-            required
-          />
+          <TypeInput type="text" name="usuario" value={formData.usuario} onChange={handleChange} required />
         </BasicInput>
 
         <BasicInput label={"Contraseña"}>
-          <TypeInput
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
+          <TypeInput type="password" name="password" value={formData.password} onChange={handleChange} />
         </BasicInput>
 
         <BasicInput label={"Verificar contraseña"}>
-          <TypeInput
-            type="password"
-            name="confirm_password"
-            value={formData.confirm_password}
-            onChange={handleChange}
-          />
+          <TypeInput type="password" name="confirm_password" value={formData.confirm_password} onChange={handleChange} />
         </BasicInput>
 
         <BasicInput label={"Rol"}>
-          <select
-            name="rol"
-            value={formData.rol}
-            onChange={handleChange}
-            required
-            className="form-control"
-          >
+          <select name="rol" value={formData.rol} onChange={handleChange} required className="form-control">
             <option value="user">Usuario</option>
             <option value="admin">Administrador</option>
           </select>
         </BasicInput>
 
         <div style={{ marginTop: "10px" }}>
-          <input
-            type="submit"
-            value={isEdit ? "Guardar cambios" : "Crear usuario"}
-            className="btn-custom me-2"
-          />
-          <button
-            type="button"
-            className="btn-main"
-            onClick={() => navigate("/admin")}
-          >
+          <input type="submit" value={isEdit ? "Guardar cambios" : "Crear usuario"} className="btn-custom me-2" />
+          <button type="button" className="btn-main" onClick={() => navigate("/admin")}>
             Volver
           </button>
         </div>
