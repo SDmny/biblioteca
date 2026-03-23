@@ -12,10 +12,6 @@ function FilterOptions({ onAction }) {
       <button onClick={() => onAction("genero", "Misterio")}>Misterio</button>
       <button onClick={() => onAction("genero", "Historia")}>Historia</button>
 
-      <h4>Idioma</h4>
-      <button onClick={() => onAction("idioma", "Español")}>Español</button>
-      <button onClick={() => onAction("idioma", "Inglés")}>Inglés</button>
-
       <h4>Páginas</h4>
       <button onClick={() => onAction("largos")}>Más de 400 páginas</button>
     </>
