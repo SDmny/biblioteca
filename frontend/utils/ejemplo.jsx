@@ -2,24 +2,24 @@ import { useState, useEffect } from "react";
 import { supabase } from "./utils/supabase";
 
 export default function App() {
-  const [todos, setTodos] = useState([]);
+  const [books, setbooks] = useState([]);
 
   useEffect(() => {
-    async function getTodos() {
-      const { data: todos } = await supabase.from("todos").select();
+    async function getbooks() {
+      const { data: books } = await supabase.from("books").select();
 
-      if (todos) {
-        setTodos(todos);
+      if (books) {
+        setbooks(books);
       }
     }
 
-    getTodos();
+    getbooks();
   }, []);
 
   return (
     <ul>
-      {todos.map((todo) => (
-        <li key={todo.id}>{todo.name}</li>
+      {books.map((book) => (
+        <li key={book.id}>{book.title}</li>
       ))}
     </ul>
   );
