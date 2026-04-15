@@ -7,7 +7,7 @@ header y navar
 card
 btn
 
-detalle libro
+detalle libro */
 
 /* colores */
 :root {
@@ -89,12 +89,112 @@ h3 {
 /* header y navar */
 
 .navbar .nav-link {
+  color: var(--clr-blanco) !important;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .navbar .nav-link:hover {
-  color: var(--clr-azul3) !important;
+  color: var(--clr-dorado1) !important;
+}
+
+.notif-bell-btn {
+  background: none;
+  border: none;
+  color: var(--clr-blanco);
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.notif-bell-btn:hover {
+  transform: scale(1.1);
+  color: var(--clr-dorado1);
+}
+
+.notif-bell-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.notif-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 120px;
+  background-color: var(--clr-blanco);
+  border: 1px solid var(--clr-azul3);
+  border-radius: 12px;
+  width: 250px;
+  padding: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  z-index: 1000;
+  color: var(--clr-negro);
+}
+
+.notif-dropdown h6 {
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--clr-azul2);
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--clr-beige3);
+  padding-bottom: 8px;
+}
+
+.notif-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--clr-azul1);
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
 }
 
 /* cards */
@@ -267,7 +367,6 @@ h3 {
 
 .catalog-content {
   flex: 1;
-
   padding: 10px;
 }
 
@@ -281,9 +380,7 @@ h3 {
 
 .catalog-container {
   display: flex;
-
   gap: 20px;
-
   padding: 20px;
 }
 
@@ -291,15 +388,10 @@ h3 {
 
 .sidebar {
   width: 230px;
-
   background-color: var(--clr-beige2);
-
   border: 2px solid var(--clr-azul3);
-
   border-radius: 10px;
-
   padding: 15px;
-
   height: fit-content;
 }
 
@@ -309,19 +401,12 @@ h3 {
 
 .sidebar button {
   width: 100%;
-
   margin-bottom: 8px;
-
   padding: 6px;
-
   border: none;
-
   background-color: var(--clr-azul1);
-
   color: white;
-
   border-radius: 6px;
-
   transition: 0.2s;
 }
 
@@ -360,47 +445,35 @@ h3 {
   flex: 1;
 }
 
-/* grid bonito */
-
 .book-grid {
   display: grid;
-
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-
   gap: 20px;
 }
 
-/* tarjeta libro mejorada */
+/* tarjeta libro */
 
 .libro-card {
   padding: 10px;
-
   cursor: pointer;
-
   text-align: center;
 }
 
 .libro-card img {
   width: 100%;
-
   height: 250px;
-
   object-fit: cover;
-
   border-radius: 10px;
-
   margin-bottom: 10px;
 }
 
 .libro-card h4 {
   font-size: 16px;
-
   margin-bottom: 5px;
 }
 
 .libro-card p {
   font-size: 14px;
-
   margin-bottom: 5px;
 }
 
@@ -431,7 +504,6 @@ h3 {
 
 .detalle-libro-imagen img {
   width: 100%;
-
   border-radius: 10px;
 }
 
@@ -443,19 +515,14 @@ h3 {
 
 .user-box {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
 }
 
 .user-img {
   width: 35px;
-
   height: 35px;
-
   border-radius: 50%;
-
   border: 2px solid var(--clr-dorado3);
 }
 
@@ -495,15 +562,10 @@ h3 {
 }
 
 .book-grid {
-
   display: flex;
-
   flex-wrap: wrap;
-
   gap: 20px;
-
   justify-content: center;
-
 }
 
 .book-card {
@@ -519,24 +581,15 @@ h3 {
 }
 
 .book-card {
-
   background: #e9edf3;
-
   border-radius: 12px;
-
   padding: 15px;
-
   width: 220px;
-
   min-height: 340px;
-
   text-align: center;
-
   transition: transform 0.3s ease,
               box-shadow 0.3s ease;
-
   overflow: hidden;
-
 }
 
 .book-card:hover {
@@ -545,52 +598,31 @@ h3 {
 }
 
 .book-img {
-
   width: 100%;
-
   height: 240px;
-
   overflow: hidden;
-
   border-radius: 10px;
-
 }
 
 .book-img img {
-
   width: 100%;
-
   height: 100%;
-
   object-fit: cover;
-
   transition: transform 0.3s ease;
-
 }
 
 .book-card:hover img {
-
   transform: scale(1.08);
-
 }
 
 .book-author {
-
   font-size: 14px;
-
   color: #444;
-
   margin: 5px 0;
-
 }
 
 .book-rating {
-
   font-size: 14px;
-
   color: #f5a623;
-
   margin-bottom: 10px;
-
 }
-
