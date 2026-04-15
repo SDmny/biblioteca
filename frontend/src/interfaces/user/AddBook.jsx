@@ -1,8 +1,13 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import BackButton from "../../components/ui/BackButton"; // importar el botón
+import { useNavigate } from "react-router-dom";
+import BasicCard from "../../components/ui/BasicCard.jsx";
+import BasicInput from "../../components/ui/BasicInput.jsx";
+import TypeInput from "../../components/ui/TypeInput.jsx";
+import BackButton from "../../components/ui/BackButton.jsx";
 
 function AddBook() {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
   const [form, setForm] = useState({
@@ -31,10 +36,9 @@ function AddBook() {
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      const result = reader.result;
       setForm((prev) => ({
         ...prev,
-        [name]: result,
+        [name]: reader.result,
       }));
       setLoadingFile(false);
     };
@@ -47,67 +51,34 @@ function AddBook() {
 
   const handleFile = (e) => {
     const file = e.target.files[0];
-    const name = e.target.name;
-    if (file) fileToBase64(file, name);
+    if (file) fileToBase64(file, e.target.name);
   };
 
   const submit = (e) => {
     e.preventDefault();
 
     if (loadingFile) {
-      Swal.fire("Espera", "El archivo aún se está cargando", "info");
+      Swal.fire("Espere", "El archivo se está cargando", "info");
       return;
     }
 
-    // Normalizar con trim
-    const titleTrimmed = form.title ? form.title.trim() : "";
-    const authorTrimmed = form.author ? form.author.trim() : "";
-    const genreTrimmed = form.genre ? form.genre.trim() : "";
-    const synopsisTrimmed = form.synopsis ? form.synopsis.trim() : "";
+    const titleTrimmed = form.title?.trim();
+    const authorTrimmed = form.author?.trim();
+    const editionTrimmed = form.edition?.trim(); 
 
-    // Validaciones
-    if (
-      !titleTrimmed ||
-      !authorTrimmed ||
-      !genreTrimmed ||
-      !synopsisTrimmed ||
-      !form.edition ||
-      !form.pages ||
-      !form.date
-    ) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos obligatorios y no pueden ser solo espacios", "warning");
-      return;
-    }
-
-    if (isNaN(form.edition) || parseInt(form.edition) <= 0) {
-      Swal.fire("Error", "La edición debe ser un número válido", "error");
-      return;
-    }
-
-    if (isNaN(form.pages) || parseInt(form.pages) <= 0) {
-      Swal.fire("Error", "El número de páginas debe ser un número válido", "error");
-      return;
-    }
-
-    if (!form.file) {
-      Swal.fire("Error", "Debes subir un archivo PDF válido", "error");
-      return;
-    }
-
-    if (!form.image) {
-      Swal.fire("Error", "Debes subir una imagen de portada", "error");
+    if (!titleTrimmed || !authorTrimmed || !editionTrimmed || !form.file || !form.image) {
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
       return;
     }
 
     const books = JSON.parse(localStorage.getItem("books")) || [];
-
     const newBook = {
       id: Date.now(),
       title: titleTrimmed,
       author: authorTrimmed,
-      edition: form.edition,
-      genre: genreTrimmed,
-      description: synopsisTrimmed,
+      edition: editionTrimmed,
+      genre: form.genre,
+      description: form.synopsis,
       pages: form.pages,
       date: form.date,
       image: form.image,
@@ -124,131 +95,66 @@ function AddBook() {
   };
 
   return (
-    <div className="form-container">
-      <div className="form-wrapper">
-        <h2>Añadir Libro</h2>
-        <div className="form-card">
-          <form onSubmit={submit}>
-            <div className="mb-3">
-              <label className="form-label">Título</label>
-              <input
-                className="form-control"
-                name="title"
-                value={form.title}
-                onChange={change}
-                required
-              />
-            </div>
+    <BasicCard titulo={"Agregar Libro"}>
+      <form onSubmit={submit}>
+        
+        <BasicInput label={"Título"}>
+          <TypeInput type="text" name="title" value={form.title} onChange={change} required />
+        </BasicInput>
 
-            <div className="mb-3">
-              <label className="form-label">Autor</label>
-              <input
-                className="form-control"
-                name="author"
-                value={form.author}
-                onChange={change}
-                required
-              />
-            </div>
+        <BasicInput label={"Autor"}>
+          <TypeInput type="text" name="author" value={form.author} onChange={change} required />
+        </BasicInput>
 
-            <div className="mb-3">
-              <label className="form-label">Edición</label>
-              <input
-                type="number"
-                className="form-control"
-                name="edition"
-                value={form.edition}
-                onChange={change}
-                required
-              />
-            </div>
+        <BasicInput label={"Edición"}>
+          <TypeInput type="text" name="edition" value={form.edition} onChange={change} required />
+        </BasicInput>
 
-            <div className="mb-3">
-              <label className="form-label">Género</label>
-              <input
-                className="form-control"
-                name="genre"
-                value={form.genre}
-                onChange={change}
-                required
-              />
-            </div>
+        <BasicInput label={"Género"}>
+          <TypeInput type="text" name="genre" value={form.genre} onChange={change} required />
+        </BasicInput>
 
-            <div className="mb-3">
-              <label className="form-label">Sinopsis</label>
-              <textarea
-                className="form-control"
-                name="synopsis"
-                value={form.synopsis}
-                onChange={change}
-                required
-              />
-            </div>
+        <BasicInput label={"Sinopsis"}>
+          <textarea
+            className="form-control"
+            name="synopsis"
+            value={form.synopsis}
+            onChange={change}
+            required
+            rows="3"
+          />
+        </BasicInput>
 
-            <div className="mb-3">
-              <label className="form-label">Páginas</label>
-              <input
-                type="number"
-                className="form-control"
-                name="pages"
-                value={form.pages}
-                onChange={change}
-                required
-              />
-            </div>
+        <BasicInput label={"Páginas"}>
+          <TypeInput type="number" name="pages" value={form.pages} onChange={change} required />
+        </BasicInput>
 
-            <div className="mb-3">
-              <label className="form-label">Fecha</label>
-              <input
-                type="date"
-                className="form-control"
-                name="date"
-                value={form.date}
-                onChange={change}
-                required
-              />
-            </div>
+        <BasicInput label={"Fecha"}>
+          <TypeInput type="date" name="date" value={form.date} onChange={change} required />
+        </BasicInput>
 
-            {/* Imagen */}
-            <div className="mb-3">
-              <label className="form-label">Imagen</label>
-              <input
-                type="file"
-                accept="image/*"
-                name="image"
-                className="form-control"
-                onChange={handleFile}
-                required
-              />
-              {form.image && (
-                <img
-                  src={form.image}
-                  alt="preview"
-                  style={{ maxWidth: 150, marginTop: 10 }}
-                />
-              )}
-            </div>
+        <BasicInput label={"Imagen de portada"}>
+          <TypeInput type="file" name="image" onChange={handleFile} accept="image/*" required />
+          {form.image && (
+            <img src={form.image} alt="preview" style={{ maxWidth: 100, marginTop: 10, borderRadius: 5 }} />
+          )}
+        </BasicInput>
 
-            {/* PDF */}
-            <div className="mb-3">
-              <label className="form-label">PDF</label>
-              <input
-                type="file"
-                accept="application/pdf"
-                name="file"
-                className="form-control"
-                onChange={handleFile}
-                required
-              />
-            </div>
+        <BasicInput label={"Archivo PDF"}>
+          <TypeInput type="file" name="file" onChange={handleFile} accept="application/pdf" required />
+        </BasicInput>
 
-          <input type="submit" value="Guardar" className="btn-custom" />
-          <br /><br />
-          {user.rol !== "admin" && <BackButton />}
-          </form>
+        <div style={{ marginTop: "20px" }}>
+          <input type="submit" value="Guardar Libro" className="btn-custom" />
+          
+          {user.rol !== "admin" && (
+            <div style={{ marginTop: "10px" }}>
+              <BackButton />
+            </div>
+          )}
         </div>
-      </div>
-    </div>
+      </form>
+    </BasicCard>
   );
 }
 

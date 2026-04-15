@@ -13,10 +13,6 @@ function AdminSidebar({ onSelect }) {
         Crear Usuario
       </button>
 
-      <button onClick={() => onSelect("user-edit")}>
-        Editar Usuario
-      </button>
-
       <br />
       <br />
 
@@ -28,14 +24,6 @@ function AdminSidebar({ onSelect }) {
 
       <button onClick={() => onSelect("book-add")}>
         Agregar Libro
-      </button>
-
-      <button onClick={() => onSelect("book-edit")}>
-        Editar Libro
-      </button>
-
-      <button onClick={() => onSelect("book-delete")}>
-        Eliminar Libro
       </button>
 
       <br />
