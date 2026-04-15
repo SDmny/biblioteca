@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import BasicInput from "../ui/BasicInput.jsx";
 import TypeInput from "../ui/TypeInput.jsx";
 
-function AddUsers({ onSubmit, isAdminContext = false }) {
+function AddUsers({ isAdminContext = false }) {
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
@@ -94,14 +94,6 @@ function AddUsers({ onSubmit, isAdminContext = false }) {
       Swal.fire("Error", "Ese usuario ya existe", "error");
       return;
     }
-
-    onSubmit({
-      ...form,
-      nombre: nombreTrimmed,
-      apellido: apellidoTrimmed,
-      usuario: usuarioTrimmed,
-      email: emailTrimmed,
-    });
 
     // 1. Crear usuario en auth.users
     const { data, error } = await supabase.auth.signUp({
