@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../../utils/supabase.js";
 import Swal from "sweetalert2";
 import BasicInput from "../ui/BasicInput.jsx";
 import TypeInput from "../ui/TypeInput.jsx";
@@ -22,7 +23,7 @@ function AddUsers({ onSubmit, isAdminContext = false }) {
     });
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
 
     // Normalizar con trim
@@ -42,13 +43,21 @@ function AddUsers({ onSubmit, isAdminContext = false }) {
       !form.confirm_password ||
       !fecNac
     ) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
+      Swal.fire(
+        "Campos incompletos",
+        "Debes llenar todos los campos",
+        "warning",
+      );
       return;
     }
 
     const year = new Date(fecNac).getFullYear();
     if (year < 1900) {
-      Swal.fire("Error", "La fecha de nacimiento no puede ser anterior a 1900", "error");
+      Swal.fire(
+        "Error",
+        "La fecha de nacimiento no puede ser anterior a 1900",
+        "error",
+      );
       return;
     }
 
@@ -61,13 +70,17 @@ function AddUsers({ onSubmit, isAdminContext = false }) {
       Swal.fire(
         "Error",
         "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
-        "error"
+        "error",
       );
       return;
     }
 
     if (form.password.length < 6) {
-      Swal.fire("Error", "La contraseña debe tener al menos 6 caracteres", "error");
+      Swal.fire(
+        "Error",
+        "La contraseña debe tener al menos 6 caracteres",
+        "error",
+      );
       return;
     }
 
@@ -89,6 +102,34 @@ function AddUsers({ onSubmit, isAdminContext = false }) {
       usuario: usuarioTrimmed,
       email: emailTrimmed,
     });
+
+    // 1. Crear usuario en auth.users
+    const { data, error } = await supabase.auth.signUp({
+      email: emailTrimmed,
+      password: form.password,
+    });
+    if (error) {
+      Swal.fire("Error", error.message, "error");
+      return;
+    }
+
+    // 2. Insertar perfil en tu tabla user
+    const { error: insertError } = await supabase.from("user").insert([
+      {
+        id: data.user.id, // mismo UUID que auth.users
+        name: nombreTrimmed,
+        lastname: apellidoTrimmed,
+        birth_date: form.fec_nac,
+        username: usuarioTrimmed,
+        role: form.rol,
+      },
+    ]);
+
+    if (insertError) {
+      Swal.fire("Error", insertError.message, "error");
+    } else {
+      Swal.fire("Éxito", "Usuario registrado correctamente", "success");
+    }
   };
 
   return (
