@@ -1,24 +1,36 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import BasicButton from "../../components/ui/BasicButton";
 import SeeProfile from "../../components/user/SeeProfile";
 import BackButton from "../../components/ui/BackButton";
 
 function ProfileView() {
-  const user = JSON.parse(localStorage.getItem("user")); // Usuario actual
+  const nav = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  const [books, setBooks] = useState(() => {
-    const all = JSON.parse(localStorage.getItem("books")) || [];
-    return all.filter((b) => b.usuario === user?.usuario);
-  });
+  const editPath = user?.rol === "admin" 
+    ? `/admin/usuarios/edit/${user.usuario}` 
+    : "/profile-edit";
 
-  const borrarLibro = (id) => {
-    const ok = confirm("Borrar libro");
-    if (!ok) return;
-
-    let all = JSON.parse(localStorage.getItem("books")) || [];
-    all = all.filter((b) => b.id !== id);
-    localStorage.setItem("books", JSON.stringify(all));
-    setBooks(books.filter((b) => b.id !== id));
+  const eliminarPerfil = () => {
+    Swal.fire({
+      title: "¿Eliminar tu cuenta?",
+      text: "Esta acción borrará tus datos permanentemente y no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        users = users.filter((u) => u.usuario !== user.usuario);
+        localStorage.setItem("users", JSON.stringify(users));
+        localStorage.removeItem("user");
+        nav("/");
+      }
+    });
   };
 
   if (!user) return <p>No autorizado</p>;
@@ -27,25 +39,55 @@ function ProfileView() {
     <div className="main-container">
       <BackButton ruta="/" />
       <SeeProfile user={user}>
-        <BasicButton to={"/add-book"} texto={"Publicar libro"} />
+        <div
+          style={{
+            display: "flex",
+            gap: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            flexWrap: "wrap",
+            marginBottom: 10
+          }}
+        >
+          <BasicButton to={editPath} texto={"Modificar datos"} />
+          <BasicButton to={"/add-book"} texto={"Publicar libro"} />
 
-        <hr />
-
-        <h3>Mis libros</h3>
-
-        {books.map((b) => (
-          <div key={b.id} className="libro-card p-3 mb-3">
-            <h4>{b.title}</h4>
-            <p>⭐ {b.rating}</p>
-            <p>{b.description}</p>
-
-            <BasicButton to={"/edit-book/" + b.id} texto={"Editar"} />
-
-            <button className="btn-main me-2" onClick={() => borrarLibro(b.id)}>
-              Borrar
+          {user.rol !== "admin" && (
+            <button
+              className="btn-main"
+              style={{ height: "fit-content" }}
+              onClick={() => nav("/my-books")}
+            >
+              Mis libros
             </button>
-          </div>
-        ))}
+          )}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+          <button 
+            className="btn-main" 
+            onClick={() => nav("/reset-password")}
+          >
+            Cambiar contraseña
+          </button>
+        </div>
+
+        {user.rol !== "admin" && (
+          <>
+            <hr />
+            <button
+              className="btn-main w-100"
+              style={{
+                backgroundColor: "#dc3545",
+                backgroundImage: "none",
+                border: "none"
+              }}
+              onClick={eliminarPerfil}
+            >
+              Eliminar Perfil
+            </button>
+          </>
+        )}
       </SeeProfile>
     </div>
   );

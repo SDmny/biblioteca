@@ -1,7 +1,6 @@
-import BasicButton from "../ui/BasicButton";
 import BasicCard from "../ui/BasicCard";
 
-function EditProfile({ user, children }) {
+function SeeProfile({ user, children }) {
   return (
     <>
       <BasicCard titulo="Perfil">
@@ -23,11 +22,10 @@ function EditProfile({ user, children }) {
 
         <br />
 
-        <BasicButton to={"/profile-edit"} texto={"Modificar datos"} />
         {children}
       </BasicCard>
     </>
   );
 }
 
-export default EditProfile;
+export default SeeProfile;

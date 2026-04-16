@@ -52,9 +52,14 @@ function LoginPage() {
           <button className="btn-custom" onClick={login}>
             Iniciar sesión
           </button>
-          <p style={{ marginTop: 15 }}>
-            No tienes una cuenta? <Link to="/register">Regístrate</Link>
-          </p>
+          <div style={{ marginTop: 15 }}>
+            <p>
+              No tienes una cuenta? <Link to="/register">Regístrate</Link>
+            </p>
+            <Link to="/reset-password" style={{ fontSize: "0.9em" }}>
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
         </div>
       </div>
     </div>

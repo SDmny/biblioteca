@@ -7,11 +7,13 @@ import Dashboard from "../interfaces/Dashboard.jsx";
 
 import Catalogo from "../interfaces/book/Catalogo.jsx";
 import BookDetailPage from "../interfaces/book/BookDetailPage.jsx";
+import MyBooks from "../interfaces/book/MyBooks.jsx";
 
 import ProfilePage from "../interfaces/user/ProfilePage.jsx";
 import ProfileView from "../interfaces/user/ProfileView.jsx";
 import AddBook from "../interfaces/user/AddBook.jsx";
 import EditBook from "../interfaces/user/EditBook.jsx";
+import ForgotPassword from "../interfaces/user/ForgotPassword.jsx";
 
 import LoginPage from "../components/user/LoginPage.jsx";
 import RegisterPage from "../components/user/RegisterPage.jsx";
@@ -32,9 +34,11 @@ function AppRoutes() {
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/reset-password" element={<ForgotPassword />} />
 
       <Route path="/perfil" element={<ProfileView />} />
       <Route path="/profile-edit" element={<ProfilePage />} />
+      <Route path="/my-books" element={<MyBooks />} />
 
       <Route path="/add-book" element={<AddBook />} />
       <Route path="/edit-book/:id" element={<EditBook />} />
