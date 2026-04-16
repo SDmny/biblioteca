@@ -51,7 +51,10 @@ function AddBook() {
 
   const handleFile = (e) => {
     const file = e.target.files[0];
-    if (file) fileToBase64(file, e.target.name);
+    const fieldName = e.target.name;
+    if (file) {
+      fileToBase64(file, fieldName);
+    }
   };
 
   const submit = (e) => {
@@ -64,10 +67,10 @@ function AddBook() {
 
     const titleTrimmed = form.title?.trim();
     const authorTrimmed = form.author?.trim();
-    const editionTrimmed = form.edition?.trim(); 
+    const editionTrimmed = form.edition?.trim();
 
     if (!titleTrimmed || !authorTrimmed || !editionTrimmed || !form.file || !form.image) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
+      Swal.fire("Campos incompletos", "Debes seleccionar la imagen y el PDF", "warning");
       return;
     }
 
@@ -84,13 +87,14 @@ function AddBook() {
       image: form.image,
       file: form.file,
       usuario: user.usuario,
+      rating: { votos: [] }
     };
 
     books.push(newBook);
     localStorage.setItem("books", JSON.stringify(books));
 
     Swal.fire("Éxito", "Libro agregado correctamente", "success").then(() => {
-      window.location.reload();
+      navigate("/libros");
     });
   };
 
@@ -134,14 +138,29 @@ function AddBook() {
         </BasicInput>
 
         <BasicInput label={"Imagen de portada"}>
-          <TypeInput type="file" name="image" onChange={handleFile} accept="image/*" required />
+          <input 
+            type="file" 
+            name="image" 
+            className="form-control"
+            onChange={handleFile} 
+            accept="image/*" 
+            required 
+          />
           {form.image && (
             <img src={form.image} alt="preview" style={{ maxWidth: 100, marginTop: 10, borderRadius: 5 }} />
           )}
         </BasicInput>
 
         <BasicInput label={"Archivo PDF"}>
-          <TypeInput type="file" name="file" onChange={handleFile} accept="application/pdf" required />
+          <input 
+            type="file" 
+            name="file" 
+            className="form-control"
+            onChange={handleFile} 
+            accept="application/pdf" 
+            required 
+          />
+          {form.file && <p className="text-success" style={{fontSize: "0.8em"}}>✓ PDF cargado</p>}
         </BasicInput>
 
         <div style={{ marginTop: "20px" }}>

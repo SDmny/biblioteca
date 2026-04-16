@@ -14,6 +14,16 @@ function BookGrid({
     currentUser &&
     currentUser.rol === "admin";
 
+  const getRating = (ratingData) => {
+    if (!ratingData) return "0.0";
+    if (typeof ratingData === "number") return ratingData.toFixed(1);
+    if (ratingData.votos && Array.isArray(ratingData.votos)) {
+      if (ratingData.votos.length === 0) return "0.0";
+      const suma = ratingData.votos.reduce((acc, v) => acc + (v.puntos || 0), 0);
+      return (suma / ratingData.votos.length).toFixed(1);
+    }
+    return "0.0";
+  };
 
   const borrarLibro = (id) => {
 
@@ -82,7 +92,7 @@ function BookGrid({
           </p>
 
           <p className="book-rating">
-            ⭐ {book.rating}
+            ⭐ {getRating(book.rating)}
           </p>
 
           {isAdmin &&
