@@ -1,5 +1,4 @@
 import { useNavigate, Link } from "react-router-dom";
-import { handleCreateUser } from "../../utils/userHandler.js";
 
 import AddUserForm from "./AddUserForm";
 import BackButton from "../ui/BackButton.jsx";
@@ -16,7 +15,7 @@ function RegisterPage() {
         <br />
         <br />
         <div className="form-card">
-          <AddUserForm onSubmit={(u) => handleCreateUser(u, nav)} />
+          <AddUserForm onSuccess={() => nav("/login")} isAdminContext={false} />
           <p style={{ marginTop: 15 }}>
             Ya tienes una cuenta? <Link to="/login">Iniciar sesión</Link>
           </p>

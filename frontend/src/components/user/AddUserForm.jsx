@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { supabase } from "../../utils/supabase.js";
+import { sendWelcomeEmail } from "../../utils/emailHandler.js"; // Importa tu función de correo
+
 import Swal from "sweetalert2";
+
 import BasicInput from "../ui/BasicInput.jsx";
 import TypeInput from "../ui/TypeInput.jsx";
 
-function AddUsers({ isAdminContext = false }) {
+function AddUsers({ onSuccess, isAdminContext = false }) {
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
@@ -13,7 +16,7 @@ function AddUsers({ isAdminContext = false }) {
     usuario: "",
     password: "",
     confirm_password: "",
-    rol: "user",
+    rol: "usuario",
   });
 
   const change = (e) => {
@@ -27,10 +30,10 @@ function AddUsers({ isAdminContext = false }) {
     e.preventDefault();
 
     // Normalizar con trim
-    const nombreTrimmed = form.nombre ? form.nombre.trim() : "";
-    const apellidoTrimmed = form.apellido ? form.apellido.trim() : "";
-    const usuarioTrimmed = form.usuario ? form.usuario.trim() : "";
-    const emailTrimmed = form.email ? form.email.trim() : "";
+    const nombreTrimmed = form.nombre?.trim() || "";
+    const apellidoTrimmed = form.apellido?.trim() || "";
+    const usuarioTrimmed = form.usuario?.trim() || "";
+    const emailTrimmed = form.email?.trim() || "";
     const fecNac = form.fec_nac;
 
     // Validaciones
@@ -69,7 +72,7 @@ function AddUsers({ isAdminContext = false }) {
     if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
       Swal.fire(
         "Error",
-        "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
+        "Usuario inválido (solo letras, números, guion y guion bajo)",
         "error",
       );
       return;
@@ -89,38 +92,39 @@ function AddUsers({ isAdminContext = false }) {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    if (users.some((u) => u.usuario === usuarioTrimmed)) {
-      Swal.fire("Error", "Ese usuario ya existe", "error");
-      return;
-    }
-
-    // 1. Crear usuario en auth.users
-    const { data, error } = await supabase.auth.signUp({
+    // 1. Crear usuario en Supabase Auth
+    const { error } = await supabase.auth.signUp({
       email: emailTrimmed,
       password: form.password,
+      options: {
+        data: {
+          name: nombreTrimmed,
+          lastname: apellidoTrimmed,
+          birthdate: fecNac,
+          username: usuarioTrimmed,
+          role: form.rol,
+        },
+      },
     });
+
     if (error) {
       Swal.fire("Error", error.message, "error");
       return;
     }
+    // 2. El trigger en Supabase se encarga de insertar en la tabla user
+    // Ya no necesitas hacer el insert manual aquí
 
-    // 2. Insertar perfil en tu tabla user
-    const { error: insertError } = await supabase.from("user").insert([
-      {
-        id: data.user.id, // mismo UUID que auth.users
-        name: nombreTrimmed,
-        lastname: apellidoTrimmed,
-        birth_date: form.fec_nac,
-        username: usuarioTrimmed,
-        role: form.rol,
-      },
-    ]);
+    // 3. Enviar correo de bienvenida
+    await sendWelcomeEmail(emailTrimmed, nombreTrimmed);
 
-    if (insertError) {
-      Swal.fire("Error", insertError.message, "error");
-    } else {
-      Swal.fire("Éxito", "Usuario registrado correctamente", "success");
+    Swal.fire(
+      "Éxito",
+      "Usuario registrado y correo enviado correctamente",
+      "success",
+    );
+
+    if (onSuccess) {
+      onSuccess(); // por ejemplo, navegar al login
     }
   };
 
@@ -128,6 +132,7 @@ function AddUsers({ isAdminContext = false }) {
     <>
       <h2>{isAdminContext ? "Crear usuario" : "Registrarse"}</h2>
       <form onSubmit={submit}>
+        {/* Inputs igual que antes */}
         <BasicInput label="Nombre">
           <TypeInput
             type="text"

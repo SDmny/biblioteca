@@ -39,3 +39,9 @@ export default App;
 ### linea para la importación de react router
 
 import { Link } from "react-router-dom";
+
+### para correo
+
+import { sendWelcomeEmail } from "../utils/emailHandler";
+
+sendWelcomeEmail("usuario@correo.com", "Sianya");
