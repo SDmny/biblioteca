@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "../../utils/supabase.js";
 import Swal from "sweetalert2";
 import "../../styles/style_form.css";
 
@@ -8,25 +9,50 @@ function LoginPage() {
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
 
-  const login = () => {
+  const login = async () => {
     if (!usuario || !password) {
       Swal.fire("Campos vacíos", "Debes llenar todos los campos", "warning");
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const encontrado = users.find(
-      (u) => u.usuario === usuario && u.password === password
-    );
+    // 1. Buscar el email asociado al username
+    const { data: userData, error: userError } = await supabase
+      .from("user")
+      .select("id, username, role")
+      .eq("username", usuario)
+      .single();
 
-    if (encontrado) {
-      localStorage.setItem("user", JSON.stringify(encontrado));
-      Swal.fire("Bienvenido", "Inicio de sesión exitoso", "success").then(() =>
-        nav("/dashboard")
-      );
-    } else {
-      Swal.fire("Error", "Usuario o contraseña incorrectos", "error");
+    if (userError || !userData) {
+      Swal.fire("Error", "Usuario no encontrado", "error");
+      return;
     }
+
+    // 2. Obtener el email desde auth.users usando el id
+    const { data: authUser, error: authError } = await supabase
+      .from("auth.users")
+      .select("email")
+      .eq("id", userData.id)
+      .single();
+
+    if (authError || !authUser) {
+      Swal.fire("Error", "No se pudo obtener el correo del usuario", "error");
+      return;
+    }
+
+    // 3. Autenticar con Supabase usando email y password
+    const { error } = await supabase.auth.signInWithPassword({
+      email: authUser.email,
+      password,
+    });
+
+    if (error) {
+      Swal.fire("Error", error.message, "error");
+      return;
+    }
+
+    Swal.fire("Bienvenido", "Inicio de sesión exitoso", "success").then(() =>
+      nav("/dashboard"),
+    );
   };
 
   return (
