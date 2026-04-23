@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { supabase } from "../../utils/supabase.js";
-import { sendWelcomeEmail } from "../../utils/emailHandler.js"; // Importa tu función de correo
 
 import Swal from "sweetalert2";
 
@@ -115,7 +114,14 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
     // Ya no necesitas hacer el insert manual aquí
 
     // 3. Enviar correo de bienvenida
-    await sendWelcomeEmail(emailTrimmed, nombreTrimmed);
+    await fetch("http://localhost:3001/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: emailTrimmed, // el correo del usuario
+        name: nombreTrimmed, // el nombre del usuario
+      }),
+    });
 
     Swal.fire(
       "Éxito",
