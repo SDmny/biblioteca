@@ -4,13 +4,13 @@ import BasicButton from "../../components/ui/BasicButton";
 import SeeProfile from "../../components/user/SeeProfile";
 import BackButton from "../../components/ui/BackButton";
 
-function ProfileView() {
+function ProfileView({ user }) {
   const nav = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
 
-  const editPath = user?.rol === "admin" 
-    ? `/admin/usuarios/edit/${user.usuario}` 
-    : "/profile-edit";
+  const editPath =
+    user?.role === "admin"
+      ? `/admin/usuarios/edit/${user.usuario}`
+      : "/profile-edit";
 
   const eliminarPerfil = () => {
     Swal.fire({
@@ -21,9 +21,10 @@ function ProfileView() {
       confirmButtonColor: "#dc3545",
       cancelButtonColor: "#6c757d",
       confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar"
+      cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
+        // CAMBIAR: Aquí iría la lógica real para eliminar el perfil, como una llamada a la API
         let users = JSON.parse(localStorage.getItem("users")) || [];
         users = users.filter((u) => u.usuario !== user.usuario);
         localStorage.setItem("users", JSON.stringify(users));
@@ -46,7 +47,7 @@ function ProfileView() {
             justifyContent: "center",
             alignItems: "center",
             flexWrap: "wrap",
-            marginBottom: 10
+            marginBottom: 10,
           }}
         >
           <BasicButton to={editPath} texto={"Modificar datos"} />
@@ -63,16 +64,19 @@ function ProfileView() {
           )}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-          <button 
-            className="btn-main" 
-            onClick={() => nav("/reset-password")}
-          >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <button className="btn-main" onClick={() => nav("/reset-password")}>
             Cambiar contraseña
           </button>
         </div>
 
-        {user.rol !== "admin" && (
+        {user.role !== "admin" && (
           <>
             <hr />
             <button
@@ -80,7 +84,7 @@ function ProfileView() {
               style={{
                 backgroundColor: "#dc3545",
                 backgroundImage: "none",
-                border: "none"
+                border: "none",
               }}
               onClick={eliminarPerfil}
             >

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../utils/supabase.js";
 
+import { supabase } from "../utils/supabase.js";
 import UserDashboard from "../interfaces/user/ProfileView.jsx";
 import AdminDashboard from "../interfaces/admin/AdminDashboard.jsx";
 
@@ -14,39 +14,39 @@ function Dashboard() {
         data: { user },
         error,
       } = await supabase.auth.getUser();
-
       if (error || !user) {
         setCurrentUser(null);
         setLoading(false);
         return;
       }
-      // Buscar datos adicionales en tu tabla user
-      const { data: userData } = await supabase
+
+      // Consulta a tu tabla user
+      const { data: userData, error: userError } = await supabase
         .from("user")
         .select("username, role, email")
-        .eq("id", user.id)
+        .eq("id", user.id) // 👈 debe coincidir con auth.uid()
         .single();
 
-      setCurrentUser(userData);
+      if (userError) {
+        console.error("Error al obtener perfil:", userError.message);
+        setCurrentUser(null);
+      } else {
+        setCurrentUser(userData);
+      }
       setLoading(false);
     };
 
     fetchUser();
   }, []);
 
-  if (loading) {
-    return <p>Cargando...</p>;
-  }
+  if (loading) return <p>Cargando...</p>;
+  if (!currentUser) return <p>No has iniciado sesión</p>;
 
-  if (!currentUser) {
-    return <p>No has iniciado sesión</p>;
-  }
-
-  if (currentUser.rol === "admin") {
-    return <AdminDashboard />;
-  }
-
-  return <UserDashboard />;
+  return currentUser.role === "admin" ? (
+    <AdminDashboard />
+  ) : (
+    <UserDashboard user={currentUser} />
+  );
 }
 
 export default Dashboard;

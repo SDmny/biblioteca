@@ -1,17 +1,41 @@
-import { useLocation } from "react-router-dom";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+import { supabase } from "../../utils/supabase.js";
+
 import Swal from "sweetalert2";
 import BasicCard from "../../components/ui/BasicCard";
 import BackButton from "../../components/ui/BackButton";
 
 function EditProfile({ noExtras = false }) {
   const nav = useNavigate();
-  const location = useLocation();
-  const logged = JSON.parse(localStorage.getItem("user"));
-  const user = location.state?.user || logged;
-  const isAdminEdit = location.state?.adminEdit;
-  const [form, setForm] = useState(user);
+  const [form, setForm] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (error || !user) {
+        setForm(null);
+        setLoading(false);
+        return;
+      }
+
+      const { data: userData } = await supabase
+        .from("user")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      setForm(userData);
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, []);
 
   const change = (e) => {
     const { name, value } = e.target;
@@ -28,21 +52,30 @@ function EditProfile({ noExtras = false }) {
     reader.readAsDataURL(file);
   };
 
-  const guardar = () => {
-    // Normalizar con trim
-    const nombreTrimmed = form.nombre ? form.nombre.trim() : "";
-    const apellidoTrimmed = form.apellido ? form.apellido.trim() : "";
-    const usuarioTrimmed = form.usuario ? form.usuario.trim() : "";
+  const guardar = async () => {
+    if (!form) return;
+
+    const nombreTrimmed = form.nombre?.trim() || "";
+    const apellidoTrimmed = form.apellido?.trim() || "";
+    const usuarioTrimmed = form.usuario?.trim() || "";
     const fecNac = form.fec_nac;
 
     if (!nombreTrimmed || !apellidoTrimmed || !usuarioTrimmed || !fecNac) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos y no pueden ser solo espacios", "warning");
+      Swal.fire(
+        "Campos incompletos",
+        "Debes llenar todos los campos",
+        "warning",
+      );
       return;
     }
 
     const year = new Date(fecNac).getFullYear();
     if (year < 1900) {
-      Swal.fire("Error", "La fecha de nacimiento no puede ser anterior a 1900", "error");
+      Swal.fire(
+        "Error",
+        "La fecha de nacimiento no puede ser anterior a 1900",
+        "error",
+      );
       return;
     }
 
@@ -50,42 +83,35 @@ function EditProfile({ noExtras = false }) {
       Swal.fire(
         "Error",
         "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
-        "error"
+        "error",
       );
       return;
     }
 
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-    const nuevos = users.map((u) =>
-      u.usuario === user.usuario
-        ? { ...form, nombre: nombreTrimmed, apellido: apellidoTrimmed, usuario: usuarioTrimmed }
-        : u
-    );
-    localStorage.setItem("users", JSON.stringify(nuevos));
+    const { error } = await supabase
+      .from("user")
+      .update({
+        nombre: nombreTrimmed,
+        apellido: apellidoTrimmed,
+        usuario: usuarioTrimmed,
+        fec_nac: fecNac,
+        img: form.img,
+      })
+      .eq("id", form.id);
 
-    if (!isAdminEdit) {
-      localStorage.setItem("user", JSON.stringify({ ...form, nombre: nombreTrimmed, apellido: apellidoTrimmed, usuario: usuarioTrimmed }));
+    if (error) {
+      Swal.fire("Error", error.message, "error");
+    } else {
+      Swal.fire("Éxito", "Perfil guardado correctamente", "success");
     }
-
-    Swal.fire("Éxito", "Perfil guardado correctamente", "success");
   };
 
-  const cerrarSesion = () => {
-    Swal.fire({
-      title: "¿Cerrar sesión?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Sí",
-      cancelButtonText: "No",
-    }).then((res) => {
-      if (res.isConfirmed) {
-        localStorage.removeItem("user");
-        nav("/");
-      }
-    });
+  const cerrarSesion = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) nav("/");
   };
 
-  const borrarCuenta = () => {
+  const borrarCuenta = async () => {
     Swal.fire({
       title: "¿Borrar cuenta?",
       text: "Esta acción no se puede deshacer",
@@ -93,16 +119,17 @@ function EditProfile({ noExtras = false }) {
       showCancelButton: true,
       confirmButtonText: "Sí, borrar",
       cancelButtonText: "Cancelar",
-    }).then((res) => {
+    }).then(async (res) => {
       if (res.isConfirmed) {
-        let users = JSON.parse(localStorage.getItem("users")) || [];
-        users = users.filter((u) => u.usuario !== user.usuario);
-        localStorage.setItem("users", JSON.stringify(users));
-        localStorage.removeItem("user");
+        await supabase.from("user").delete().eq("id", form.id);
+        await supabase.auth.signOut();
         nav("/");
       }
     });
   };
+
+  if (loading) return <p>Cargando...</p>;
+  if (!form) return <p>No autorizado</p>;
 
   return (
     <>
@@ -118,16 +145,37 @@ function EditProfile({ noExtras = false }) {
         </div>
         <br />
         Nombre
-        <input className="form-control" name="nombre" value={form.nombre || ""} onChange={change} />
+        <input
+          className="form-control"
+          name="nombre"
+          value={form.nombre || ""}
+          onChange={change}
+        />
         <br />
         Apellido
-        <input className="form-control" name="apellido" value={form.apellido || ""} onChange={change} />
+        <input
+          className="form-control"
+          name="apellido"
+          value={form.apellido || ""}
+          onChange={change}
+        />
         <br />
         Usuario
-        <input className="form-control" name="usuario" value={form.usuario || ""} onChange={change} />
+        <input
+          className="form-control"
+          name="usuario"
+          value={form.usuario || ""}
+          onChange={change}
+        />
         <br />
         Fecha de nacimiento
-        <input className="form-control" type="date" name="fec_nac" value={form.fec_nac || ""} onChange={change} />
+        <input
+          className="form-control"
+          type="date"
+          name="fec_nac"
+          value={form.fec_nac || ""}
+          onChange={change}
+        />
         <br />
         <button className="btn-main me-2" onClick={guardar}>
           Guardar
