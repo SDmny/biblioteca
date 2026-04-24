@@ -18,7 +18,7 @@ function LoginPage() {
     // 1. Buscar el email asociado al username
     const { data: userData, error: userError } = await supabase
       .from("user")
-      .select("id, username, role")
+      .select("id, username, role, email")
       .eq("username", usuario)
       .single();
 
@@ -28,20 +28,8 @@ function LoginPage() {
     }
 
     // 2. Obtener el email desde auth.users usando el id
-    const { data: authUser, error: authError } = await supabase
-      .from("auth.users")
-      .select("email")
-      .eq("id", userData.id)
-      .single();
-
-    if (authError || !authUser) {
-      Swal.fire("Error", "No se pudo obtener el correo del usuario", "error");
-      return;
-    }
-
-    // 3. Autenticar con Supabase usando email y password
     const { error } = await supabase.auth.signInWithPassword({
-      email: authUser.email,
+      email: userData.email,
       password,
     });
 
