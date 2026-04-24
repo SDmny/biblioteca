@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../utils/supabase.js";
+
 import Swal from "sweetalert2";
 import BasicButton from "../../components/ui/BasicButton";
 import SeeProfile from "../../components/user/SeeProfile";
@@ -22,13 +24,10 @@ function ProfileView({ user }) {
       cancelButtonColor: "#6c757d",
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        // CAMBIAR: Aquí iría la lógica real para eliminar el perfil, como una llamada a la API
-        let users = JSON.parse(localStorage.getItem("users")) || [];
-        users = users.filter((u) => u.usuario !== user.usuario);
-        localStorage.setItem("users", JSON.stringify(users));
-        localStorage.removeItem("user");
+        await supabase.from("user").delete().eq("id", user.id);
+        await supabase.auth.signOut();
         nav("/");
       }
     });
@@ -53,7 +52,7 @@ function ProfileView({ user }) {
           <BasicButton to={editPath} texto={"Modificar datos"} />
           <BasicButton to={"/add-book"} texto={"Publicar libro"} />
 
-          {user.rol !== "admin" && (
+          {user.role !== "admin" && (
             <button
               className="btn-main"
               style={{ height: "fit-content" }}
