@@ -15,7 +15,7 @@ function LoginPage() {
       return;
     }
 
-    // 1. Buscar el email asociado al username
+    // 1. Buscar el email asociado al username (usando 'username' como en tu BD)
     const { data: userData, error: userError } = await supabase
       .from("user")
       .select("id, username, role, email")
@@ -27,7 +27,7 @@ function LoginPage() {
       return;
     }
 
-    // 2. Obtener el email desde auth.users usando el id
+    // 2. Iniciar sesión con el email obtenido
     const { error } = await supabase.auth.signInWithPassword({
       email: userData.email,
       password,

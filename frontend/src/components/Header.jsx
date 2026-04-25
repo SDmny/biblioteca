@@ -1,12 +1,47 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../utils/supabase";
 import Swal from "sweetalert2";
 
 function Header() {
   const nav = useNavigate();
   const [showNotif, setShowNotif] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  useEffect(() => {
+    // Función para obtener datos de la tabla 'user' de Supabase
+    const fetchUserData = async (userId) => {
+      const { data } = await supabase
+        .from("user")
+        .select("username, role") // Nombres de tus capturas
+        .eq("id", userId)
+        .single();
+      
+      if (data) {
+        setUser({
+          usuario: data.username,
+          rol: data.role,
+          img: null // Asumimos null porque no hay columna image_url en tu captura
+        });
+      }
+    };
+
+    // Revisar sesión inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) fetchUserData(session.user.id);
+    });
+
+    // Escuchar cambios de sesión en tiempo real
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        fetchUserData(session.user.id);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const cerrarSesion = () => {
     Swal.fire({
@@ -20,10 +55,9 @@ function Header() {
       cancelButtonText: "Cancelar",
       background: "#f5f3ee",   
       color: "#1a1a1a"               
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        localStorage.removeItem("user");
-        localStorage.removeItem("adminSelected");
+        await supabase.auth.signOut();
         nav("/");
       }
     });
@@ -48,18 +82,10 @@ function Header() {
 
           <div className="collapse navbar-collapse" id="menu">
             <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <Link className="nav-link" to="/">Inicio</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/conocenos">Conócenos</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/contacto">Contacto</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/libros">Libros</Link>
-              </li>
+              <li className="nav-item"><Link className="nav-link" to="/">Inicio</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/conocenos">Conócenos</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/contacto">Contacto</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/libros">Libros</Link></li>
 
               {user && user.rol === "admin" && (
                 <li className="nav-item">
@@ -75,13 +101,11 @@ function Header() {
             </ul>
 
             <div className="ms-3 d-flex align-items-center">
-              {!user && (
+              {!user ? (
                 <Link to="/login" className="btn btn-main">
                   Iniciar sesión
                 </Link>
-              )}
-
-              {user && (
+              ) : (
                 <div className="user-box position-relative">
                   <button 
                     className="notif-bell-btn me-3" 
@@ -132,6 +156,7 @@ function Header() {
                     <img
                       src={user.img || "/src/assets/images/user.png"}
                       className="user-img"
+                      alt="avatar"
                     />
                     <span>{user.usuario}</span>
                   </Link>
