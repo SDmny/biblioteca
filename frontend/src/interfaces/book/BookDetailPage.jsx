@@ -1,37 +1,72 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { supabase } from "../../utils/supabase";
 import DetailBook from "../../components/book/DetailBook";
 import BackButton from "../../components/ui/BackButton";
 
 function BookDetailPage() {
   const { id } = useParams();
   const [book, setBook] = useState(null);
-  const [owner, setOwner] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const localBooks = JSON.parse(localStorage.getItem("books")) || [];
-    const foundBook = localBooks.find((b) => String(b.id) === String(id));
-    
-    if (foundBook) {
-      // Calculamos el promedio decimal si existe la nueva estructura
-      const ratingData = foundBook.rating;
-      let averageRating = 0;
+    const fetchBookDetails = async () => {
+      const { data, error } = await supabase
+        .from("book")
+        .select(`
+          *,
+          book_genres (
+            genre (genre)
+          )
+        `)
+        .eq("id", id)
+        .maybeSingle();
 
-      if (typeof ratingData === "object" && ratingData.count > 0) {
-        averageRating = parseFloat((ratingData.sum / ratingData.count).toFixed(1));
-      } else {
-        averageRating = ratingData || 0;
+      if (error || !data) {
+        setLoading(false);
+        return;
       }
 
-      setBook({ ...foundBook, displayRating: averageRating });
+      let ownerData = null;
+      if (data.user_id) {
+        const { data: userData } = await supabase
+          .from("user")
+          .select("username, name, lastname, image_url")
+          .eq("id", data.user_id)
+          .maybeSingle();
+        ownerData = userData;
+      }
 
-      const localUsers = JSON.parse(localStorage.getItem("users")) || [];
-      const foundUser = localUsers.find((u) => u.usuario === foundBook.usuario);
-      setOwner(foundUser);
-    }
+      const { data: votesData } = await supabase
+        .from("votes")
+        .select("voto")
+        .eq("book_id", id);
+
+      let calculatedRating = 0;
+      if (votesData && votesData.length > 0) {
+        const sum = votesData.reduce((acc, curr) => acc + curr.voto, 0);
+        calculatedRating = sum / votesData.length;
+      }
+
+      const formattedBook = {
+        ...data,
+        image: data.image_url,
+        file: data.pdf_url,
+        genres: data.book_genres?.map((bg) => bg.genre?.genre).join(", ") || "Sin género",
+        owner: ownerData,
+        rating: calculatedRating,
+        publishDate: data.date 
+      };
+      
+      setBook(formattedBook);
+      setLoading(false);
+    };
+
+    fetchBookDetails();
   }, [id]);
 
-  if (!book) return <p>Cargando...</p>;
+  if (loading) return <div className="main-container"><p>Cargando...</p></div>;
+  if (!book) return <div className="main-container"><p>Libro no encontrado.</p></div>;
 
   return (
     <div className="main-container">
@@ -41,47 +76,19 @@ function BookDetailPage() {
         author={book.author}
         pages={book.pages}
         edition={book.edition}
-        genre={book.genre}
-        description={book.description}
+        genre={book.genres}
+        description={book.synopsis}
         imageSrc={book.image}
         file={book.file}
-        rating={book.displayRating} // Pasamos el promedio con decimal
-        owner={owner}
+        rating={book.rating}
+        owner={book.owner}
+        ownerId={book.user_id}
+        publishDate={book.publishDate}
       />
       
-      {owner && (
-        <div style={{ 
-          display: "flex", 
-          flexDirection: "column",
-          alignItems: "center", 
-          gap: "8px", 
-          marginTop: "30px",
-          padding: "20px",
-          borderTop: "1px solid #eee"
-        }}>
-          <span style={{ fontSize: "0.85em", color: "#888", textTransform: "uppercase", letterSpacing: "1px" }}>
-            Publicado por
-          </span>
-          <img 
-            src={owner.img || "/src/assets/images/user.png"} 
-            alt={owner.usuario} 
-            style={{ 
-              width: "60px", 
-              height: "60px", 
-              borderRadius: "50%", 
-              objectFit: "cover",
-              border: "2px solid #f0f0f0",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
-            }}
-          />
-          <span style={{ fontWeight: "600", fontSize: "1.1em", color: "#333" }}>
-            {owner.nombre} {owner.apellido}
-          </span>
-        </div>
-      )}
-
-      <br />
-      <BackButton texto="← Volver" />
+      <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-start", width: "100%" }}>
+        <BackButton texto="← Volver" />
+      </div>
     </div>
   );
 }

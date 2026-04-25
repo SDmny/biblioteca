@@ -8,7 +8,7 @@ function MyBooks() {
   const nav = useNavigate();
   const { filtered, search, user, filtrar, buscar } = useCatalogo();
 
-  const misLibros = filtered.filter(b => b.usuario === user?.usuario);
+  const misLibros = filtered.filter(b => b.user_id === user?.id);
 
   return (
     <div className="main-container">
@@ -42,7 +42,14 @@ function MyBooks() {
           </div>
 
           <h3 className="mb-4">Mis Publicaciones ({misLibros.length})</h3>
-          <BookGrid books={misLibros} />
+          
+          {misLibros.length > 0 ? (
+            <BookGrid books={misLibros} />
+          ) : (
+            <div className="text-center mt-5">
+              <p className="text-muted">Aún no has publicado ningún libro.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
