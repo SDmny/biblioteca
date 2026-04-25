@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { supabase } from "../../utils/supabase.js";
 import Swal from "sweetalert2";
 
 import BasicCard from "../ui/BasicCard.jsx";
@@ -15,7 +14,9 @@ function AddUsers({ onSuccess }) {
     fec_nac: "",
     email: "",
     usuario: "",
-    rol: "usuario",
+    password: "",
+    confirm_password: "",
+    rol: "",
   });
 
   const validarCampo = (name, value) => {
@@ -42,6 +43,14 @@ function AddUsers({ onSuccess }) {
       case "password":
         if (value.length < 6)
           error = "La contraseña debe contener al menos 6 caracteres";
+        if (form.confirm_password && form.confirm_password !== value) {
+          setErrors((prev) => ({
+            ...prev,
+            confirm_password: "Las contraseñas no coinciden",
+          }));
+        } else {
+          setErrors((prev) => ({ ...prev, confirm_password: "" }));
+        }
         break;
       case "confirm_password":
         if (value !== form.password) error = "Las contraseñas no coinciden";
@@ -76,18 +85,25 @@ function AddUsers({ onSuccess }) {
 
     if (!formularioEsValido()) return;
 
-    const { error } = await supabase.from("user").insert({
-      email: form.email.trim(),
-      password: form.password,
-      username: form.usuario.trim(),
-      role: form.rol,
-      name: form.nombre.trim(),
-      lastname: form.apellido.trim(),
-      birthdate: form.fec_nac,
-    });
-
-    if (error) {
-      Swal.fire("Error", error.message, "error");
+    const response = await fetch(
+      "http://localhost:3001/api/admin-create-user",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email.trim(),
+          password: form.password,
+          name: form.nombre.trim(),
+          lastname: form.apellido.trim(),
+          birthdate: form.fec_nac,
+          username: form.usuario.trim(),
+          role: form.rol,
+        }),
+      },
+    );
+    const result = await response.json();
+    if (result.error) {
+      Swal.fire("Error", result.error, "error");
       return;
     }
 
@@ -110,7 +126,16 @@ function AddUsers({ onSuccess }) {
             includeRole={true}
           />
           <br />
-          <input type="submit" value="Agregar Usuario" className="btn-custom" />
+          <input
+            type="submit"
+            value="Agregar Usuario"
+            className="btn-custom"
+            disabled={!formularioEsValido()}
+            style={{
+              opacity: formularioEsValido() ? 1 : 0.5,
+              cursor: formularioEsValido() ? "pointer" : "not-allowed",
+            }}
+          />{" "}
         </form>
       </BasicCard>
     </>

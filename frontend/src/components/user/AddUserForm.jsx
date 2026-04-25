@@ -46,7 +46,16 @@ function AddUsers({ onSuccess }) {
       case "password":
         if (value.length < 6)
           error = "La contraseña debe contener al menos 6 caracteres";
+        if (form.confirm_password && form.confirm_password !== value) {
+          setErrors((prev) => ({
+            ...prev,
+            confirm_password: "Las contraseñas no coinciden",
+          }));
+        } else {
+          setErrors((prev) => ({ ...prev, confirm_password: "" }));
+        }
         break;
+
       case "confirm_password":
         if (value !== form.password) error = "Las contraseñas no coinciden";
         break;
