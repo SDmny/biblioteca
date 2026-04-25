@@ -13,7 +13,7 @@ function Header() {
     const fetchUserData = async (userId) => {
       const { data } = await supabase
         .from("user")
-        .select("username, role") // Nombres de tus capturas
+        .select("username, role") 
         .eq("id", userId)
         .single();
       
@@ -21,7 +21,7 @@ function Header() {
         setUser({
           usuario: data.username,
           rol: data.role,
-          img: null // Asumimos null porque no hay columna image_url en tu captura
+          img: null
         });
       }
     };
@@ -31,7 +31,6 @@ function Header() {
       if (session) fetchUserData(session.user.id);
     });
 
-    // Escuchar cambios de sesión en tiempo real
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         fetchUserData(session.user.id);
