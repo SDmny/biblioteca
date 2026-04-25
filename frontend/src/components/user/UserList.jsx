@@ -1,19 +1,39 @@
 import { useNavigate } from "react-router-dom";
 
-function UserList({ mode = "all" }) {
+import { useEffect, useState } from "react";
+
+import { supabase } from "../../utils/supabase";
+
+function UserList() {
   const nav = useNavigate();
 
-  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const [users, setUsers] = useState([]);
 
-  const borrar = (usuario) => {
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data, error } = await supabase
+        .from("user")
+        .select("id, username, role");
+      if (error) {
+        console.error("Error al cargar usuarios:", error.message);
+      } else {
+        setUsers(data);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const borrar = async (id) => {
     const ok = window.confirm("¿Eliminar usuario?");
     if (!ok) return;
 
-    const updated = users.filter((u) => u.usuario !== usuario);
-
-    localStorage.setItem("users", JSON.stringify(updated));
-
-    window.location.reload();
+    const { error } = await supabase.from("user").delete().eq("id", id);
+    if (error) {
+      console.error("Error al borrar usuario:", error.message);
+    } else {
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+    }
   };
 
   return (
@@ -31,24 +51,20 @@ function UserList({ mode = "all" }) {
 
         <tbody>
           {users.map((u) => (
-            <tr key={u.usuario}>
-              <td>{u.usuario}</td>
-              <td>{u.rol}</td>
+            <tr key={u.id}>
+              <td>{u.username}</td>
+              <td>{u.role}</td>
               <td>
-                {(mode === "all" || mode === "edit") && (
-                  <button
-                    className="btn-main me-2"
-                    onClick={() => nav(`/admin/usuarios/edit/${u.usuario}`)}
-                  >
-                    Editar
-                  </button>
-                )}
+                <button
+                  className="btn-main me-2"
+                  onClick={() => nav(`/admin/usuarios/edit/${u.id}`)}
+                >
+                  Editar
+                </button>
 
-                {(mode === "all" || mode === "delete") && (
-                  <button className="btn-main" onClick={() => borrar(u.usuario)}>
-                    Borrar
-                  </button>
-                )}
+                <button className="btn-main" onClick={() => borrar(u.id)}>
+                  Borrar
+                </button>
               </td>
             </tr>
           ))}

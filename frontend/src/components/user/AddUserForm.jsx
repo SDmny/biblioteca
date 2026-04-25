@@ -6,7 +6,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import BasicInput from "../ui/BasicInput.jsx";
 import TypeInput from "../ui/TypeInput.jsx";
 
-function AddUsers({ onSuccess, isAdminContext = false }) {
+function AddUsers({ onSuccess }) {
   const nav = useNavigate();
   const [captchaValido, setCaptchaValido] = useState(false);
   const [errors, setErrors] = useState({});
@@ -18,7 +18,6 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
     usuario: "",
     password: "",
     confirm_password: "",
-    rol: "usuario",
   });
 
   const validarCampo = (name, value) => {
@@ -26,20 +25,25 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
     switch (name) {
       case "nombre":
       case "apellido":
-        if (value.trim().length < 2) error = "Debe contener al menos 2 caracteres";
+        if (value.trim().length < 2)
+          error = "Debe contener al menos 2 caracteres";
         break;
       case "email":
         if (!/\S+@\S+\.\S+/.test(value)) error = "Correo electrónico inválido";
         break;
       case "usuario":
-        if (!/^[A-Za-z0-9_-]+$/.test(value)) error = "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
+        if (!/^[A-Za-z0-9_-]+$/.test(value))
+          error =
+            "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
         break;
-      case "fec_nac":
+      case "fec_nac": {
         const year = new Date(value).getFullYear();
         if (year < 1900) error = "El año no puede ser anterior a 1900";
         break;
+      }
       case "password":
-        if (value.length < 6) error = "La contraseña debe contener al menos 6 caracteres";
+        if (value.length < 6)
+          error = "La contraseña debe contener al menos 6 caracteres";
         break;
       case "confirm_password":
         if (value !== form.password) error = "Las contraseñas no coinciden";
@@ -54,12 +58,6 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
     validarCampo(name, value);
-    if (name === "password") {
-      setErrors((prev) => ({ 
-        ...prev, 
-        confirm_password: value !== form.confirm_password ? "Las contraseñas no coinciden" : "" 
-      }));
-    }
   };
 
   const onCaptchaChange = (value) => {
@@ -67,8 +65,15 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
   };
 
   const formularioEsValido = () => {
-    const hayCamposVacios = !form.nombre || !form.apellido || !form.email || !form.usuario || !form.password || !form.confirm_password || !form.fec_nac;
-    const hayErrores = Object.values(errors).some(error => error !== "");
+    const hayCamposVacios =
+      !form.nombre ||
+      !form.apellido ||
+      !form.email ||
+      !form.usuario ||
+      !form.password ||
+      !form.confirm_password ||
+      !form.fec_nac;
+    const hayErrores = Object.values(errors).some((error) => error !== "");
     return !hayCamposVacios && !hayErrores && captchaValido;
   };
 
@@ -86,7 +91,7 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
           lastname: form.apellido.trim(),
           birthdate: form.fec_nac,
           username: form.usuario.trim(),
-          role: form.rol,
+          role: "usuario",
         },
       },
     });
@@ -118,16 +123,16 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
       text: "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.",
       icon: "success",
       confirmButtonText: "Ir al Login",
-      confirmButtonColor: "#3085d6"
+      confirmButtonColor: "#3085d6",
     }).then(() => {
-      nav("/login");
+      nav("/dashboard");
       if (onSuccess) onSuccess();
     });
   };
 
   return (
     <>
-      <h2>{isAdminContext ? "Crear usuario" : "Registrarse"}</h2>
+      <h2>Registrarse</h2>
       <form onSubmit={submit}>
         <BasicInput label="Nombre">
           <TypeInput
@@ -138,7 +143,11 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
-          {errors.nombre && <small style={{ color: "red", display: "block" }}>{errors.nombre}</small>}
+          {errors.nombre && (
+            <small style={{ color: "red", display: "block" }}>
+              {errors.nombre}
+            </small>
+          )}
         </BasicInput>
 
         <BasicInput label="Apellido">
@@ -150,7 +159,11 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
-          {errors.apellido && <small style={{ color: "red", display: "block" }}>{errors.apellido}</small>}
+          {errors.apellido && (
+            <small style={{ color: "red", display: "block" }}>
+              {errors.apellido}
+            </small>
+          )}
         </BasicInput>
 
         <BasicInput label="Fecha de nacimiento">
@@ -161,7 +174,11 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
-          {errors.fec_nac && <small style={{ color: "red", display: "block" }}>{errors.fec_nac}</small>}
+          {errors.fec_nac && (
+            <small style={{ color: "red", display: "block" }}>
+              {errors.fec_nac}
+            </small>
+          )}
         </BasicInput>
 
         <BasicInput label="Email">
@@ -173,7 +190,11 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
-          {errors.email && <small style={{ color: "red", display: "block" }}>{errors.email}</small>}
+          {errors.email && (
+            <small style={{ color: "red", display: "block" }}>
+              {errors.email}
+            </small>
+          )}
         </BasicInput>
 
         <BasicInput label="Usuario">
@@ -185,7 +206,11 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
-          {errors.usuario && <small style={{ color: "red", display: "block" }}>{errors.usuario}</small>}
+          {errors.usuario && (
+            <small style={{ color: "red", display: "block" }}>
+              {errors.usuario}
+            </small>
+          )}
         </BasicInput>
 
         <BasicInput label="Contraseña">
@@ -196,7 +221,11 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
-          {errors.password && <small style={{ color: "red", display: "block" }}>{errors.password}</small>}
+          {errors.password && (
+            <small style={{ color: "red", display: "block" }}>
+              {errors.password}
+            </small>
+          )}
         </BasicInput>
 
         <BasicInput label="Confirmar contraseña">
@@ -207,23 +236,12 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
-          {errors.confirm_password && <small style={{ color: "red", display: "block" }}>{errors.confirm_password}</small>}
+          {errors.confirm_password && (
+            <small style={{ color: "red", display: "block" }}>
+              {errors.confirm_password}
+            </small>
+          )}
         </BasicInput>
-
-        {isAdminContext && (
-          <BasicInput label="Rol">
-            <select
-              name="rol"
-              value={form.rol}
-              onChange={change}
-              className="form-control"
-              required
-            >
-              <option value="usuario">Usuario</option>
-              <option value="admin">Administrador</option>
-            </select>
-          </BasicInput>
-        )}
 
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
           <ReCAPTCHA
@@ -232,14 +250,14 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
           />
         </div>
 
-        <input 
-          type="submit" 
-          value={isAdminContext ? "Crear Usuario" : "Registrarse"} 
-          className="btn-custom" 
+        <input
+          type="submit"
+          value="Registrarse"
+          className="btn-custom"
           disabled={!formularioEsValido()}
-          style={{ 
-            opacity: formularioEsValido() ? 1 : 0.5, 
-            cursor: formularioEsValido() ? "pointer" : "not-allowed" 
+          style={{
+            opacity: formularioEsValido() ? 1 : 0.5,
+            cursor: formularioEsValido() ? "pointer" : "not-allowed",
           }}
         />
       </form>

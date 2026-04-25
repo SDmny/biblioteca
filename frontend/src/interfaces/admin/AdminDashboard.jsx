@@ -28,23 +28,11 @@ function AdminDashboard() {
       case "user-add":
         return <AddUsers />;
 
-      case "user-edit":
-        return <UserList mode="edit" />;
-
-      case "user-delete":
-        return <UserList mode="delete" />;
-
       case "book-list":
         return <BookList />;
 
       case "book-add":
         return <AddBook noMove={true} />;
-
-      case "book-edit":
-        return <BookList mode="edit" />;
-
-      case "book-delete":
-        return <BookList mode="delete" />;
 
       case "profile":
         return <EditProfile noExtras />;
