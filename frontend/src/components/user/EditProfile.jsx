@@ -1,8 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-
 import { supabase } from "../../utils/supabase.js";
-
 import Swal from "sweetalert2";
 import BasicCard from "../../components/ui/BasicCard";
 import BackButton from "../../components/ui/BackButton";
@@ -11,6 +9,7 @@ function EditProfile({ noExtras = false }) {
   const nav = useNavigate();
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -30,7 +29,16 @@ function EditProfile({ noExtras = false }) {
         .eq("id", user.id)
         .single();
 
-      setForm(userData);
+      if (userData) {
+        setForm({
+          ...userData,
+          nombre: userData.name || "",
+          apellido: userData.lastname || "",
+          usuario: userData.username || "",
+          fec_nac: userData.birthdate || "",
+          img: userData.image_url || ""
+        });
+      }
       setLoading(false);
     };
 
@@ -42,14 +50,32 @@ function EditProfile({ noExtras = false }) {
     setForm({ ...form, [name]: value });
   };
 
-  const changeImg = (e) => {
+  const changeImg = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setForm({ ...form, img: reader.result });
-    };
-    reader.readAsDataURL(file);
+
+    try {
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('Images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('Images')
+        .getPublicUrl(fileName);
+
+      setForm({ ...form, img: publicUrl });
+      
+    } catch (error) {
+      Swal.fire("Error", "No se pudo subir la imagen", "error");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const guardar = async () => {
@@ -61,54 +87,39 @@ function EditProfile({ noExtras = false }) {
     const fecNac = form.fec_nac;
 
     if (!nombreTrimmed || !apellidoTrimmed || !usuarioTrimmed || !fecNac) {
-      Swal.fire(
-        "Campos incompletos",
-        "Debes llenar todos los campos",
-        "warning",
-      );
+      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
       return;
     }
 
     const year = new Date(fecNac).getFullYear();
     if (year < 1900) {
-      Swal.fire(
-        "Error",
-        "La fecha de nacimiento no puede ser anterior a 1900",
-        "error",
-      );
+      Swal.fire("Error", "La fecha de nacimiento no puede ser anterior a 1900", "error");
       return;
     }
 
     if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
-      Swal.fire(
-        "Error",
-        "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
-        "error",
-      );
+      Swal.fire("Error", "Usuario no válido", "error");
       return;
     }
 
     const { error } = await supabase
       .from("user")
       .update({
-        nombre: nombreTrimmed,
-        apellido: apellidoTrimmed,
-        usuario: usuarioTrimmed,
-        fec_nac: fecNac,
-        img: form.img,
+        name: nombreTrimmed,
+        lastname: apellidoTrimmed,
+        username: usuarioTrimmed,
+        birthdate: fecNac,
+        image_url: form.img,
       })
       .eq("id", form.id);
 
     if (error) {
       Swal.fire("Error", error.message, "error");
     } else {
-      Swal.fire("Éxito", "Perfil guardado correctamente", "success");
+      Swal.fire("Éxito", "Perfil guardado correctamente", "success").then(() => {
+        nav("/perfil");
+      });
     }
-  };
-
-  const cerrarSesion = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) nav("/");
   };
 
   const borrarCuenta = async () => {
@@ -121,9 +132,19 @@ function EditProfile({ noExtras = false }) {
       cancelButtonText: "Cancelar",
     }).then(async (res) => {
       if (res.isConfirmed) {
-        await supabase.from("user").delete().eq("id", form.id);
-        await supabase.auth.signOut();
-        nav("/");
+        try {
+          const { error: dbError } = await supabase
+            .from("user")
+            .delete()
+            .eq("id", form.id);
+
+          if (dbError) throw dbError;
+
+          await supabase.auth.signOut();
+          window.location.href = "/";
+        } catch (error) {
+          Swal.fire("Error", "Error al borrar: " + error.message, "error");
+        }
       }
     });
   };
@@ -138,55 +159,32 @@ function EditProfile({ noExtras = false }) {
           <img
             src={form.img || "/src/assets/images/user.png"}
             width="90"
-            style={{ borderRadius: "50%" }}
+            style={{ borderRadius: "50%", height: "90px", objectFit: "cover" }}
           />
           <br />
-          <input type="file" onChange={changeImg} />
+          <input type="file" onChange={changeImg} disabled={uploading} />
+          {uploading && <p style={{fontSize: '12px'}}>Subiendo...</p>}
         </div>
         <br />
         Nombre
-        <input
-          className="form-control"
-          name="nombre"
-          value={form.nombre || ""}
-          onChange={change}
-        />
+        <input className="form-control" name="nombre" value={form.nombre || ""} onChange={change} />
         <br />
         Apellido
-        <input
-          className="form-control"
-          name="apellido"
-          value={form.apellido || ""}
-          onChange={change}
-        />
+        <input className="form-control" name="apellido" value={form.apellido || ""} onChange={change} />
         <br />
         Usuario
-        <input
-          className="form-control"
-          name="usuario"
-          value={form.usuario || ""}
-          onChange={change}
-        />
+        <input className="form-control" name="usuario" value={form.usuario || ""} onChange={change} />
         <br />
         Fecha de nacimiento
-        <input
-          className="form-control"
-          type="date"
-          name="fec_nac"
-          value={form.fec_nac || ""}
-          onChange={change}
-        />
+        <input className="form-control" type="date" name="fec_nac" value={form.fec_nac || ""} onChange={change} />
         <br />
-        <button className="btn-main me-2" onClick={guardar}>
-          Guardar
+        <button className="btn-main me-2" onClick={guardar} disabled={uploading}>
+          {uploading ? "Cargando..." : "Guardar"}
         </button>
         {!noExtras ? (
           <>
             <hr />
-            <button className="btn-main me-2" onClick={cerrarSesion}>
-              Cerrar sesión
-            </button>
-            <button className="btn-main me-2" onClick={borrarCuenta}>
+            <button className="btn-main me-2" onClick={borrarCuenta} style={{backgroundColor: '#dc3545', backgroundImage: 'none'}}>
               Borrar cuenta
             </button>
           </>

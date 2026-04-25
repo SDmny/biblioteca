@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { supabase } from "../utils/supabase.js";
 import UserDashboard from "../interfaces/user/ProfileView.jsx";
 import AdminDashboard from "../interfaces/admin/AdminDashboard.jsx";
@@ -14,24 +13,30 @@ function Dashboard() {
         data: { user },
         error,
       } = await supabase.auth.getUser();
+
       if (error || !user) {
         setCurrentUser(null);
         setLoading(false);
         return;
       }
 
-      // Consulta a tu tabla user
       const { data: userData, error: userError } = await supabase
         .from("user")
-        .select("username, role, email")
-        .eq("id", user.id) // 👈 debe coincidir con auth.uid()
+        .select("id, username, role, email, name, lastname, image_url")
+        .eq("id", user.id)
         .single();
 
       if (userError) {
         console.error("Error al obtener perfil:", userError.message);
         setCurrentUser(null);
       } else {
-        setCurrentUser(userData);
+        setCurrentUser({
+          ...userData,
+          nombre: userData.name,
+          apellido: userData.lastname,
+          usuario: userData.username,
+          img: userData.image_url
+        });
       }
       setLoading(false);
     };
@@ -39,8 +44,17 @@ function Dashboard() {
     fetchUser();
   }, []);
 
-  if (loading) return <p>Cargando...</p>;
-  if (!currentUser) return <p>No has iniciado sesión</p>;
+  if (loading) return (
+    <div className="main-container">
+      <p>Cargando...</p>
+    </div>
+  );
+
+  if (!currentUser) return (
+    <div className="main-container">
+      <p>No has iniciado sesión</p>
+    </div>
+  );
 
   return currentUser.role === "admin" ? (
     <AdminDashboard />

@@ -8,32 +8,51 @@ function Header() {
   const [showNotif, setShowNotif] = useState(false);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    // Función para obtener datos de la tabla 'user' de Supabase
-    const fetchUserData = async (userId) => {
-      const { data } = await supabase
-        .from("user")
-        .select("username, role") 
-        .eq("id", userId)
-        .single();
-      
-      if (data) {
-        setUser({
-          usuario: data.username,
-          rol: data.role,
-          img: null
-        });
-      }
-    };
+  const fetchUserData = async (userId) => {
+    const { data } = await supabase
+      .from("user")
+      .select("username, role, image_url")
+      .eq("id", userId)
+      .single();
+    
+    if (data) {
+      setUser({
+        usuario: data.username,
+        rol: data.role,
+        img: data.image_url
+      });
+    }
+  };
 
-    // Revisar sesión inicial
+  useEffect(() => {
+    // Verificación inicial por si ya hay sesión al cargar
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) fetchUserData(session.user.id);
+      if (session) {
+        fetchUserData(session.user.id);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         fetchUserData(session.user.id);
+
+        const channel = supabase
+          .channel(`public:user:id=eq.${session.user.id}`)
+          .on('postgres_changes', { 
+              event: 'UPDATE', 
+              schema: 'public', 
+              table: 'user',
+              filter: `id=eq.${session.user.id}` 
+          }, (payload) => {
+            setUser({
+              usuario: payload.new.username,
+              rol: payload.new.role,
+              img: payload.new.image_url
+            });
+          })
+          .subscribe();
+
+        return () => supabase.removeChannel(channel);
       } else {
         setUser(null);
       }
@@ -57,7 +76,7 @@ function Header() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await supabase.auth.signOut();
-        nav("/");
+        window.location.href = "/";
       }
     });
   };
@@ -70,12 +89,7 @@ function Header() {
             Biblioteca
           </Link>
 
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#menu"
-          >
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
             <span className="navbar-toggler-icon"></span>
           </button>
 
@@ -88,11 +102,7 @@ function Header() {
 
               {user && user.rol === "admin" && (
                 <li className="nav-item">
-                  <Link
-                    className="nav-link"
-                    to="/admin"
-                    onClick={() => localStorage.setItem("adminSelected", "user-list")}
-                  >
+                  <Link className="nav-link" to="/admin" onClick={() => localStorage.setItem("adminSelected", "user-list")}>
                     Administrar
                   </Link>
                 </li>
@@ -107,7 +117,7 @@ function Header() {
               ) : (
                 <div className="user-box position-relative">
                   <button 
-                    className="notif-bell-btn me-3" 
+                    className={`notif-bell-btn me-3 ${showNotif ? 'active' : ''}`} 
                     onClick={() => setShowNotif(!showNotif)}
                     title="Configurar Notificaciones"
                   >
@@ -156,6 +166,7 @@ function Header() {
                       src={user.img || "/src/assets/images/user.png"}
                       className="user-img"
                       alt="avatar"
+                      style={{ objectFit: 'cover' }}
                     />
                     <span>{user.usuario}</span>
                   </Link>

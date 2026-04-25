@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../utils/supabase.js";
-
 import Swal from "sweetalert2";
-
+import ReCAPTCHA from "react-google-recaptcha";
 import BasicInput from "../ui/BasicInput.jsx";
 import TypeInput from "../ui/TypeInput.jsx";
 
 function AddUsers({ onSuccess, isAdminContext = false }) {
+  const nav = useNavigate();
+  const [captchaValido, setCaptchaValido] = useState(false);
+  const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
@@ -18,127 +21,114 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
     rol: "usuario",
   });
 
+  const validarCampo = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "nombre":
+      case "apellido":
+        if (value.trim().length < 2) error = "Debe contener al menos 2 caracteres";
+        break;
+      case "email":
+        if (!/\S+@\S+\.\S+/.test(value)) error = "Correo electrónico inválido";
+        break;
+      case "usuario":
+        if (!/^[A-Za-z0-9_-]+$/.test(value)) error = "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
+        break;
+      case "fec_nac":
+        const year = new Date(value).getFullYear();
+        if (year < 1900) error = "El año no puede ser anterior a 1900";
+        break;
+      case "password":
+        if (value.length < 6) error = "La contraseña debe contener al menos 6 caracteres";
+        break;
+      case "confirm_password":
+        if (value !== form.password) error = "Las contraseñas no coinciden";
+        break;
+      default:
+        break;
+    }
+    setErrors((prev) => ({ ...prev, [name]: error }));
+  };
+
   const change = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    validarCampo(name, value);
+    if (name === "password") {
+      setErrors((prev) => ({ 
+        ...prev, 
+        confirm_password: value !== form.confirm_password ? "Las contraseñas no coinciden" : "" 
+      }));
+    }
+  };
+
+  const onCaptchaChange = (value) => {
+    setCaptchaValido(!!value);
+  };
+
+  const formularioEsValido = () => {
+    const hayCamposVacios = !form.nombre || !form.apellido || !form.email || !form.usuario || !form.password || !form.confirm_password || !form.fec_nac;
+    const hayErrores = Object.values(errors).some(error => error !== "");
+    return !hayCamposVacios && !hayErrores && captchaValido;
   };
 
   const submit = async (e) => {
     e.preventDefault();
 
-    // Normalizar con trim
-    const nombreTrimmed = form.nombre?.trim() || "";
-    const apellidoTrimmed = form.apellido?.trim() || "";
-    const usuarioTrimmed = form.usuario?.trim() || "";
-    const emailTrimmed = form.email?.trim() || "";
-    const fecNac = form.fec_nac;
+    if (!formularioEsValido()) return;
 
-    // Validaciones
-    if (
-      !nombreTrimmed ||
-      !apellidoTrimmed ||
-      !usuarioTrimmed ||
-      !emailTrimmed ||
-      !form.password ||
-      !form.confirm_password ||
-      !fecNac
-    ) {
-      Swal.fire(
-        "Campos incompletos",
-        "Debes llenar todos los campos",
-        "warning",
-      );
-      return;
-    }
-
-    const year = new Date(fecNac).getFullYear();
-    if (year < 1900) {
-      Swal.fire(
-        "Error",
-        "La fecha de nacimiento no puede ser anterior a 1900",
-        "error",
-      );
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(emailTrimmed)) {
-      Swal.fire("Error", "Correo electrónico inválido", "error");
-      return;
-    }
-
-    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
-      Swal.fire(
-        "Error",
-        "Usuario inválido (solo letras, números, guion y guion bajo)",
-        "error",
-      );
-      return;
-    }
-
-    if (form.password.length < 6) {
-      Swal.fire(
-        "Error",
-        "La contraseña debe tener al menos 6 caracteres",
-        "error",
-      );
-      return;
-    }
-
-    if (form.password !== form.confirm_password) {
-      Swal.fire("Error", "Las contraseñas no coinciden", "error");
-      return;
-    }
-
-    // 1. Crear usuario en Supabase Auth
-    const { error } = await supabase.auth.signUp({
-      email: emailTrimmed,
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: form.email.trim(),
       password: form.password,
       options: {
         data: {
-          name: nombreTrimmed,
-          lastname: apellidoTrimmed,
-          birthdate: fecNac,
-          username: usuarioTrimmed,
+          name: form.nombre.trim(),
+          lastname: form.apellido.trim(),
+          birthdate: form.fec_nac,
+          username: form.usuario.trim(),
           role: form.rol,
         },
       },
     });
 
-    if (error) {
-      Swal.fire("Error", error.message, "error");
+    if (signUpError) {
+      let mensajeError = signUpError.message;
+      if (mensajeError === "User already registered") {
+        mensajeError = "Este correo electrónico ya está registrado.";
+      }
+      Swal.fire("Error al registrar", mensajeError, "error");
       return;
     }
-    // 2. El trigger en Supabase se encarga de insertar en la tabla user
-    // Ya no necesitas hacer el insert manual aquí
 
-    // 3. Enviar correo de bienvenida
-    await fetch("http://localhost:3001/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: emailTrimmed, // el correo del usuario
-        name: nombreTrimmed, // el nombre del usuario
-      }),
-    });
-
-    Swal.fire(
-      "Éxito",
-      "Usuario registrado y correo enviado correctamente",
-      "success",
-    );
-
-    if (onSuccess) {
-      onSuccess(); // por ejemplo, navegar al login
+    try {
+      await fetch("http://localhost:3001/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: form.email.trim(),
+          name: form.nombre.trim(),
+        }),
+      });
+    } catch (e) {
+      console.error("Error al enviar email", e);
     }
+
+    Swal.fire({
+      title: "¡Registro Exitoso!",
+      text: "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.",
+      icon: "success",
+      confirmButtonText: "Ir al Login",
+      confirmButtonColor: "#3085d6"
+    }).then(() => {
+      nav("/login");
+      if (onSuccess) onSuccess();
+    });
   };
 
   return (
     <>
       <h2>{isAdminContext ? "Crear usuario" : "Registrarse"}</h2>
       <form onSubmit={submit}>
-        {/* Inputs igual que antes */}
         <BasicInput label="Nombre">
           <TypeInput
             type="text"
@@ -148,7 +138,9 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
+          {errors.nombre && <small style={{ color: "red", display: "block" }}>{errors.nombre}</small>}
         </BasicInput>
+
         <BasicInput label="Apellido">
           <TypeInput
             type="text"
@@ -158,7 +150,9 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
+          {errors.apellido && <small style={{ color: "red", display: "block" }}>{errors.apellido}</small>}
         </BasicInput>
+
         <BasicInput label="Fecha de nacimiento">
           <TypeInput
             type="date"
@@ -167,7 +161,9 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
+          {errors.fec_nac && <small style={{ color: "red", display: "block" }}>{errors.fec_nac}</small>}
         </BasicInput>
+
         <BasicInput label="Email">
           <TypeInput
             type="email"
@@ -177,7 +173,9 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
+          {errors.email && <small style={{ color: "red", display: "block" }}>{errors.email}</small>}
         </BasicInput>
+
         <BasicInput label="Usuario">
           <TypeInput
             type="text"
@@ -187,7 +185,9 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
+          {errors.usuario && <small style={{ color: "red", display: "block" }}>{errors.usuario}</small>}
         </BasicInput>
+
         <BasicInput label="Contraseña">
           <TypeInput
             type="password"
@@ -196,7 +196,9 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
+          {errors.password && <small style={{ color: "red", display: "block" }}>{errors.password}</small>}
         </BasicInput>
+
         <BasicInput label="Confirmar contraseña">
           <TypeInput
             type="password"
@@ -205,6 +207,7 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
             onChange={change}
             required
           />
+          {errors.confirm_password && <small style={{ color: "red", display: "block" }}>{errors.confirm_password}</small>}
         </BasicInput>
 
         {isAdminContext && (
@@ -216,13 +219,29 @@ function AddUsers({ onSuccess, isAdminContext = false }) {
               className="form-control"
               required
             >
-              <option value="user">Usuario</option>
+              <option value="usuario">Usuario</option>
               <option value="admin">Administrador</option>
             </select>
           </BasicInput>
         )}
 
-        <input type="submit" value="Registrarse" className="btn-custom" />
+        <div style={{ marginTop: "15px", marginBottom: "15px" }}>
+          <ReCAPTCHA
+            sitekey="6LeD9cgsAAAAAEsdS_PkWKuwuLfhQn_d6H0OEGcv"
+            onChange={onCaptchaChange}
+          />
+        </div>
+
+        <input 
+          type="submit" 
+          value={isAdminContext ? "Crear Usuario" : "Registrarse"} 
+          className="btn-custom" 
+          disabled={!formularioEsValido()}
+          style={{ 
+            opacity: formularioEsValido() ? 1 : 0.5, 
+            cursor: formularioEsValido() ? "pointer" : "not-allowed" 
+          }}
+        />
       </form>
     </>
   );

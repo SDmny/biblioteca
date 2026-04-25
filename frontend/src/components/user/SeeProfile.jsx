@@ -8,16 +8,18 @@ function SeeProfile({ user, children }) {
           <img
             src={user.img || "/src/assets/images/user.png"}
             width="90"
+            height="90"
             style={{
               borderRadius: "50%",
+              objectFit: "cover"
             }}
+            alt="Foto de perfil"
           />
 
           <h3>
             {user.nombre} {user.apellido}
           </h3>
 
-          <p>{user.usuario}</p>
         </div>
 
         <br />
