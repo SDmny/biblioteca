@@ -24,46 +24,59 @@ function Header() {
   };
 
   useEffect(() => {
-    // Verificación inicial por si ya hay sesión al cargar
+    let channel; // referencia para limpiar
+
+    const setupChannel = (userId) => {
+      // si ya había un canal, lo quitamos
+      if (channel) supabase.removeChannel(channel);
+
+      channel = supabase
+        .channel(`user-changes-${userId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "user",
+            filter: `id=eq.${userId}`,
+          },
+          (payload) => {
+            setUser({
+              usuario: payload.new.username,
+              rol: payload.new.role,
+              img: payload.new.image_url,
+            });
+          },
+        )
+        .subscribe();
+    };
+
+    // Sesión inicial
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         fetchUserData(session.user.id);
+        setupChannel(session.user.id);
       }
     });
 
+    // Cambios de sesión
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         fetchUserData(session.user.id);
-
-        const channel = supabase
-          .channel(`public:user:id=eq.${session.user.id}`)
-          .on(
-            "postgres_changes",
-            {
-              event: "UPDATE",
-              schema: "public",
-              table: "user",
-              filter: `id=eq.${session.user.id}`,
-            },
-            (payload) => {
-              setUser({
-                usuario: payload.new.username,
-                rol: payload.new.role,
-                img: payload.new.image_url,
-              });
-            },
-          )
-          .subscribe();
-
-        return () => supabase.removeChannel(channel);
+        setupChannel(session.user.id);
       } else {
         setUser(null);
+        if (channel) supabase.removeChannel(channel);
       }
     });
 
-    return () => subscription.unsubscribe();
+    // limpieza al desmontar
+    return () => {
+      subscription.unsubscribe();
+      if (channel) supabase.removeChannel(channel);
+    };
   }, []);
 
   const cerrarSesion = () => {
