@@ -15,7 +15,7 @@ function RegisterPage() {
         <br />
         <br />
         <div className="form-card">
-          <AddUserForm onSuccess={() => nav("/login")} isAdminContext={false} />
+          <AddUserForm onSuccess={() => nav("/dashboard")} />
           <p style={{ marginTop: 15 }}>
             Ya tienes una cuenta? <Link to="/login">Iniciar sesión</Link>
           </p>

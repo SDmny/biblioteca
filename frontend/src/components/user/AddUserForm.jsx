@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
 import BasicInput from "../ui/BasicInput.jsx";
 import TypeInput from "../ui/TypeInput.jsx";
+import AddUserFormFields from "./AddUserFormFields.jsx";
 
 function AddUsers({ onSuccess }) {
   const nav = useNavigate();
@@ -18,6 +19,7 @@ function AddUsers({ onSuccess }) {
     usuario: "",
     password: "",
     confirm_password: "",
+    rol: "usuario",
   });
 
   const validarCampo = (name, value) => {
@@ -82,7 +84,7 @@ function AddUsers({ onSuccess }) {
 
     if (!formularioEsValido()) return;
 
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: form.email.trim(),
       password: form.password,
       options: {
@@ -91,17 +93,13 @@ function AddUsers({ onSuccess }) {
           lastname: form.apellido.trim(),
           birthdate: form.fec_nac,
           username: form.usuario.trim(),
-          role: "usuario",
+          role: form.rol,
         },
       },
     });
 
-    if (signUpError) {
-      let mensajeError = signUpError.message;
-      if (mensajeError === "User already registered") {
-        mensajeError = "Este correo electrónico ya está registrado.";
-      }
-      Swal.fire("Error al registrar", mensajeError, "error");
+    if (error) {
+      Swal.fire("Error", error.message, "error");
       return;
     }
 
@@ -122,7 +120,7 @@ function AddUsers({ onSuccess }) {
       title: "¡Registro Exitoso!",
       text: "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.",
       icon: "success",
-      confirmButtonText: "Ir al Login",
+      confirmButtonText: "Acceder",
       confirmButtonColor: "#3085d6",
     }).then(() => {
       nav("/dashboard");
@@ -134,122 +132,15 @@ function AddUsers({ onSuccess }) {
     <>
       <h2>Registrarse</h2>
       <form onSubmit={submit}>
-        <BasicInput label="Nombre">
-          <TypeInput
-            type="text"
-            name="nombre"
-            placeholder="Nombres(s)"
-            value={form.nombre}
-            onChange={change}
-            required
-          />
-          {errors.nombre && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.nombre}
-            </small>
-          )}
-        </BasicInput>
-
-        <BasicInput label="Apellido">
-          <TypeInput
-            type="text"
-            name="apellido"
-            placeholder="Apellido(s)"
-            value={form.apellido}
-            onChange={change}
-            required
-          />
-          {errors.apellido && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.apellido}
-            </small>
-          )}
-        </BasicInput>
-
-        <BasicInput label="Fecha de nacimiento">
-          <TypeInput
-            type="date"
-            name="fec_nac"
-            value={form.fec_nac}
-            onChange={change}
-            required
-          />
-          {errors.fec_nac && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.fec_nac}
-            </small>
-          )}
-        </BasicInput>
-
-        <BasicInput label="Email">
-          <TypeInput
-            type="email"
-            name="email"
-            placeholder="correo@ejemplo.com"
-            value={form.email}
-            onChange={change}
-            required
-          />
-          {errors.email && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.email}
-            </small>
-          )}
-        </BasicInput>
-
-        <BasicInput label="Usuario">
-          <TypeInput
-            type="text"
-            name="usuario"
-            placeholder="Usuario"
-            value={form.usuario}
-            onChange={change}
-            required
-          />
-          {errors.usuario && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.usuario}
-            </small>
-          )}
-        </BasicInput>
-
-        <BasicInput label="Contraseña">
-          <TypeInput
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={change}
-            required
-          />
-          {errors.password && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.password}
-            </small>
-          )}
-        </BasicInput>
-
-        <BasicInput label="Confirmar contraseña">
-          <TypeInput
-            type="password"
-            name="confirm_password"
-            value={form.confirm_password}
-            onChange={change}
-            required
-          />
-          {errors.confirm_password && (
-            <small style={{ color: "red", display: "block" }}>
-              {errors.confirm_password}
-            </small>
-          )}
-        </BasicInput>
-
+        <AddUserFormFields form={form} errors={errors} change={change} />
+        <br />
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
           <ReCAPTCHA
             sitekey="6LeD9cgsAAAAAEsdS_PkWKuwuLfhQn_d6H0OEGcv"
             onChange={onCaptchaChange}
           />
         </div>
-
+        <br />
         <input
           type="submit"
           value="Registrarse"

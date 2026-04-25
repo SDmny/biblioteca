@@ -113,23 +113,20 @@ function AddUserFormFields({ form, errors, change, includeRole = false }) {
         )}
       </BasicInput>
 
-      <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-        <ReCAPTCHA
-          sitekey="6LeD9cgsAAAAAEsdS_PkWKuwuLfhQn_d6H0OEGcv"
-          onChange={onCaptchaChange}
-        />
-      </div>
-
-      <input
-        type="submit"
-        value="Registrarse"
-        className="btn-custom"
-        disabled={!formularioEsValido()}
-        style={{
-          opacity: formularioEsValido() ? 1 : 0.5,
-          cursor: formularioEsValido() ? "pointer" : "not-allowed",
-        }}
-      />
+      {includeRole && (
+        <BasicInput label="Rol">
+          <select
+            name="rol"
+            value={form.rol}
+            onChange={change}
+            className="form-control"
+            required
+          >
+            <option value="usuario">Usuario</option>
+            <option value="administrador">Administrador</option>
+          </select>
+        </BasicInput>
+      )}
     </>
   );
 }
