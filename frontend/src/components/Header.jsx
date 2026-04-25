@@ -1,10 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import Swal from "sweetalert2";
 
 function Header() {
-  const nav = useNavigate();
   const [showNotif, setShowNotif] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -14,12 +13,12 @@ function Header() {
       .select("username, role, image_url")
       .eq("id", userId)
       .single();
-    
+
     if (data) {
       setUser({
         usuario: data.username,
         rol: data.role,
-        img: data.image_url
+        img: data.image_url,
       });
     }
   };
@@ -32,24 +31,30 @@ function Header() {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         fetchUserData(session.user.id);
 
         const channel = supabase
           .channel(`public:user:id=eq.${session.user.id}`)
-          .on('postgres_changes', { 
-              event: 'UPDATE', 
-              schema: 'public', 
-              table: 'user',
-              filter: `id=eq.${session.user.id}` 
-          }, (payload) => {
-            setUser({
-              usuario: payload.new.username,
-              rol: payload.new.role,
-              img: payload.new.image_url
-            });
-          })
+          .on(
+            "postgres_changes",
+            {
+              event: "UPDATE",
+              schema: "public",
+              table: "user",
+              filter: `id=eq.${session.user.id}`,
+            },
+            (payload) => {
+              setUser({
+                usuario: payload.new.username,
+                rol: payload.new.role,
+                img: payload.new.image_url,
+              });
+            },
+          )
           .subscribe();
 
         return () => supabase.removeChannel(channel);
@@ -67,12 +72,12 @@ function Header() {
       text: "Tendrás que ingresar de nuevo a tu cuenta.",
       icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#00468b", 
-      cancelButtonColor: "#d4d0c4",  
+      confirmButtonColor: "#00468b",
+      cancelButtonColor: "#d4d0c4",
       confirmButtonText: "Salir",
       cancelButtonText: "Cancelar",
-      background: "#f5f3ee",   
-      color: "#1a1a1a"               
+      background: "#f5f3ee",
+      color: "#1a1a1a",
     }).then(async (result) => {
       if (result.isConfirmed) {
         await supabase.auth.signOut();
@@ -89,20 +94,47 @@ function Header() {
             Biblioteca
           </Link>
 
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#menu"
+          >
             <span className="navbar-toggler-icon"></span>
           </button>
 
           <div className="collapse navbar-collapse" id="menu">
             <ul className="navbar-nav ms-auto">
-              <li className="nav-item"><Link className="nav-link" to="/">Inicio</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/conocenos">Conócenos</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/contacto">Contacto</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/libros">Libros</Link></li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/">
+                  Inicio
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/conocenos">
+                  Conócenos
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/contacto">
+                  Contacto
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/libros">
+                  Libros
+                </Link>
+              </li>
 
-              {user && user.rol === "admin" && (
+              {user && user.rol === "administrador" && (
                 <li className="nav-item">
-                  <Link className="nav-link" to="/admin" onClick={() => localStorage.setItem("adminSelected", "user-list")}>
+                  <Link
+                    className="nav-link"
+                    to="/dashboard"
+                    onClick={() =>
+                      localStorage.setItem("adminSelected", "user-list")
+                    }
+                  >
                     Administrar
                   </Link>
                 </li>
@@ -116,12 +148,19 @@ function Header() {
                 </Link>
               ) : (
                 <div className="user-box position-relative">
-                  <button 
-                    className={`notif-bell-btn me-3 ${showNotif ? 'active' : ''}`} 
+                  <button
+                    className={`notif-bell-btn me-3 ${showNotif ? "active" : ""}`}
                     onClick={() => setShowNotif(!showNotif)}
                     title="Configurar Notificaciones"
                   >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                       <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                     </svg>
@@ -166,12 +205,16 @@ function Header() {
                       src={user.img || "/src/assets/images/user.png"}
                       className="user-img"
                       alt="avatar"
-                      style={{ objectFit: 'cover' }}
+                      style={{ objectFit: "cover" }}
                     />
                     <span>{user.usuario}</span>
                   </Link>
 
-                  <button className="logout-icon ms-2" onClick={cerrarSesion} title="Cerrar sesión">
+                  <button
+                    className="logout-icon ms-2"
+                    onClick={cerrarSesion}
+                    title="Cerrar sesión"
+                  >
                     Salir
                   </button>
                 </div>

@@ -5,36 +5,25 @@ function AdminSidebar({ onSelect }) {
 
       <h5>Gestionar Usuarios</h5>
 
-      <button onClick={() => onSelect("user-list")}>
-        Ver Usuarios
-      </button>
+      <button onClick={() => onSelect("user-list")}>Ver Usuarios</button>
 
-      <button onClick={() => onSelect("user-add")}>
-        Crear Usuario
-      </button>
+      <button onClick={() => onSelect("user-add")}>Agregar Usuario</button>
 
       <br />
       <br />
 
       <h5>Gestionar Libros</h5>
 
-      <button onClick={() => onSelect("book-list")}>
-        Ver Libros
-      </button>
+      <button onClick={() => onSelect("book-list")}>Ver Libros</button>
 
-      <button onClick={() => onSelect("book-add")}>
-        Agregar Libro
-      </button>
+      <button onClick={() => onSelect("book-add")}>Agregar Libro</button>
 
       <br />
       <br />
 
       <h5>Más Opciones</h5>
 
-      <button onClick={() => onSelect("profile")}>
-        Editar perfil
-      </button>
-      
+      <button onClick={() => onSelect("profile")}>Editar perfil</button>
     </div>
   );
 }

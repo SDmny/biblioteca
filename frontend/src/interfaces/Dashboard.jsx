@@ -35,7 +35,7 @@ function Dashboard() {
           nombre: userData.name,
           apellido: userData.lastname,
           usuario: userData.username,
-          img: userData.image_url
+          img: userData.image_url,
         });
       }
       setLoading(false);
@@ -44,19 +44,21 @@ function Dashboard() {
     fetchUser();
   }, []);
 
-  if (loading) return (
-    <div className="main-container">
-      <p>Cargando...</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="main-container">
+        <p>Cargando...</p>
+      </div>
+    );
 
-  if (!currentUser) return (
-    <div className="main-container">
-      <p>No has iniciado sesión</p>
-    </div>
-  );
+  if (!currentUser)
+    return (
+      <div className="main-container">
+        <p>No has iniciado sesión</p>
+      </div>
+    );
 
-  return currentUser.role === "admin" ? (
+  return currentUser.role === "administrador" ? (
     <AdminDashboard />
   ) : (
     <UserDashboard user={currentUser} />

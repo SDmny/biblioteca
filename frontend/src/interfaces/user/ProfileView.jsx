@@ -14,21 +14,23 @@ function ProfileView({ user: propUser }) {
   useEffect(() => {
     if (!propUser) {
       const fetchUser = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (session) {
           const { data } = await supabase
             .from("user")
             .select("*")
             .eq("id", session.user.id)
             .single();
-          
+
           if (data) {
             setUser({
               ...data,
               img: data.image_url,
               nombre: data.name,
               apellido: data.lastname,
-              usuario: data.username
+              usuario: data.username,
             });
           }
         }
@@ -38,9 +40,10 @@ function ProfileView({ user: propUser }) {
     }
   }, [propUser]);
 
-  const editPath = user?.role === "admin"
-    ? `/admin/usuarios/edit/${user.username}`
-    : "/profile-edit";
+  const editPath =
+    user?.role === "administrador"
+      ? `/admin/usuarios/edit/${user.username}`
+      : "/profile-edit";
 
   const eliminarPerfil = () => {
     Swal.fire({
@@ -63,19 +66,35 @@ function ProfileView({ user: propUser }) {
           if (dbError) throw dbError;
 
           await supabase.auth.signOut();
-          
-          Swal.fire("Eliminado", "Tu cuenta ha sido borrada.", "success").then(() => {
-            window.location.href = "/";
-          });
+
+          Swal.fire("Eliminado", "Tu cuenta ha sido borrada.", "success").then(
+            () => {
+              window.location.href = "/";
+            },
+          );
         } catch (error) {
-          Swal.fire("Error", "No se pudo eliminar la cuenta: " + error.message, "error");
+          Swal.fire(
+            "Error",
+            "No se pudo eliminar la cuenta: " + error.message,
+            "error",
+          );
         }
       }
     });
   };
 
-  if (loading) return <div className="main-container"><p>Cargando...</p></div>;
-  if (!user) return <div className="main-container"><p>No autorizado</p></div>;
+  if (loading)
+    return (
+      <div className="main-container">
+        <p>Cargando...</p>
+      </div>
+    );
+  if (!user)
+    return (
+      <div className="main-container">
+        <p>No autorizado</p>
+      </div>
+    );
 
   return (
     <div className="main-container">
@@ -87,29 +106,52 @@ function ProfileView({ user: propUser }) {
           </h2>
         </div>
 
-        <div style={{ display: "flex", gap: 10, justifyContent: "center", alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
+        <div
+          style={{
+            display: "flex",
+            gap: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            flexWrap: "wrap",
+            marginBottom: 10,
+          }}
+        >
           <BasicButton to={editPath} texto={"Modificar datos"} />
           <BasicButton to={"/add-book"} texto={"Publicar libro"} />
 
-          {user.role !== "admin" && (
-            <button className="btn-main" style={{ height: "fit-content" }} onClick={() => nav("/my-books")}>
+          {user.role !== "administrador" && (
+            <button
+              className="btn-main"
+              style={{ height: "fit-content" }}
+              onClick={() => nav("/my-books")}
+            >
               Mis libros
             </button>
           )}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
           <button className="btn-main" onClick={() => nav("/reset-password")}>
             Cambiar contraseña
           </button>
         </div>
 
-        {user.role !== "admin" && (
+        {user.role !== "administrador" && (
           <>
             <hr />
             <button
               className="btn-main w-100"
-              style={{ backgroundColor: "#dc3545", backgroundImage: "none", border: "none" }}
+              style={{
+                backgroundColor: "#dc3545",
+                backgroundImage: "none",
+                border: "none",
+              }}
               onClick={eliminarPerfil}
             >
               Eliminar Perfil
