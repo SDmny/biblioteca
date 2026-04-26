@@ -1,52 +1,31 @@
-import { useEffect, useState } from "react";
-
+import { useState } from "react";
 import AdminSidebar from "../../components/admin/AdminSidebar.jsx";
-
 import UserList from "../../components/user/UserList.jsx";
 import AddUsers from "../../components/admin/AddUsers.jsx";
-
 import BookList from "../../components/book/BookList.jsx";
 import AddBook from "../user/AddBook.jsx";
-
 import EditProfile from "../../components/user/EditProfile.jsx";
 
 function AdminDashboard() {
-  const [selected, setSelected] = useState(
-    localStorage.getItem("adminSelected") || "user-list",
-  );
-  useEffect(() => {
-    if (selected) {
-      localStorage.setItem("adminSelected", selected);
-    }
-  }, [selected]);
+  const [selected, setSelected] = useState("book-list");
 
   const renderContent = () => {
     switch (selected) {
-      case "user-list":
-        return <UserList />;
-
-      case "user-add":
-        return <AddUsers />;
-
-      case "book-list":
-        return <BookList />;
-
-      case "book-add":
-        return <AddBook noMove={true} />;
-
-      case "profile":
-        return <EditProfile noExtras />;
-
-      default:
-        return <BookList />;
+      case "user-list": return <UserList />;
+      case "user-add": return <AddUsers />;
+      case "book-list": return <BookList isAdmin={true} />;
+      case "book-add": return <AddBook noMove={true} />;
+      case "profile": return <EditProfile noExtras />;
+      default: return <BookList isAdmin={true} />;
     }
   };
 
   return (
-    <div className="catalog-container">
+    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
       <AdminSidebar onSelect={setSelected} />
-
-      <div className="catalog-content">{renderContent()}</div>
+      <div style={{ flex: 1, padding: "20px", overflowY: "auto" }}>
+        {renderContent()}
+      </div>
     </div>
   );
 }
