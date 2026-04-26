@@ -21,10 +21,23 @@ function AdminDashboard() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f4f6f8" }}>
+    <div style={{ 
+      display: "flex", 
+      minHeight: "100vh", 
+      backgroundColor: "#f4f6f8" 
+    }}>
       <AdminSidebar onSelect={setSelected} />
-      <div style={{ flex: 1, padding: "20px", overflowY: "auto" }}>
-        {renderContent()}
+
+      <div style={{ 
+        flex: 1, 
+        padding: "30px", 
+        marginLeft: "310px",
+        paddingBottom: "100px",
+        overflow: 'hidden'
+      }}>
+        <div style={{ maxWidth: "1250px", margin: "0 auto" }}>
+          {renderContent()}
+        </div>
       </div>
     </div>
   );

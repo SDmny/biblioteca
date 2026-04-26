@@ -78,111 +78,115 @@ function FilterOptions({ onAction, isAdmin }) {
   // Vista admin
   if (isAdmin) {
     return (
-      <div className="bg-white p-3 rounded shadow-sm" style={{ border: "1px solid #ddd", position: 'relative' }}>
-        <div className="d-flex w-100 align-items-start" style={{ gap: "20px" }}>
-          
-          {/* 1. Base */}
-          <div style={{ flex: 1, borderRight: "1px solid #eee", paddingRight: "15px" }}>
-            <h6 className="fw-bold text-secondary mb-2" style={{ fontSize: '0.85rem' }}>1. Estados</h6>
-            <div className="d-flex gap-2 flex-wrap">
-              {['todos', 'populares', 'nuevos'].map((tipo) => (
-                <button 
-                  key={tipo} 
-                  style={{...getDynamicStyle(tipo, baseFilter === tipo), padding: '6px 12px', fontSize: '12px'}}
-                  onClick={() => handleBase(tipo)}
-                >
-                  {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 2. Autor */}
-          <div style={{ flex: 1, borderRight: "1px solid #eee", paddingRight: "15px" }}>
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <h6 className="fw-bold text-secondary m-0" style={{ fontSize: '0.85rem' }}>2. Autor</h6>
-              <small 
-                onClick={() => { setAuthorSearch(""); emitirFiltros(baseFilter, selectedGenres, minPages, ""); }}
-                style={{ cursor: 'pointer', color: '#2f6fb0', fontSize: '0.7rem' }}
-              >
-                Limpiar
-              </small>
-            </div>
-            <input 
-              type="text" className="form-control form-control-sm" placeholder="Buscar autor..." 
-              value={authorSearch}
-              onChange={(e) => { setAuthorSearch(e.target.value); emitirFiltros(baseFilter, selectedGenres, minPages, e.target.value); }}
-            />
-          </div>
-
-          {/* 3. Géneros y Páginas */}
-          <div style={{ flex: 2 }}>
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <h6 className="fw-bold text-secondary m-0" style={{ fontSize: '0.85rem' }}>3. Género y Páginas</h6>
-              <small 
-                onClick={() => { setBaseFilter("todos"); setSelectedGenres([]); setMinPages(0); setAuthorSearch(""); emitirFiltros("todos", [], 0, ""); }}
-                style={{ cursor: 'pointer', color: '#2f6fb0', fontWeight: 'bold', fontSize: '0.7rem' }}
-              >
-                Limpiar Todo
-              </small>
-            </div>
-            
-            <div className="d-flex gap-3 align-items-center">
-              <div style={{ position: 'relative', flex: 1 }}>
-                <div className="d-flex align-items-center gap-1">
-                    <input 
-                    type="text" className="form-control form-control-sm" placeholder="Añadir género..." 
-                    value={genreSearch} onChange={(e) => setGenreSearch(e.target.value)} 
-                    />
-                    <small 
-                        onClick={() => { setSelectedGenres([]); emitirFiltros(baseFilter, [], minPages, authorSearch); }}
-                        style={{ cursor: 'pointer', color: '#2f6fb0', fontSize: '0.65rem' }}
-                    >
-                        Limpiar
-                    </small>
-                </div>
-                {genreSearch && (
-                  <div style={{ 
-                    position: 'absolute', zIndex: 100, background: 'white', width: '100%',
-                    border: '1px solid #ddd', borderRadius: '4px', maxHeight: '120px', overflowY: 'auto',
-                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)', fontSize: '0.8rem'
-                  }}>
-                    {genres.filter(g => g.genre.toLowerCase().includes(genreSearch.toLowerCase())).map(g => (
-                      <div 
-                        key={g.genre} onClick={() => addGenre(g.genre)}
-                        style={{ padding: '5px 10px', cursor: 'pointer', borderBottom: '1px solid #eee' }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f7ff'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-                      >
-                        + {g.genre}
-                      </div>
-                    ))}
-                  </div>
-                )}
+      <div style={{ 
+        position: 'sticky', 
+        top: '0', 
+        zIndex: 1000, 
+        backgroundColor: '#f4f6f8', // Mismo fondo que el dashboard para camuflarse
+        padding: '10px 0' 
+      }}>
+        <div className="bg-white p-3 rounded shadow-sm" style={{ border: "1px solid #ddd", position: 'relative' }}>
+          <div className="d-flex w-100 align-items-start" style={{ gap: "20px" }}>
+            <div style={{ flex: 1, borderRight: "1px solid #eee", paddingRight: "15px" }}>
+              <h6 className="fw-bold text-secondary mb-2" style={{ fontSize: '0.85rem' }}>1. Estados</h6>
+              <div className="d-flex gap-2 flex-wrap">
+                {['todos', 'populares', 'nuevos'].map((tipo) => (
+                  <button 
+                    key={tipo} 
+                    style={{...getDynamicStyle(tipo, baseFilter === tipo), padding: '6px 12px', fontSize: '12px'}}
+                    onClick={() => handleBase(tipo)}
+                  >
+                    {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
+                  </button>
+                ))}
               </div>
+            </div>
 
-              <div className="d-flex align-items-center gap-2" style={{ flex: 1 }}>
-                <span style={{ fontSize: "11px", fontWeight: "bold", whiteSpace: 'nowrap' }}>{minPages}p+</span>
-                <input 
-                  type="range" className="form-range" min="0" max="1000" step="50"
-                  value={minPages} 
-                  onChange={(e) => { setMinPages(e.target.value); emitirFiltros(baseFilter, selectedGenres, e.target.value, authorSearch); }} 
-                />
+            <div style={{ flex: 1, borderRight: "1px solid #eee", paddingRight: "15px" }}>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h6 className="fw-bold text-secondary m-0" style={{ fontSize: '0.85rem' }}>2. Autor</h6>
                 <small 
-                    onClick={() => { setMinPages(0); emitirFiltros(baseFilter, selectedGenres, 0, authorSearch); }}
-                    style={{ cursor: 'pointer', color: '#2f6fb0', fontSize: '0.65rem' }}
+                  onClick={() => { setAuthorSearch(""); emitirFiltros(baseFilter, selectedGenres, minPages, ""); }}
+                  style={{ cursor: 'pointer', color: '#2f6fb0', fontSize: '0.7rem' }}
                 >
-                    Limpiar
+                  Limpiar
                 </small>
               </div>
+              <input 
+                type="text" className="form-control form-control-sm" placeholder="Buscar autor..." 
+                value={authorSearch}
+                onChange={(e) => { setAuthorSearch(e.target.value); emitirFiltros(baseFilter, selectedGenres, minPages, e.target.value); }}
+              />
             </div>
 
-            <div className="d-flex flex-wrap gap-1 mt-2">
-              {selectedGenres.map((g) => (
-                <span key={g} style={getDynamicStyle(g, true, true)} onClick={() => removeGenre(g)}>
-                  {g} <span style={{ fontSize: '0.6rem' }}>✖</span>
-                </span>
-              ))}
+            <div style={{ flex: 2 }}>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h6 className="fw-bold text-secondary m-0" style={{ fontSize: '0.85rem' }}>3. Género y Páginas</h6>
+                <small 
+                  onClick={() => { setBaseFilter("todos"); setSelectedGenres([]); setMinPages(0); setAuthorSearch(""); emitirFiltros("todos", [], 0, ""); }}
+                  style={{ cursor: 'pointer', color: '#2f6fb0', fontWeight: 'bold', fontSize: '0.7rem' }}
+                >
+                  Limpiar Todo
+                </small>
+              </div>
+              
+              <div className="d-flex gap-3 align-items-center">
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <div className="d-flex align-items-center gap-1">
+                      <input 
+                      type="text" className="form-control form-control-sm" placeholder="Añadir género..." 
+                      value={genreSearch} onChange={(e) => setGenreSearch(e.target.value)} 
+                      />
+                      <small 
+                          onClick={() => { setSelectedGenres([]); emitirFiltros(baseFilter, [], minPages, authorSearch); }}
+                          style={{ cursor: 'pointer', color: '#2f6fb0', fontSize: '0.65rem' }}
+                      >
+                          Limpiar
+                      </small>
+                  </div>
+                  {genreSearch && (
+                    <div style={{ 
+                      position: 'absolute', zIndex: 100, background: 'white', width: '100%',
+                      border: '1px solid #ddd', borderRadius: '4px', maxHeight: '120px', overflowY: 'auto',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)', fontSize: '0.8rem'
+                    }}>
+                      {genres.filter(g => g.genre.toLowerCase().includes(genreSearch.toLowerCase())).map(g => (
+                        <div 
+                          key={g.genre} onClick={() => addGenre(g.genre)}
+                          style={{ padding: '5px 10px', cursor: 'pointer', borderBottom: '1px solid #eee' }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f7ff'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                        >
+                          + {g.genre}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="d-flex align-items-center gap-2" style={{ flex: 1 }}>
+                  <span style={{ fontSize: "11px", fontWeight: "bold", whiteSpace: 'nowrap' }}>{minPages}p+</span>
+                  <input 
+                    type="range" className="form-range" min="0" max="1000" step="50"
+                    value={minPages} 
+                    onChange={(e) => { setMinPages(e.target.value); emitirFiltros(baseFilter, selectedGenres, e.target.value, authorSearch); }} 
+                  />
+                  <small 
+                      onClick={() => { setMinPages(0); emitirFiltros(baseFilter, selectedGenres, 0, authorSearch); }}
+                      style={{ cursor: 'pointer', color: '#2f6fb0', fontSize: '0.65rem' }}
+                  >
+                      Limpiar
+                  </small>
+                </div>
+              </div>
+
+              <div className="d-flex flex-wrap gap-1 mt-2">
+                {selectedGenres.map((g) => (
+                  <span key={g} style={getDynamicStyle(g, true, true)} onClick={() => removeGenre(g)}>
+                    {g} <span style={{ fontSize: '0.6rem' }}>✖</span>
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -192,7 +196,7 @@ function FilterOptions({ onAction, isAdmin }) {
 
   // Vista usuario
   return (
-    <div className="sidebar-container" style={{ position: 'relative' }}>
+    <div className="sidebar-container" style={{ position: 'sticky', top: '20px' }}>
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h3>Filtros</h3>
         <small 
