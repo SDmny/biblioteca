@@ -35,7 +35,8 @@ export function useCatalogo() {
             ...b,
             image: b.image_url,
             genres: b.book_genres.map((bg) => bg.genre.genre),
-            rating: promedio
+            rating: promedio,
+            created_at: new Date(b.created_at)
           };
         });
         setBooks(formattedBooks);
@@ -49,24 +50,50 @@ export function useCatalogo() {
   const filtrar = (tipo, valor) => {
     let lista = [...books];
 
-    if (tipo === "todos") {
-      lista = books;
-    } else if (tipo === "populares") {
-      lista = lista.filter((b) => Number(b.rating) >= 4.5);
-    } else if (tipo === "genero") {
-      lista = lista.filter((b) => b.genres.includes(valor));
-    } else if (tipo === "largos") {
-      lista = lista.filter((b) => b.pages > 400);
-    }
+    if (tipo === "aplicar_filtros_globales") {
+      const { base, genres, pages, author } = valor;
 
-    setFiltered(lista);
+      // 2. Filtro Base
+      if (base === "populares") {
+        lista = lista.filter((b) => Number(b.rating) >= 4.5);
+      } else if (base === "nuevos") {
+        lista = [...lista].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      }
+
+      // 3. Filtro de Autor
+      if (author && author.trim() !== "") {
+        lista = lista.filter((b) => 
+          b.author && b.author.toLowerCase().includes(author.toLowerCase())
+        );
+      }
+
+      // 4. Filtro de Géneros
+      if (genres && genres.length > 0) {
+        lista = lista.filter((b) => 
+          genres.every(g => b.genres.includes(g))
+        );
+      }
+
+      // 5. Filtro de Páginas (Solo Mínimo porque el otro no me salió)
+      if (pages !== undefined) {
+        lista = lista.filter((b) => Number(b.pages) >= Number(pages));
+      }
+
+      setFiltered(lista);
+    } else if (tipo === "todos") {
+      setFiltered(books);
+    }
   };
 
   const buscar = (texto) => {
     setSearch(texto);
+    if (!texto.trim()) {
+      setFiltered(books);
+      return;
+    }
     const lista = books.filter((b) =>
-      b.title.toLowerCase().includes(texto.toLowerCase()) ||
-      b.author.toLowerCase().includes(texto.toLowerCase())
+      (b.title && b.title.toLowerCase().includes(texto.toLowerCase())) ||
+      (b.author && b.author.toLowerCase().includes(texto.toLowerCase()))
     );
     setFiltered(lista);
   };
