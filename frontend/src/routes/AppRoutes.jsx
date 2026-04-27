@@ -21,31 +21,30 @@ import RegisterPage from "../components/user/RegisterPage.jsx";
 import AdminRoute from "./AdminRoute.jsx";
 import AdminDashboard from "../interfaces/admin/AdminDashboard.jsx";
 import AdminUserForm from "../components/admin/AdminUserForm.jsx";
+import EditUserForm from "../components/user/EditUserForm.jsx";
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* PUBLICAS */}
+      {/* RUTAS PÚBLICAS */}
       <Route path="/" element={<Home />} />
       <Route path="/conocenos" element={<Conocenos />} />
       <Route path="/contacto" element={<Contacto />} />
       <Route path="/libros" element={<Catalogo />} />
       <Route path="/libro/:id" element={<BookDetailPage />} />
-
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/reset-password" element={<ForgotPassword />} />
 
+      {/* RUTAS DE USUARIO */}
       <Route path="/perfil" element={<ProfileView />} />
       <Route path="/profile-edit" element={<ProfilePage />} />
       <Route path="/my-books" element={<MyBooks />} />
-
       <Route path="/add-book" element={<AddBook />} />
       <Route path="/edit-book/:id" element={<EditBook />} />
-
       <Route path="/dashboard" element={<Dashboard />} />
 
-      {/* ADMIN */}
+      {/* RUTAS DE ADMINISTRADOR */}
       <Route
         path="/admin"
         element={
@@ -65,33 +64,13 @@ function AppRoutes() {
       />
 
       <Route
-        path="/admin/usuarios/edit/:usuario"
+        path="/admin/usuarios/edit/:id"
         element={
           <AdminRoute>
-            <AdminUserForm />
+            <EditUserForm isAdminContext={true} />
           </AdminRoute>
         }
       />
-
-      {/* Rutas protegidas para admin 
-
-      <Route
-        path="/admin/libros"
-        element={
-          <AdminRoute>
-            <ManageBooksPage />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/admin/usuarios"
-        element={
-          <AdminRoute>
-            <ManageUsersPage />
-          </AdminRoute>
-        }
-      />
-      */}
     </Routes>
   );
 }

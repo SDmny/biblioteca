@@ -83,13 +83,33 @@ function AddUserFormFields({ form, errors, change, includeRole = false }) {
         )}
       </BasicInput>
 
+      {includeRole && (
+        <BasicInput label="Rol">
+          <select
+            name="rol"
+            value={form.rol}
+            onChange={change}
+            className="form-select"
+            style={{ 
+              width: "100%", 
+              padding: "10px", 
+              borderRadius: "8px", 
+              border: "1px solid #ccc" 
+            }}
+            required
+          >
+            <option value="usuario">Usuario</option>
+            <option value="administrador">Administrador</option>
+          </select>
+        </BasicInput>
+      )}
+
       <BasicInput label="Contraseña">
         <TypeInput
           type="password"
           name="password"
           value={form.password}
           onChange={change}
-          required
         />
         {errors.password && (
           <small style={{ color: "red", display: "block" }}>
@@ -104,7 +124,6 @@ function AddUserFormFields({ form, errors, change, includeRole = false }) {
           name="confirm_password"
           value={form.confirm_password}
           onChange={change}
-          required
         />
         {errors.confirm_password && (
           <small style={{ color: "red", display: "block" }}>
@@ -112,21 +131,6 @@ function AddUserFormFields({ form, errors, change, includeRole = false }) {
           </small>
         )}
       </BasicInput>
-
-      {includeRole && (
-        <BasicInput label="Rol">
-          <select
-            name="rol"
-            value={form.rol}
-            onChange={change}
-            className="form-control"
-            required
-          >
-            <option value="usuario">Usuario</option>
-            <option value="administrador">Administrador</option>
-          </select>
-        </BasicInput>
-      )}
     </>
   );
 }

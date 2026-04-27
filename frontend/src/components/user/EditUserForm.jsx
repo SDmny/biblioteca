@@ -1,132 +1,195 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "../../utils/supabase.js";
 import Swal from "sweetalert2";
-import BasicInput from "../ui/BasicInput";
-import TypeInput from "../ui/TypeInput";
-import BasicButton from "../ui/BasicButton";
+import AddUserFormFields from "./AddUserFormFields.jsx";
+import BackButton from "../ui/BackButton.jsx";
 
-function EditUserForm({ user, onSubmit, isAdminContext = false, onCancel }) {
-  const [formData, setFormData] = useState(user);
+function EditUserForm() {
+  const { id } = useParams();
+  const nav = useNavigate();
+  
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
+  const [form, setForm] = useState({
+    nombre: "",
+    apellido: "",
+    fec_nac: "",
+    email: "",
+    usuario: "",
+    password: "",
+    confirm_password: "",
+    rol: "usuario", 
+  });
+
+  const validateField = (name, value) => {
+    let errorMsg = "";
+
+    switch (name) {
+      case "nombre":
+      case "apellido":
+        if (value.trim().length < 2) errorMsg = "Mínimo 2 caracteres.";
+        break;
+      case "email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) errorMsg = "Correo electrónico no válido.";
+        break;
+      case "usuario":
+        if (value.trim().length < 4) errorMsg = "El usuario debe tener al menos 4 caracteres.";
+        break;
+      case "fec_nac": {
+        if (!value) {
+          errorMsg = "La fecha es obligatoria.";
+        } else {
+          const fechaSeleccionada = new Date(value);
+          const hoy = new Date();
+          const anio = fechaSeleccionada.getFullYear();
+          if (anio < 1900) {
+            errorMsg = "El año no puede ser anterior a 1900.";
+          } else if (fechaSeleccionada > hoy) {
+            errorMsg = "La fecha no puede ser futura.";
+          }
+        }
+        break;
+      }
+      case "password":
+        if (value.length > 0 && value.length < 6) {
+          errorMsg = "La contraseña debe tener al menos 6 caracteres.";
+        }
+        break;
+      case "confirm_password":
+        if (value !== form.password) errorMsg = "Las contraseñas no coinciden.";
+        break;
+      default:
+        break;
+    }
+
+    setErrors(prev => ({ ...prev, [name]: errorMsg }));
+  };
 
   useEffect(() => {
-    setFormData(user);
-  }, [user]);
+    const fetchUser = async () => {
+      const { data, error } = await supabase
+        .from("user")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-  const handleChange = (e) => {
+      if (error || !data) {
+        Swal.fire("Error", "No se encontró el usuario", "error");
+        nav("/admin"); 
+      } else {
+        setForm({
+          nombre: data.name || "",
+          apellido: data.lastname || "",
+          fec_nac: data.birthdate || "",
+          email: data.email || "",
+          usuario: data.username || "",
+          rol: data.role || "usuario", 
+          password: "", 
+          confirm_password: "",
+        });
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [id, nav]);
+
+  const change = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setForm(prev => ({ ...prev, [name]: value }));
+    validateField(name, value);
+    
+    if (name === "password") {
+      validateField("confirm_password", form.confirm_password);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
 
-    // Normalizar con trim
-    const nombreTrimmed = formData.nombre ? formData.nombre.trim() : "";
-    const apellidoTrimmed = formData.apellido ? formData.apellido.trim() : "";
-    const usuarioTrimmed = formData.usuario ? formData.usuario.trim() : "";
-    const emailTrimmed = formData.email ? formData.email.trim() : "";
-    const fecNac = formData.fec_nac;
-
-    // Validaciones obligatorias
-    if (!nombreTrimmed || !apellidoTrimmed || !usuarioTrimmed || !emailTrimmed || !fecNac) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
+    const tieneErrores = Object.values(errors).some(msg => msg !== "");
+    if (tieneErrores) {
+      Swal.fire("Error", "Por favor, corrige los errores antes de guardar.", "error");
       return;
     }
 
-    // Validar fecha mínima (>= 1900)
-    const year = new Date(fecNac).getFullYear();
-    if (year < 1900) {
-      Swal.fire("Error", "La fecha de nacimiento no puede ser anterior a 1900", "error");
+    const { data, error: dbError } = await supabase
+      .from("user")
+      .update({
+        name: form.nombre.trim(),
+        lastname: form.apellido.trim(),
+        birthdate: form.fec_nac,
+        username: form.usuario.trim(),
+        role: form.rol, 
+        email: form.email.trim()
+      })
+      .eq("id", id)
+      .select();
+
+    if (dbError) {
+      Swal.fire("Error", "No se pudo actualizar la tabla: " + dbError.message, "error");
       return;
     }
 
-    // Validar email
-    if (!/\S+@\S+\.\S+/.test(emailTrimmed)) {
-      Swal.fire("Error", "Correo electrónico inválido", "error");
-      return;
+    if (form.password.trim() !== "") {
+      try {
+        const res = await fetch("http://localhost:3001/api/admin/update-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: id, newPassword: form.password }),
+        });
+
+        if (!res.ok) throw new Error("Error en servidor de contraseñas");
+      } catch (err) {
+        Swal.fire("Aviso", "Datos básicos guardados, pero la contraseña no cambió.", "warning");
+        return;
+      }
     }
 
-    // Validar usuario (igual que en creación)
-    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
-      Swal.fire(
-        "Error",
-        "El nombre de usuario solo puede contener letras, números, guion (-) y guion bajo (_), sin espacios",
-        "error"
-      );
-      return;
-    }
-
-    // Validar contraseña (solo si se cambia)
-    if (formData.password && formData.password.length < 6) {
-      Swal.fire("Error", "La contraseña debe tener al menos 6 caracteres", "error");
-      return;
-    }
-    if (formData.password !== formData.confirm_password) {
-      Swal.fire("Error", "Las contraseñas no coinciden", "error");
-      return;
-    }
-
-    Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
-    onSubmit({
-      ...formData,
-      nombre: nombreTrimmed,
-      apellido: apellidoTrimmed,
-      usuario: usuarioTrimmed,
-      email: emailTrimmed,
-    });
+    Swal.fire("¡Éxito!", "Usuario actualizado correctamente", "success")
+      .then(() => nav("/admin"));
   };
 
+  if (loading) return <div className="text-center mt-5">Cargando...</div>;
+
   return (
-    <>
-      <h2>{isAdminContext ? "Editar usuario" : "Editar perfil"}</h2>
-      <form onSubmit={handleSubmit}>
-        <BasicInput label={"Nombre"}>
-          <TypeInput type="text" name="nombre" value={formData.nombre} onChange={handleChange} required />
-        </BasicInput>
-
-        <BasicInput label={"Apellido"}>
-          <TypeInput type="text" name="apellido" value={formData.apellido} onChange={handleChange} required />
-        </BasicInput>
-
-        <BasicInput label={"Fecha de nacimiento"}>
-          <TypeInput type="date" name="fec_nac" value={formData.fec_nac} onChange={handleChange} required />
-        </BasicInput>
-
-        <BasicInput label={"Correo electrónico"}>
-          <TypeInput type="email" name="email" value={formData.email} onChange={handleChange} required />
-        </BasicInput>
-
-        <BasicInput label={"Nombre de usuario"}>
-          <TypeInput
-            type="text"
-            name="usuario"
-            value={formData.usuario}
-            onChange={handleChange}
-            required
-            disabled={!isAdminContext} // solo editable por admin
-          />
-        </BasicInput>
-
-        <BasicInput label={"Contraseña"}>
-          <TypeInput type="password" name="password" value={formData.password || ""} onChange={handleChange} />
-        </BasicInput>
-
-        <BasicInput label={"Verificar contraseña"}>
-          <TypeInput type="password" name="confirm_password" value={formData.confirm_password || ""} onChange={handleChange} />
-        </BasicInput>
-
-        {isAdminContext && (
-          <BasicInput label={"Rol"}>
-            <select name="rol" value={formData.rol} onChange={handleChange} required className="form-control">
-              <option value="user">Usuario</option>
-              <option value="admin">Administrador</option>
-            </select>
-          </BasicInput>
-        )}
-
-        <input type="submit" value="Guardar cambios" className="btn-custom" />
-        {onCancel && <BasicButton onClick={onCancel} texto="Cancelar" />}
-      </form>
-    </>
+    <div className="form-container">
+      <div className="form-wrapper">
+        <div className="d-flex align-items-center mb-4">
+          <BackButton />
+          <h2 className="ms-3 mb-0" style={{ color: "var(--clr-azul3)", fontWeight: "bold" }}>
+            Editar Usuario
+          </h2>
+        </div>
+        <div className="form-card p-4">
+          <form onSubmit={submit}>
+            <AddUserFormFields 
+              form={form} 
+              errors={errors} 
+              change={change} 
+              includeRole={true} 
+            />
+            
+            <p className="text-muted mt-2" style={{fontSize: '0.8rem'}}>
+              * Por motivos de privacidad no se puede visualizar la contraseña. Deje la contraseña en blanco si no desea cambiarla.
+            </p>
+            <br />
+            <input 
+              type="submit" 
+              value="Guardar Cambios" 
+              className="btn-custom" 
+              style={{ 
+                width: "100%",
+                opacity: Object.values(errors).some(msg => msg !== "") ? 0.5 : 1,
+                cursor: Object.values(errors).some(msg => msg !== "") ? "not-allowed" : "pointer"
+              }} 
+              disabled={Object.values(errors).some(msg => msg !== "")} 
+            />
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }
 

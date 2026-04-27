@@ -12,7 +12,8 @@ function BookGrid({ books = [], isAdmin }) {
       showCancelButton: true,
       confirmButtonColor: "#2f6fb0",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, borrar"
+      confirmButtonText: "Sí, borrar",
+      cancelButtonText: "Cancelar"
     });
 
     if (result.isConfirmed) {

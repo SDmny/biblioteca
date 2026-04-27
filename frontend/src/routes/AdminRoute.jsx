@@ -1,14 +1,48 @@
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import { supabase } from "../utils/supabase"; 
 
 function AdminRoute({ children }) {
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
 
-  // Si no hay usuario o no es admin, redirige a inicio
-  if (!currentUser || currentUser.rol !== "admin") {
-    return <Navigate to="/" />;
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error || !user) {
+        setAuthorized(false);
+        setLoading(false);
+        return;
+      }
+
+      const { data: userData, error: dbError } = await supabase
+        .from("user")
+        .select("role") 
+        .eq("email", user.email)
+        .single();
+
+      if (dbError || !userData) {
+        setAuthorized(false);
+      } else {
+        const role = userData.role?.toLowerCase().trim();
+        setAuthorized(role === "admin" || role === "administrador");
+      }
+      
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center mt-5">Verificando permisos...</div>;
   }
 
-  // Si es admin, renderiza la ruta protegida
+  if (!authorized) {
+    return <Navigate to="/login" />;
+  }
+
   return children;
 }
 
