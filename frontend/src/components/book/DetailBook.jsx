@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../utils/supabase";
 import Swal from "sweetalert2";
 
+import defaultUserImage from "../../assets/images/user.png";
+
 function DetailBook({
   id,
   title,
@@ -113,7 +115,8 @@ function DetailBook({
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
-      confirmButtonText: "Sí, borrar"
+      confirmButtonText: "Sí, borrar",
+      cancelButtonText: "Cancelar"
     });
     if (result.isConfirmed) {
       const { error } = await supabase.from("book").delete().eq("id", id);
@@ -142,7 +145,6 @@ function DetailBook({
   const isAdmin = user && (user.role === "admin" || user.role === "administrador");
   const canEditOrDelete = isOwner || isAdmin;
 
-  // Se oculta si el rol del dueño es administrador
   const hideOwnerInfo = ownerRole === "admin" || ownerRole === "administrador";
 
   return (
@@ -204,7 +206,7 @@ function DetailBook({
               <div className="mt-3 text-center border-top pt-3 w-100">
                 <span className="d-block small text-muted text-uppercase mb-2" style={{ letterSpacing: "1px" }}>Publicado por</span>
                 <img 
-                  src={owner.image_url || "/img/user.png"} 
+                  src={(owner.image_url && owner.image_url.trim() !== "") ? owner.image_url : defaultUserImage} 
                   alt={owner.username} 
                   style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover", border: "2px solid #eee" }}
                 />
