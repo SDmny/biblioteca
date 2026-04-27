@@ -105,11 +105,28 @@ function EditUserForm() {
     }
   };
 
+  const obtenerErroresActuales = () => {
+    let lista = [];
+    if (!form.nombre.trim()) lista.push("Nombre");
+    if (!form.apellido.trim()) lista.push("Apellido");
+    if (!form.email.trim()) lista.push("Email");
+    if (!form.usuario.trim()) lista.push("Usuario");
+    if (!form.fec_nac) lista.push("Fecha");
+
+    Object.entries(errors).forEach(([campo, msg]) => {
+      if (msg) lista.push(campo.charAt(0).toUpperCase() + campo.slice(1));
+    });
+
+    return [...new Set(lista)]; 
+  };
+
+  const listaErrores = obtenerErroresActuales();
+  const esValido = listaErrores.length === 0;
+
   const submit = async (e) => {
     e.preventDefault();
 
-    const tieneErrores = Object.values(errors).some(msg => msg !== "");
-    if (tieneErrores) {
+    if (!esValido) {
       Swal.fire("Error", "Por favor, corrige los errores antes de guardar.", "error");
       return;
     }
@@ -174,17 +191,31 @@ function EditUserForm() {
             <p className="text-muted mt-2" style={{fontSize: '0.8rem'}}>
               * Por motivos de privacidad no se puede visualizar la contraseña. Deje la contraseña en blanco si no desea cambiarla.
             </p>
-            <br />
+
+            <div className="mt-4">
+              {listaErrores.length > 0 ? (
+                <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+                  <strong>Pendiente:</strong> {listaErrores.join(", ")}
+                </div>
+              ) : (
+                <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+                  ✓ Todos los campos están correctos
+                </div>
+              )}
+            </div>
+
             <input 
               type="submit" 
               value="Guardar Cambios" 
-              className="btn-custom" 
+              className="btn-custom mt-2" 
               style={{ 
                 width: "100%",
-                opacity: Object.values(errors).some(msg => msg !== "") ? 0.5 : 1,
-                cursor: Object.values(errors).some(msg => msg !== "") ? "not-allowed" : "pointer"
+                opacity: esValido ? 1 : 0.5,
+                cursor: esValido ? "pointer" : "not-allowed",
+                fontWeight: "bold",
+                padding: "12px"
               }} 
-              disabled={Object.values(errors).some(msg => msg !== "")} 
+              disabled={!esValido} 
             />
           </form>
         </div>

@@ -36,8 +36,17 @@ function AddUsers({ onSuccess }) {
             "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
         break;
       case "fec_nac": {
-        const year = new Date(value).getFullYear();
-        if (year < 1900) error = "El año no puede ser anterior a 1900";
+        const fechaSeleccionada = new Date(value);
+        const fechaActual = new Date();
+        const year = fechaSeleccionada.getFullYear();
+        
+        if (!value) {
+          error = "La fecha de nacimiento es obligatoria";
+        } else if (year < 1900) {
+          error = "El año no puede ser anterior a 1900";
+        } else if (fechaSeleccionada > fechaActual) {
+          error = "La fecha no puede ser futura";
+        }
         break;
       }
       case "password":
@@ -67,23 +76,33 @@ function AddUsers({ onSuccess }) {
     validarCampo(name, value);
   };
 
-  const formularioEsValido = () => {
-    const hayCamposVacios =
-      !form.nombre ||
-      !form.apellido ||
-      !form.email ||
-      !form.usuario ||
-      !form.password ||
-      !form.confirm_password ||
-      !form.fec_nac;
-    const hayErrores = Object.values(errors).some((error) => error !== "");
-    return !hayCamposVacios && !hayErrores;
+  const obtenerMensajesValidacion = () => {
+    let pendientes = [];
+    
+    if (!form.nombre) pendientes.push("Nombre");
+    if (!form.apellido) pendientes.push("Apellido");
+    if (!form.email) pendientes.push("Email");
+    if (!form.usuario) pendientes.push("Usuario");
+    if (!form.fec_nac) pendientes.push("Fecha");
+    if (!form.password) pendientes.push("Contraseña");
+    if (!form.confirm_password) pendientes.push("Confirmación");
+    if (!form.rol) pendientes.push("Rol");
+
+    const erroresActivos = Object.entries(errors).filter(([_, msg]) => msg !== "");
+    erroresActivos.forEach(([campo]) => {
+      if (!pendientes.includes(campo)) pendientes.push(`Error en ${campo}`);
+    });
+
+    return pendientes;
   };
+
+  const listaPendiente = obtenerMensajesValidacion();
+  const formularioEsValido = listaPendiente.length === 0;
 
   const submit = async (e) => {
     e.preventDefault();
 
-    if (!formularioEsValido()) return;
+    if (!formularioEsValido) return;
 
     const response = await fetch(
       "http://localhost:3001/api/admin-create-user",
@@ -110,6 +129,7 @@ function AddUsers({ onSuccess }) {
     Swal.fire({
       title: "¡Usuario registrado!",
       text: "Puedes visualizar el nuevo usuario en Ver Usuarios.",
+      icon: "success"
     });
 
     if (onSuccess) onSuccess();
@@ -125,17 +145,33 @@ function AddUsers({ onSuccess }) {
             change={change}
             includeRole={true}
           />
-          <br />
-          <input
-            type="submit"
-            value="Agregar Usuario"
-            className="btn-custom"
-            disabled={!formularioEsValido()}
-            style={{
-              opacity: formularioEsValido() ? 1 : 0.5,
-              cursor: formularioEsValido() ? "pointer" : "not-allowed",
-            }}
-          />{" "}
+
+          <div className="mt-4">
+            {listaPendiente.length > 0 ? (
+              <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+                <strong>Falta completar:</strong> {listaPendiente.join(", ")}
+              </div>
+            ) : (
+              <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+                ✓ Todo listo para registrar
+              </div>
+            )}
+          </div>
+
+          <div className="mt-3">
+            <input
+              type="submit"
+              value="Agregar Usuario"
+              className="btn-custom w-100"
+              disabled={!formularioEsValido}
+              style={{
+                padding: '10px',
+                fontWeight: 'bold',
+                opacity: formularioEsValido ? 1 : 0.5,
+                cursor: formularioEsValido ? "pointer" : "not-allowed",
+              }}
+            />
+          </div>
         </form>
       </BasicCard>
     </>

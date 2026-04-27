@@ -34,14 +34,12 @@ function EditBook() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Obtener lista de géneros
         const { data: genres } = await supabase
           .from("genre")
           .select("*")
           .order("genre", { ascending: true });
         setGenresList(genres || []);
 
-        // 2. Obtener datos del libro
         const { data: book, error: bookError } = await supabase
           .from("book")
           .select("*, book_genres(genre_id)")
@@ -77,6 +75,24 @@ function EditBook() {
 
   const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const obtenerErrores = () => {
+    let errores = [];
+    if (!form.title.trim()) errores.push("Título vacío");
+    if (!form.author.trim()) errores.push("Autor vacío");
+    if (!form.synopsis.trim()) errores.push("Sinopsis vacía");
+    if (!form.date) errores.push("Falta fecha");
+    
+    const numPages = parseInt(form.pages);
+    if (isNaN(numPages) || numPages <= 0) errores.push("Páginas deben ser > 0");
+    
+    if (selectedGenres.length === 0) errores.push("Selecciona al menos 1 género");
+    
+    return errores;
+  };
+
+  const erroresActuales = obtenerErrores();
+  const esValido = erroresActuales.length === 0 && !isSubmitting;
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -87,38 +103,30 @@ function EditBook() {
 
   const uploadToStorage = async (file, bucket) => {
     if (!file) return null;
-
-    // Nombre único para que el navegador no use la imagen vieja en caché
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, file);
-
+    const { error: uploadError } = await supabase.storage.from(bucket).upload(fileName, file);
     if (uploadError) throw uploadError;
-
     const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
     return data.publicUrl;
   };
 
   const submit = async (e) => {
     e.preventDefault();
-    if (selectedGenres.length === 0) return Swal.fire("Género", "Selecciona al menos un género", "warning");
+    if (!esValido) return;
 
     setIsSubmitting(true);
     Swal.fire({
       title: "Actualizando...",
+      text: "Guardando cambios...",
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading(),
     });
 
     try {
-      // 1. Subir archivos
       const imageUrl = imageFile ? await uploadToStorage(imageFile, "Images_books") : currentFiles.image;
       const pdfUrl = pdfFile ? await uploadToStorage(pdfFile, "books_pdfs") : currentFiles.pdf;
 
-      // 2. Actualizar datos del libro
       const { error: bookError } = await supabase
         .from("book")
         .update({
@@ -136,25 +144,19 @@ function EditBook() {
       if (bookError) throw bookError;
 
       await supabase.from("book_genres").delete().eq("book_id", id);
-      const { error: genError } = await supabase.from("book_genres").insert(
+      await supabase.from("book_genres").insert(
         selectedGenres.map(gid => ({ book_id: id, genre_id: gid }))
       );
-      if (genError) throw genError;
 
       await Swal.fire("Éxito", "Cambios guardados correctamente", "success");
       navigate(`/libro/${id}`);
 
     } catch (error) {
-      console.error(error);
       Swal.fire("Error", error.message, "error");
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const filteredGenres = genresList.filter((g) =>
-    g.genre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   if (loading) return <div className="text-center mt-5">Cargando...</div>;
 
@@ -162,18 +164,18 @@ function EditBook() {
     <BasicCard titulo={"Editar Libro"}>
       <form onSubmit={submit}>
         <BasicInput label={"Título"}>
-          <TypeInput type="text" name="title" value={form.title} onChange={change} required disabled={isSubmitting} />
+          <TypeInput type="text" name="title" value={form.title} onChange={change} required />
         </BasicInput>
 
         <div className="row">
           <div className="col-md-6">
             <BasicInput label={"Autor"}>
-              <TypeInput type="text" name="author" value={form.author} onChange={change} required disabled={isSubmitting} />
+              <TypeInput type="text" name="author" value={form.author} onChange={change} required />
             </BasicInput>
           </div>
           <div className="col-md-6">
             <BasicInput label={"Edición"}>
-              <TypeInput type="text" name="edition" value={form.edition} onChange={change} required disabled={isSubmitting} />
+              <TypeInput type="text" name="edition" value={form.edition} onChange={change} required />
             </BasicInput>
           </div>
         </div>
@@ -189,7 +191,7 @@ function EditBook() {
             gap: '8px', padding: '10px', border: '1px solid #ddd', borderRadius: '8px',
             maxHeight: '150px', overflowY: 'auto', backgroundColor: '#fff' 
           }}>
-            {filteredGenres.map((g) => (
+            {genresList.filter(g => g.genre.toLowerCase().includes(searchTerm.toLowerCase())).map((g) => (
               <label key={g.id} style={{ display: 'flex', alignItems: 'center', fontSize: '0.85em', cursor: 'pointer' }}>
                 <input
                   type="checkbox"
@@ -199,7 +201,6 @@ function EditBook() {
                       prev.includes(g.id) ? prev.filter(i => i !== g.id) : [...prev, g.id]
                     );
                   }}
-                  disabled={isSubmitting}
                   style={{ marginRight: '5px' }}
                 />
                 {g.genre}
@@ -209,18 +210,18 @@ function EditBook() {
         </BasicInput>
 
         <BasicInput label={"Sinopsis"}>
-          <textarea className="form-control" name="synopsis" value={form.synopsis} onChange={change} rows="3" disabled={isSubmitting} />
+          <textarea className="form-control" name="synopsis" value={form.synopsis} onChange={change} rows="3" />
         </BasicInput>
 
         <div className="row">
           <div className="col-md-6">
             <BasicInput label={"Páginas"}>
-              <TypeInput type="number" name="pages" value={form.pages} onChange={change} required disabled={isSubmitting} />
+              <TypeInput type="number" name="pages" value={form.pages} onChange={change} required />
             </BasicInput>
           </div>
           <div className="col-md-6">
             <BasicInput label={"Fecha"}>
-              <TypeInput type="date" name="date" value={form.date} onChange={change} required disabled={isSubmitting} />
+              <TypeInput type="date" name="date" value={form.date} onChange={change} required />
             </BasicInput>
           </div>
         </div>
@@ -228,24 +229,45 @@ function EditBook() {
         <div className="row mt-3">
           <div className="col-md-6">
             <BasicInput label={"Nueva Portada (Opcional)"}>
-              <input type="file" className="form-control" onChange={handleImageChange} accept="image/*" disabled={isSubmitting} />
-              {imagePreview && <img src={imagePreview} className="mt-2 img-thumbnail" style={{ height: '120px', objectFit: 'cover' }} alt="Vista previa" />}
+              <input type="file" className="form-control" onChange={handleImageChange} accept="image/*" />
+              {imagePreview && <img src={imagePreview} className="mt-2 img-thumbnail" style={{ height: '100px', objectFit: 'cover' }} />}
             </BasicInput>
           </div>
           <div className="col-md-6">
             <BasicInput label={"Nuevo PDF (Opcional)"}>
-              <input type="file" className="form-control" onChange={(e) => setPdfFile(e.target.files[0])} accept="application/pdf" disabled={isSubmitting} />
-              {currentFiles.pdf && <p className="small text-muted mt-2">Ya existe un PDF cargado.</p>}
+              <input type="file" className="form-control" onChange={(e) => setPdfFile(e.target.files[0])} accept="application/pdf" />
+              {currentFiles.pdf && <p className="small text-muted mt-2">PDF actual conservado.</p>}
             </BasicInput>
           </div>
         </div>
 
-        <button type="submit" className="btn-custom w-100 mt-4" disabled={isSubmitting}>
-          {isSubmitting ? "Procesando..." : "Guardar Cambios"}
+        <div className="mt-4">
+          {erroresActuales.length > 0 ? (
+            <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+              <strong>Falta completar:</strong> {erroresActuales.join(", ")}
+            </div>
+          ) : (
+            <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+              ✓ Todos los campos están correctos
+            </div>
+          )}
+        </div>
+
+        <button 
+          type="submit" 
+          className="btn-custom w-100" 
+          disabled={!esValido}
+          style={{ 
+            opacity: esValido ? 1 : 0.5,
+            cursor: esValido ? "pointer" : "not-allowed",
+            padding: '12px', fontWeight: 'bold'
+          }}
+        >
+          {isSubmitting ? "Guardando..." : "Guardar Cambios"}
         </button>
       </form>
       <div className="mt-3">
-        <BackButton texto="Cancelar" />
+        <BackButton texto="← Cancelar" />
       </div>
     </BasicCard>
   );

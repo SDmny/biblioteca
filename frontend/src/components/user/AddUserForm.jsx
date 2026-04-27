@@ -39,8 +39,17 @@ function AddUsers({ onSuccess }) {
             "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
         break;
       case "fec_nac": {
-        const year = new Date(value).getFullYear();
-        if (year < 1900) error = "El año no puede ser anterior a 1900";
+        const fechaSeleccionada = new Date(value);
+        const fechaActual = new Date();
+        const year = fechaSeleccionada.getFullYear();
+        
+        if (!value) {
+          error = "La fecha de nacimiento es obligatoria";
+        } else if (year < 1900) {
+          error = "El año no puede ser anterior a 1900";
+        } else if (fechaSeleccionada > fechaActual) {
+          error = "La fecha no puede ser futura";
+        }
         break;
       }
       case "password":
@@ -75,23 +84,36 @@ function AddUsers({ onSuccess }) {
     setCaptchaValido(!!value);
   };
 
-  const formularioEsValido = () => {
-    const hayCamposVacios =
-      !form.nombre ||
-      !form.apellido ||
-      !form.email ||
-      !form.usuario ||
-      !form.password ||
-      !form.confirm_password ||
-      !form.fec_nac;
-    const hayErrores = Object.values(errors).some((error) => error !== "");
-    return !hayCamposVacios && !hayErrores && captchaValido;
+  const obtenerMensajesFaltantes = () => {
+    let faltan = [];
+    
+    // Campos vacíos
+    if (!form.nombre) faltan.push("Nombre");
+    if (!form.apellido) faltan.push("Apellido");
+    if (!form.email) faltan.push("Email");
+    if (!form.usuario) faltan.push("Usuario");
+    if (!form.fec_nac) faltan.push("Fecha");
+    if (!form.password) faltan.push("Contraseña");
+    if (!form.confirm_password) faltan.push("Confirmar contraseña");
+    
+    // Errores de validación activa
+    const erroresActivos = Object.entries(errors).filter(([_, msg]) => msg !== "");
+    erroresActivos.forEach(([campo, _]) => {
+      if (!faltan.includes(campo)) faltan.push(`Corregir ${campo}`);
+    });
+
+    if (!captchaValido) faltan.push("Confirmar Captcha");
+
+    return faltan;
   };
+
+  const faltantes = obtenerMensajesFaltantes();
+  const formularioEsValido = faltantes.length === 0;
 
   const submit = async (e) => {
     e.preventDefault();
 
-    if (!formularioEsValido()) return;
+    if (!formularioEsValido) return;
 
     const { error } = await supabase.auth.signUp({
       email: form.email.trim(),
@@ -142,22 +164,37 @@ function AddUsers({ onSuccess }) {
       <h2>Registrarse</h2>
       <form onSubmit={submit}>
         <AddUserFormFields form={form} errors={errors} change={change} />
-        <br />
+        
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
           <ReCAPTCHA
             sitekey="6LeD9cgsAAAAAEsdS_PkWKuwuLfhQn_d6H0OEGcv"
             onChange={onCaptchaChange}
           />
         </div>
-        <br />
+
+        <div className="mt-3">
+          {faltantes.length > 0 ? (
+            <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+              <strong>Pendiente:</strong> {faltantes.join(", ")}
+            </div>
+          ) : (
+            <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+              ✓ Información lista para registrar
+            </div>
+          )}
+        </div>
+
         <input
           type="submit"
           value="Registrarse"
           className="btn-custom"
-          disabled={!formularioEsValido()}
+          disabled={!formularioEsValido}
           style={{
-            opacity: formularioEsValido() ? 1 : 0.5,
-            cursor: formularioEsValido() ? "pointer" : "not-allowed",
+            width: '100%',
+            padding: '10px',
+            marginTop: '10px',
+            opacity: formularioEsValido ? 1 : 0.5,
+            cursor: formularioEsValido ? "pointer" : "not-allowed",
           }}
         />
       </form>

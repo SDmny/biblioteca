@@ -32,15 +32,12 @@ function AddBook() {
     const fetchInitialData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-
       const { data: genres, error } = await supabase
         .from("genre")
         .select("*")
         .order("genre", { ascending: true });
-      
       if (!error) setGenresList(genres);
     };
-
     fetchInitialData();
   }, []);
 
@@ -49,6 +46,26 @@ function AddBook() {
       ...form,
       [e.target.name]: e.target.value,
     });
+
+  const obtenerErrores = () => {
+    let errores = [];
+    if (!form.title.trim()) errores.push("Título");
+    if (!form.author.trim()) errores.push("Autor");
+    if (!form.synopsis.trim()) errores.push("Sinopsis");
+    if (!form.date) errores.push("Fecha");
+    
+    const numPages = parseInt(form.pages);
+    if (isNaN(numPages) || numPages <= 0) errores.push("Páginas válidas");
+    
+    if (selectedGenres.length === 0) errores.push("Género");
+    if (!imageFile) errores.push("Portada");
+    if (!pdfFile) errores.push("Archivo PDF");
+    
+    return errores;
+  };
+
+  const erroresActuales = obtenerErrores();
+  const esValido = erroresActuales.length === 0 && !loading;
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -66,30 +83,21 @@ function AddBook() {
     );
   };
 
-  const filteredGenres = genresList.filter((g) =>
-    g.genre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const uploadToStorage = async (file, bucket) => {
     const fileExt = file.name.split(".").pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
-
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
     const { error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(filePath, file);
-
+      .upload(fileName, file);
     if (uploadError) throw uploadError;
-
-    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
     return data.publicUrl;
   };
 
   const submit = async (e) => {
     e.preventDefault();
-
     if (!user) return Swal.fire("Error", "Sesión no válida", "error");
-    if (selectedGenres.length === 0) return Swal.fire("Género", "Selecciona al menos un género", "warning");
+    if (!esValido) return;
 
     setLoading(true);
     Swal.fire({
@@ -130,9 +138,8 @@ function AddBook() {
       if (genreError) throw genreError;
 
       Swal.fire("Éxito", "Libro añadido correctamente", "success").then(() => navigate("/libros"));
-
     } catch (error) {
-      Swal.fire("Error", error.message, "error");
+      Swal.fire("Error", "No se pudo subir el libro: " + error.message, "error");
     } finally {
       setLoading(false);
     }
@@ -141,7 +148,6 @@ function AddBook() {
   return (
     <BasicCard titulo={"Añadir Nuevo Libro"}>
       <form onSubmit={submit}>
-        
         <BasicInput label={"Título del Libro"}>
           <TypeInput type="text" name="title" value={form.title} onChange={change} required />
         </BasicInput>
@@ -160,36 +166,18 @@ function AddBook() {
         </div>
 
         <BasicInput label={"Géneros"}>
-          <div className="mb-2">
-            <input 
-              type="text" 
-              className="form-control form-control-sm" 
-              placeholder="Buscar género" 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ marginBottom: '10px', borderRadius: '20px' }}
-            />
-          </div>
+          <input 
+            type="text" className="form-control form-control-sm mb-2" 
+            placeholder="Buscar género..." value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+          />
           <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
-            gap: '8px',
-            padding: '12px',
-            border: '1px solid #ced4da',
-            borderRadius: '8px',
-            maxHeight: '160px',
-            overflowY: 'auto',
-            backgroundColor: '#f8f9fa'
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', 
+            gap: '8px', padding: '12px', border: '1px solid #ced4da', borderRadius: '8px',
+            maxHeight: '160px', overflowY: 'auto', backgroundColor: '#f8f9fa'
           }}>
-            {filteredGenres.map((g) => (
-              <label key={g.id} style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                fontSize: '0.85em', 
-                cursor: 'pointer',
-                padding: '4px',
-                borderRadius: '4px'
-              }}>
+            {genresList.filter(g => g.genre.toLowerCase().includes(searchTerm.toLowerCase())).map((g) => (
+              <label key={g.id} style={{ display: 'flex', alignItems: 'center', fontSize: '0.85em', cursor: 'pointer' }}>
                 <input
                   type="checkbox"
                   checked={selectedGenres.includes(g.id)}
@@ -203,15 +191,7 @@ function AddBook() {
         </BasicInput>
 
         <BasicInput label={"Sinopsis"}>
-          <textarea
-            className="form-control"
-            name="synopsis"
-            value={form.synopsis}
-            onChange={change}
-            required
-            rows="3"
-            placeholder="Breve resumen del contenido"
-          />
+          <textarea className="form-control" name="synopsis" value={form.synopsis} onChange={change} required rows="3" />
         </BasicInput>
 
         <div className="row">
@@ -230,50 +210,49 @@ function AddBook() {
         <div className="row mt-3">
           <div className="col-md-6">
             <BasicInput label={"Portada (Imagen)"}>
-              <input type="file" className="form-control" onChange={handleImageChange} accept="image/*" required />
-              {imagePreview && (
-                <div className="mt-2 text-center">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    style={{ maxHeight: '150px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }} 
-                  />
-                </div>
-              )}
+              <input type="file" className="form-control" onChange={handleImageChange} accept="image/*" />
+              {imagePreview && <img src={imagePreview} alt="Preview" style={{ maxHeight: '100px', marginTop: '10px' }} />}
             </BasicInput>
           </div>
           <div className="col-md-6">
             <BasicInput label={"Libro Completo (PDF)"}>
-              <input 
-                type="file" 
-                className="form-control" 
-                onChange={(e) => setPdfFile(e.target.files[0])} 
-                accept="application/pdf" 
-                required 
-              />
-              {pdfFile && <small className="text-success mt-1 d-block">✓ {pdfFile.name}</small>}
+              <input type="file" className="form-control" onChange={(e) => setPdfFile(e.target.files[0])} accept="application/pdf" />
+              {pdfFile && <small className="text-success d-block mt-1">✓ {pdfFile.name}</small>}
             </BasicInput>
           </div>
         </div>
 
-        <div style={{ marginTop: "30px" }}>
+        <div className="mt-4">
+          {erroresActuales.length > 0 ? (
+            <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+              <strong>Pendiente:</strong> {erroresActuales.join(", ")}
+            </div>
+          ) : (
+            <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+              ✓ Listo para publicar
+            </div>
+          )}
+        </div>
+
+        <div style={{ marginTop: "20px" }}>
           <button 
             type="submit" 
             className="btn-custom w-100" 
-            disabled={loading}
+            disabled={!esValido}
             style={{ 
               padding: '12px', 
               fontWeight: 'bold',
-              fontSize: '1.1rem' 
+              opacity: esValido ? 1 : 0.5,
+              cursor: esValido ? "pointer" : "not-allowed"
             }}
           >
-            {loading ? "Añadiendo..." : "Añadir Libro"}
+            {loading ? "Procesando..." : "Publicar Libro"}
           </button>
         </div>
       </form>
 
       <div className="text-start" style={{ marginTop: "15px" }}>
-        <BackButton texto="← Volver" />
+        <BackButton texto="← Cancelar" />
       </div>
     </BasicCard>
   );

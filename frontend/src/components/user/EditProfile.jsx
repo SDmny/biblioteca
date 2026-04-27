@@ -50,6 +50,36 @@ function EditProfile({ noExtras = false }) {
     setForm({ ...form, [name]: value });
   };
 
+  const obtenerErrores = () => {
+    if (!form) return [];
+    let errores = [];
+
+    const nombreTrimmed = form.nombre?.trim() || "";
+    const apellidoTrimmed = form.apellido?.trim() || "";
+    const usuarioTrimmed = form.usuario?.trim() || "";
+    const fecNac = form.fec_nac;
+
+    if (nombreTrimmed.length < 2) errores.push("Nombre (min. 2 letras)");
+    if (apellidoTrimmed.length < 2) errores.push("Apellido (min. 2 letras)");
+    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) errores.push("Usuario (letras, números, _ o -)");
+    
+    if (!fecNac) {
+      errores.push("Fecha de nacimiento");
+    } else {
+      const fechaSeleccionada = new Date(fecNac);
+      const fechaActual = new Date();
+      if (fechaSeleccionada.getFullYear() < 1900) errores.push("Año inválido");
+      if (fechaSeleccionada > fechaActual) errores.push("Fecha no puede ser futura");
+    }
+
+    if (uploading) errores.push("Espera a que suba la imagen");
+
+    return errores;
+  };
+
+  const erroresActuales = obtenerErrores();
+  const formularioEsValido = erroresActuales.length === 0;
+
   const changeImg = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -79,36 +109,15 @@ function EditProfile({ noExtras = false }) {
   };
 
   const guardar = async () => {
-    if (!form) return;
-
-    const nombreTrimmed = form.nombre?.trim() || "";
-    const apellidoTrimmed = form.apellido?.trim() || "";
-    const usuarioTrimmed = form.usuario?.trim() || "";
-    const fecNac = form.fec_nac;
-
-    if (!nombreTrimmed || !apellidoTrimmed || !usuarioTrimmed || !fecNac) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
-      return;
-    }
-
-    const year = new Date(fecNac).getFullYear();
-    if (year < 1900) {
-      Swal.fire("Error", "La fecha de nacimiento no puede ser anterior a 1900", "error");
-      return;
-    }
-
-    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
-      Swal.fire("Error", "Usuario no válido", "error");
-      return;
-    }
+    if (!formularioEsValido) return;
 
     const { error } = await supabase
       .from("user")
       .update({
-        name: nombreTrimmed,
-        lastname: apellidoTrimmed,
-        username: usuarioTrimmed,
-        birthdate: fecNac,
+        name: form.nombre.trim(),
+        lastname: form.apellido.trim(),
+        username: form.usuario.trim(),
+        birthdate: form.fec_nac,
         image_url: form.img,
       })
       .eq("id", form.id);
@@ -149,8 +158,8 @@ function EditProfile({ noExtras = false }) {
     });
   };
 
-  if (loading) return <p>Cargando...</p>;
-  if (!form) return <p>No autorizado</p>;
+  if (loading) return <p className="text-center mt-5">Cargando perfil...</p>;
+  if (!form) return <p className="text-center mt-5">No autorizado</p>;
 
   return (
     <>
@@ -162,29 +171,52 @@ function EditProfile({ noExtras = false }) {
             style={{ borderRadius: "50%", height: "90px", objectFit: "cover" }}
           />
           <br />
-          <input type="file" onChange={changeImg} disabled={uploading} />
-          {uploading && <p style={{fontSize: '12px'}}>Subiendo...</p>}
+          <input type="file" className="mt-2" onChange={changeImg} disabled={uploading} />
+          {uploading && <p style={{fontSize: '12px', color: '#666'}}>Subiendo imagen...</p>}
         </div>
         <br />
-        Nombre
+        <label className="fw-bold">Nombre</label>
         <input className="form-control" name="nombre" value={form.nombre || ""} onChange={change} />
         <br />
-        Apellido
+        <label className="fw-bold">Apellido</label>
         <input className="form-control" name="apellido" value={form.apellido || ""} onChange={change} />
         <br />
-        Usuario
+        <label className="fw-bold">Usuario</label>
         <input className="form-control" name="usuario" value={form.usuario || ""} onChange={change} />
         <br />
-        Fecha de nacimiento
+        <label className="fw-bold">Fecha de nacimiento</label>
         <input className="form-control" type="date" name="fec_nac" value={form.fec_nac || ""} onChange={change} />
-        <br />
-        <button className="btn-main me-2" onClick={guardar} disabled={uploading}>
-          {uploading ? "Cargando..." : "Guardar"}
+        
+        <div className="mt-4">
+          {erroresActuales.length > 0 ? (
+            <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+              <strong>Pendiente:</strong> {erroresActuales.join(", ")}
+            </div>
+          ) : (
+            <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+              ✓ Información correcta
+            </div>
+          )}
+        </div>
+
+        <button 
+          className="btn-main w-100 mt-2" 
+          onClick={guardar} 
+          disabled={!formularioEsValido}
+          style={{ 
+            opacity: formularioEsValido ? 1 : 0.5,
+            cursor: formularioEsValido ? "pointer" : "not-allowed",
+            fontWeight: 'bold',
+            padding: '10px'
+          }}
+        >
+          {uploading ? "Procesando..." : "Guardar Cambios"}
         </button>
+
         {!noExtras ? (
           <>
             <hr />
-            <button className="btn-main me-2" onClick={borrarCuenta} style={{backgroundColor: '#dc3545', backgroundImage: 'none'}}>
+            <button className="btn-main w-100" onClick={borrarCuenta} style={{backgroundColor: '#dc3545', backgroundImage: 'none'}}>
               Borrar cuenta
             </button>
           </>

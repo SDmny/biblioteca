@@ -15,7 +15,7 @@ function LoginPage() {
       return;
     }
 
-    // 1. Buscar el email asociado al username (usando 'username' como en tu BD)
+    // 1. Buscar el email asociado al username
     const { data: userData, error: userError } = await supabase
       .from("user")
       .select("id, username, role, email")
@@ -34,7 +34,11 @@ function LoginPage() {
     });
 
     if (error) {
-      Swal.fire("Error", error.message, "error");
+      const errorMessage = error.message === "Invalid login credentials" 
+        ? "Credenciales de inicio de sesión no válidas" 
+        : error.message;
+
+      Swal.fire("Error", errorMessage, "error");
       return;
     }
 
