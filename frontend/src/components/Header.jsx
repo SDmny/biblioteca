@@ -133,11 +133,13 @@ function Header() {
                   Contacto
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/libros">
-                  Libros
-                </Link>
-              </li>
+              {(!user || user.rol !== "administrador") && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/libros">
+                    Libros
+                  </Link>
+                </li>
+              )}
 
               {user && user.rol === "administrador" && (
                 <li className="nav-item">
@@ -161,58 +163,6 @@ function Header() {
                 </Link>
               ) : (
                 <div className="user-box position-relative">
-                  <button
-                    className={`notif-bell-btn me-3 ${showNotif ? "active" : ""}`}
-                    onClick={() => setShowNotif(!showNotif)}
-                    title="Configurar Notificaciones"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                  </button>
-
-                  {showNotif && (
-                    <div className="notif-dropdown">
-                      <h6>Preferencias de Correo</h6>
-                      <div className="notif-item">
-                        <span>Nuevos PDF</span>
-                        <label className="switch">
-                          <input type="checkbox" defaultChecked />
-                          <span className="slider"></span>
-                        </label>
-                      </div>
-                      <div className="notif-item">
-                        <span>Sugerencias</span>
-                        <label className="switch">
-                          <input type="checkbox" />
-                          <span className="slider"></span>
-                        </label>
-                      </div>
-                      <div className="notif-item">
-                        <span>Actualizaciones</span>
-                        <label className="switch">
-                          <input type="checkbox" defaultChecked />
-                          <span className="slider"></span>
-                        </label>
-                      </div>
-                      <div className="notif-item">
-                        <span>Cuenta</span>
-                        <label className="switch">
-                          <input type="checkbox" defaultChecked />
-                          <span className="slider"></span>
-                        </label>
-                      </div>
-                    </div>
-                  )}
-
                   <Link to="/perfil" className="user-link">
                     <img
                       src={user.img || "/src/assets/images/user.png"}

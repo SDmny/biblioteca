@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { supabase } from "../../utils/supabase";
 import BasicCard from "../../components/ui/BasicCard";
 import BackButton from "../../components/ui/BackButton";
 
@@ -9,51 +10,74 @@ function ForgotPassword() {
   const loggedUser = JSON.parse(localStorage.getItem("user"));
   const [step, setStep] = useState(loggedUser ? 2 : 1);
   const [usuario, setUsuario] = useState(loggedUser ? loggedUser.usuario : "");
+  const [email, setEmail] = useState("");
   const [codigo, setCodigo] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
 
-  const enviarCodigo = () => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const existe = users.find(u => u.usuario === usuario);
-    if (!existe) {
-      Swal.fire("Error", "El usuario no existe", "error");
+  const enviarCodigo = async () => {
+    const { data: userData, error: userError } = await supabase
+      .from("user")
+      .select("email")
+      .eq("username", usuario)
+      .maybeSingle();
+
+    if (userError || !userData) {
+      Swal.fire("Error", "No se encontró el nombre de usuario", "error");
       return;
     }
-    Swal.fire("Código enviado", "Se ha enviado un código a tu correo (Simulación: 1234)", "info");
-    setStep(2);
-  };
 
-  const verificarCodigo = () => {
-    if (codigo === "1234") {
-      setStep(3);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(userData.email, {
+      redirectTo: window.location.origin + "/reset-password",
+    });
+
+    if (resetError) {
+      console.error("Error de Supabase:", resetError);
+      Swal.fire({
+        title: "Error de servidor",
+        text: "Supabase no pudo procesar el envío. Revisa que la plantilla de correo en el Dashboard tenga un 'Subject' y que no hayas superado el límite de 3 correos por hora.",
+        icon: "error"
+      });
     } else {
-      Swal.fire("Error", "Código incorrecto", "error");
+      setEmail(userData.email);
+      Swal.fire("Correo enviado", "Revisa tu bandeja de entrada", "success");
+      setStep(2);
     }
   };
 
-  const cambiarPass = () => {
+  const verificarCodigo = async () => {
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: codigo,
+      type: "recovery"
+    });
+
+    if (error) {
+      Swal.fire("Código inválido", "El código es incorrecto o ha expirado", "error");
+    } else {
+      setStep(3);
+    }
+  };
+
+  const cambiarPass = async () => {
     if (newPass !== confirmPass) {
       Swal.fire("Error", "Las contraseñas no coinciden", "error");
       return;
     }
 
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-    const index = users.findIndex(u => u.usuario === usuario);
-    
-    if (index !== -1) {
-      users[index].password = newPass;
-      localStorage.setItem("users", JSON.stringify(users));
-      
-      if (loggedUser && loggedUser.usuario === usuario) {
-        localStorage.setItem("user", JSON.stringify(users[index]));
-        
-        Swal.fire("Éxito", "Contraseña actualizada", "success")
-          .then(() => nav("/perfil")); // Si estaba logueado, vuelve al perfil
-      } else {
-        Swal.fire("Éxito", "Contraseña actualizada", "success")
-          .then(() => nav("/login")); // Si no, va al login
-      }
+    if (newPass.length < 6) {
+      Swal.fire("Seguridad", "La contraseña debe tener al menos 6 caracteres", "warning");
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPass });
+
+    if (error) {
+      Swal.fire("Error", "No se pudo actualizar. Intenta obtener un nuevo código.", "error");
+    } else {
+      Swal.fire("¡Éxito!", "Contraseña actualizada correctamente", "success").then(() => {
+        nav(loggedUser && loggedUser.usuario === usuario ? "/perfil" : "/login");
+      });
     }
   };
 
@@ -63,17 +87,17 @@ function ForgotPassword() {
       <BasicCard titulo="Restablecer Contraseña">
         {step === 1 && (
           <div>
-            <label className="form-label">Ingresa tu usuario</label>
-            <input className="form-control" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
+            <label className="form-label">Nombre de usuario</label>
+            <input className="form-control" placeholder="Tu usuario" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
             <button className="btn-main mt-3" onClick={enviarCodigo}>Enviar código</button>
           </div>
         )}
 
         {step === 2 && (
           <div>
-            <p>Usuario: <b>{usuario}</b></p>
-            <label className="form-label">Ingresa el código (1234)</label>
-            <input className="form-control" value={codigo} onChange={(e) => setCodigo(e.target.value)} />
+            <p>Se envió un código a tu correo vinculado.</p>
+            <label className="form-label">Código de 6 dígitos</label>
+            <input className="form-control" placeholder="000000" value={codigo} onChange={(e) => setCodigo(e.target.value)} />
             <button className="btn-main mt-3" onClick={verificarCodigo}>Verificar código</button>
             {!loggedUser && (
               <button className="btn-main mt-3 ms-2" onClick={() => setStep(1)} style={{backgroundColor: '#6c757d'}}>Atrás</button>
@@ -88,7 +112,7 @@ function ForgotPassword() {
             <br />
             <label className="form-label">Confirmar contraseña</label>
             <input type="password" className="form-control" value={confirmPass} onChange={(e) => setConfirmPass(e.target.value)} />
-            <button className="btn-main mt-3" onClick={cambiarPass}>Cambiar contraseña</button>
+            <button className="btn-main mt-3" onClick={cambiarPass}>Actualizar contraseña</button>
           </div>
         )}
       </BasicCard>

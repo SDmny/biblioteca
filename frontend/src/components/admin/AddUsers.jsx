@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { supabase } from "../../utils/supabase.js"; // Importación de supabase añadida
 
 import BasicCard from "../ui/BasicCard.jsx";
 import BasicInput from "../ui/BasicInput.jsx";
@@ -104,32 +105,40 @@ function AddUsers({ onSuccess }) {
 
     if (!formularioEsValido) return;
 
-    const response = await fetch(
-      "http://localhost:3001/api/admin-create-user",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: form.email.trim(),
-          password: form.password,
+    // --- LÓGICA DE CREACIÓN DESDE ADMIN ---
+    // Nota: Para que un administrador cree usuarios sin cerrar su propia sesión, 
+    // lo ideal es usar una Edge Function de Supabase. 
+    // Aquí usamos signUp con los datos, lo cual enviará el correo de confirmación al nuevo usuario.
+    
+    const { data, error } = await supabase.auth.signUp({
+      email: form.email.trim(),
+      password: form.password,
+      options: {
+        data: {
           name: form.nombre.trim(),
           lastname: form.apellido.trim(),
           birthdate: form.fec_nac,
           username: form.usuario.trim(),
           role: form.rol,
-        }),
+        },
       },
-    );
-    const result = await response.json();
-    if (result.error) {
-      Swal.fire("Error", result.error, "error");
+    });
+
+    if (error) {
+      Swal.fire("Error", error.message, "error");
       return;
     }
 
     Swal.fire({
       title: "¡Usuario registrado!",
-      text: "Puedes visualizar el nuevo usuario en Ver Usuarios.",
+      text: "El usuario ha sido creado y se ha enviado un correo de confirmación a su bandeja.",
       icon: "success"
+    });
+
+    // Limpiar formulario tras éxito
+    setForm({
+      nombre: "", apellido: "", fec_nac: "", email: "",
+      usuario: "", password: "", confirm_password: "", rol: ""
     });
 
     if (onSuccess) onSuccess();

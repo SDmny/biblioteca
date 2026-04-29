@@ -87,7 +87,6 @@ function AddUsers({ onSuccess }) {
   const obtenerMensajesFaltantes = () => {
     let faltan = [];
     
-    // Campos vacíos
     if (!form.nombre) faltan.push("Nombre");
     if (!form.apellido) faltan.push("Apellido");
     if (!form.email) faltan.push("Email");
@@ -96,7 +95,6 @@ function AddUsers({ onSuccess }) {
     if (!form.password) faltan.push("Contraseña");
     if (!form.confirm_password) faltan.push("Confirmar contraseña");
     
-    // Errores de validación activa
     const erroresActivos = Object.entries(errors).filter(([_, msg]) => msg !== "");
     erroresActivos.forEach(([campo, _]) => {
       if (!faltan.includes(campo)) faltan.push(`Corregir ${campo}`);
@@ -134,27 +132,14 @@ function AddUsers({ onSuccess }) {
       return;
     }
 
-    try {
-      await fetch("http://localhost:3001/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: form.email.trim(),
-          name: form.nombre.trim(),
-        }),
-      });
-    } catch (e) {
-      console.error("Error al enviar email", e);
-    }
-
     Swal.fire({
       title: "¡Registro Exitoso!",
-      text: "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.",
+      text: "Se ha enviado un enlace de confirmación a tu correo. Por favor, verifícalo para activar tu cuenta.",
       icon: "success",
-      confirmButtonText: "Acceder",
+      confirmButtonText: "Entendido",
       confirmButtonColor: "#3085d6",
     }).then(() => {
-      nav("/dashboard");
+      nav("/");
       if (onSuccess) onSuccess();
     });
   };
