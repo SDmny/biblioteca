@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { supabase } from "../../utils/supabase.js"; // Importación de supabase añadida
+import { supabase } from "../../utils/supabase.js";
 
 import BasicCard from "../ui/BasicCard.jsx";
 import BasicInput from "../ui/BasicInput.jsx";
@@ -104,11 +104,6 @@ function AddUsers({ onSuccess }) {
     e.preventDefault();
 
     if (!formularioEsValido) return;
-
-    // --- LÓGICA DE CREACIÓN DESDE ADMIN ---
-    // Nota: Para que un administrador cree usuarios sin cerrar su propia sesión, 
-    // lo ideal es usar una Edge Function de Supabase. 
-    // Aquí usamos signUp con los datos, lo cual enviará el correo de confirmación al nuevo usuario.
     
     const { data, error } = await supabase.auth.signUp({
       email: form.email.trim(),
