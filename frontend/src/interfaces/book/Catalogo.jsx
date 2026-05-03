@@ -30,7 +30,7 @@ function Catalogo() {
                 height: 35,
                 padding: "4px 8px",
               }}
-              placeholder="Buscar libro..."
+              placeholder="Buscar por título o autor..."
               value={search}
               onChange={(e) => buscar(e.target.value)}
             />
