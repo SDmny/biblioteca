@@ -85,7 +85,7 @@ function EditBook() {
     const numPages = parseInt(form.pages);
     if (isNaN(numPages) || numPages <= 0) errores.push("Páginas deben ser > 0");
     
-    if (selectedGenres.length === 0) errores.push("Selecciona al menos 1 género");
+    if (selectedGenres.length === 0) errores.push("Selecciona al menos 1 etiqueta");
     
     return errores;
   };
@@ -180,10 +180,10 @@ function EditBook() {
           </div>
         </div>
 
-        <BasicInput label={"Géneros"}>
+        <BasicInput label={"Etiquetas"}>
           <input 
             type="text" className="form-control form-control-sm mb-2" 
-            placeholder="Buscar género..." value={searchTerm} 
+            placeholder="Buscar etiqueta..." value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
           />
           <div style={{ 

@@ -82,7 +82,7 @@ function FilterOptions({ onAction, isAdmin }) {
         position: 'sticky', 
         top: '0', 
         zIndex: 1000, 
-        backgroundColor: '#f4f6f8', // Mismo fondo que el dashboard para camuflarse
+        backgroundColor: '#f4f6f8',
         padding: '10px 0' 
       }}>
         <div className="bg-white p-3 rounded shadow-sm" style={{ border: "1px solid #ddd", position: 'relative' }}>
@@ -121,7 +121,7 @@ function FilterOptions({ onAction, isAdmin }) {
 
             <div style={{ flex: 2 }}>
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="fw-bold text-secondary m-0" style={{ fontSize: '0.85rem' }}>3. Género y Páginas</h6>
+                <h6 className="fw-bold text-secondary m-0" style={{ fontSize: '0.85rem' }}>3. Etiquetas y Páginas</h6>
                 <small 
                   onClick={() => { setBaseFilter("todos"); setSelectedGenres([]); setMinPages(0); setAuthorSearch(""); emitirFiltros("todos", [], 0, ""); }}
                   style={{ cursor: 'pointer', color: '#2f6fb0', fontWeight: 'bold', fontSize: '0.7rem' }}
@@ -134,7 +134,7 @@ function FilterOptions({ onAction, isAdmin }) {
                 <div style={{ position: 'relative', flex: 1 }}>
                   <div className="d-flex align-items-center gap-1">
                       <input 
-                      type="text" className="form-control form-control-sm" placeholder="Añadir género..." 
+                      type="text" className="form-control form-control-sm" placeholder="Añadir etiqueta..." 
                       value={genreSearch} onChange={(e) => setGenreSearch(e.target.value)} 
                       />
                       <small 
@@ -246,7 +246,7 @@ function FilterOptions({ onAction, isAdmin }) {
 
       <div className="mt-4">
         <div className="d-flex justify-content-between align-items-center mb-2">
-          <h4>Género</h4>
+          <h4>Etiquetas</h4>
           <small 
             onClick={() => { setSelectedGenres([]); emitirFiltros(baseFilter, [], minPages, authorSearch); }}
             style={{ cursor: 'pointer', color: '#2f6fb0', fontSize: '0.75rem' }}

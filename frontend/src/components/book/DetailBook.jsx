@@ -160,7 +160,7 @@ function DetailBook({
                 <p><strong>Páginas:</strong> {pages}</p>
                 <p><strong>Edición:</strong> {edition}</p>
                 <p><strong>Fecha de Publicación Original:</strong> {publishDate || "No disponible"}</p>
-                <p><strong>Género:</strong> {genre}</p>
+                <p><strong>Etiquetas:</strong> {genre}</p>
                 <p style={{ textAlign: "justify" }}><strong>Descripción:</strong> {description}</p>
 
                 <div className="ratings-wrapper mt-4">

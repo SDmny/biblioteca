@@ -57,7 +57,7 @@ function AddBook() {
     const numPages = parseInt(form.pages);
     if (isNaN(numPages) || numPages <= 0) errores.push("Páginas válidas");
     
-    if (selectedGenres.length === 0) errores.push("Género");
+    if (selectedGenres.length === 0) errores.push("Etiquetas");
     if (!imageFile) errores.push("Portada");
     if (!pdfFile) errores.push("Archivo PDF");
     
@@ -165,10 +165,10 @@ function AddBook() {
           </div>
         </div>
 
-        <BasicInput label={"Géneros"}>
+        <BasicInput label={"Etiquetas"}>
           <input 
             type="text" className="form-control form-control-sm mb-2" 
-            placeholder="Buscar género..." value={searchTerm} 
+            placeholder="Buscar etiqueta..." value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
           />
           <div style={{ 

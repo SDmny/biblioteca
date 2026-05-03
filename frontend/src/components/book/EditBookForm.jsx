@@ -147,7 +147,7 @@ function EditBook() {
             </div>
 
             <div className="mb-3">
-              <label className="form-label">Género</label>
+              <label className="form-label">Etiquetas</label>
               <input
                 className="form-control"
                 name="genre"

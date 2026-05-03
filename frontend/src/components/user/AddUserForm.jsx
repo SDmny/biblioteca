@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../utils/supabase.js";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
-import BasicInput from "../ui/BasicInput.jsx";
-import TypeInput from "../ui/TypeInput.jsx";
 import AddUserFormFields from "./AddUserFormFields.jsx";
 
 function AddUsers({ onSuccess }) {
@@ -35,14 +33,12 @@ function AddUsers({ onSuccess }) {
         break;
       case "usuario":
         if (!/^[A-Za-z0-9_-]+$/.test(value))
-          error =
-            "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
+          error = "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
         break;
       case "fec_nac": {
         const fechaSeleccionada = new Date(value);
         const fechaActual = new Date();
         const year = fechaSeleccionada.getFullYear();
-        
         if (!value) {
           error = "La fecha de nacimiento es obligatoria";
         } else if (year < 1900) {
@@ -56,15 +52,11 @@ function AddUsers({ onSuccess }) {
         if (value.length < 6)
           error = "La contraseña debe contener al menos 6 caracteres";
         if (form.confirm_password && form.confirm_password !== value) {
-          setErrors((prev) => ({
-            ...prev,
-            confirm_password: "Las contraseñas no coinciden",
-          }));
+          setErrors((prev) => ({ ...prev, confirm_password: "Las contraseñas no coinciden" }));
         } else {
           setErrors((prev) => ({ ...prev, confirm_password: "" }));
         }
         break;
-
       case "confirm_password":
         if (value !== form.password) error = "Las contraseñas no coinciden";
         break;
@@ -86,7 +78,6 @@ function AddUsers({ onSuccess }) {
 
   const obtenerMensajesFaltantes = () => {
     let faltan = [];
-    
     if (!form.nombre) faltan.push("Nombre");
     if (!form.apellido) faltan.push("Apellido");
     if (!form.email) faltan.push("Email");
@@ -96,12 +87,11 @@ function AddUsers({ onSuccess }) {
     if (!form.confirm_password) faltan.push("Confirmar contraseña");
     
     const erroresActivos = Object.entries(errors).filter(([_, msg]) => msg !== "");
-    erroresActivos.forEach(([campo, _]) => {
+    erroresActivos.forEach(([campo]) => {
       if (!faltan.includes(campo)) faltan.push(`Corregir ${campo}`);
     });
 
     if (!captchaValido) faltan.push("Confirmar Captcha");
-
     return faltan;
   };
 
@@ -110,8 +100,38 @@ function AddUsers({ onSuccess }) {
 
   const submit = async (e) => {
     e.preventDefault();
-
     if (!formularioEsValido) return;
+
+    try {
+      const { data: existingUser, error: checkError } = await supabase
+        .from("user")
+        .select("email, username")
+        .or(`email.eq.${form.email.trim()},username.eq.${form.usuario.trim()}`)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+
+      if (existingUser) {
+        if (existingUser.email.toLowerCase() === form.email.trim().toLowerCase()) {
+          Swal.fire({
+            title: "Correo ya registrado",
+            text: "Este correo electrónico ya está vinculado a una cuenta.",
+            icon: "warning",
+            confirmButtonColor: "#2f6fb0"
+          });
+        } else {
+          Swal.fire({
+            title: "Usuario no disponible",
+            text: "El nombre de usuario ya está en uso. Por favor, elige otro.",
+            icon: "warning",
+            confirmButtonColor: "#2f6fb0"
+          });
+        }
+        return; 
+      }
+    } catch (err) {
+      console.error("Error al validar datos:", err.message);
+    }
 
     const { error } = await supabase.auth.signUp({
       email: form.email.trim(),
@@ -134,7 +154,7 @@ function AddUsers({ onSuccess }) {
 
     Swal.fire({
       title: "¡Registro Exitoso!",
-      text: "Se ha enviado un enlace de confirmación a tu correo. Por favor, verifícalo para activar tu cuenta.",
+      text: "Se ha enviado un enlace de confirmación a tu correo. Por favor, verifícalo.",
       icon: "success",
       confirmButtonText: "Entendido",
       confirmButtonColor: "#3085d6",
