@@ -2,41 +2,40 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
+import serverless from "serverless-http"; // Cambiado a import
 import adminCreateUserRouter from "./admin/admin-create-user.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Configuración de Supabase Admin con SERVICE_ROLE_KEY
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
-app.use("/api", adminCreateUserRouter);
+// --- CONFIGURACIÓN PARA NETLIFY ---
+const router = express.Router();
 
-// Actualizar contraseña
-app.post("/api/admin/update-password", async (req, res) => {
+// Montamos tus rutas existentes en el router
+router.use("/admin", adminCreateUserRouter);
+
+router.post("/admin/update-password", async (req, res) => {
   const { userId, newPassword } = req.body;
   const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
     userId,
-    { password: newPassword }
+    { password: newPassword },
   );
   if (error) return res.status(400).json({ error: error.message });
   return res.json({ message: "Contraseña actualizada con éxito" });
 });
 
-// Borrar usuario permanentemente
-app.delete("/api/admin/delete-user/:id", async (req, res) => {
+router.delete("/admin/delete-user/:id", async (req, res) => {
   const { id } = req.params;
-
   try {
-    // 1. Borrar de Supabase Auth (Sistema de autenticación)
     const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
     if (authError) throw authError;
 
-    // 2. Borrar de la tabla pública 'user'
     const { error: dbError } = await supabaseAdmin
       .from("user")
       .delete()
@@ -45,12 +44,19 @@ app.delete("/api/admin/delete-user/:id", async (req, res) => {
 
     return res.json({ message: "Usuario eliminado de raíz" });
   } catch (error) {
-    console.error("Error al eliminar:", error.message);
     return res.status(400).json({ error: error.message });
   }
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Backend running on port ${PORT}`);
-});
+// Esta es la clave: el router debe colgar de la ruta que Netlify espera
+// Si tu archivo se llama server.js, usa '/.netlify/functions/server'
+app.use("/.netlify/functions/server", router);
+
+// Exportamos para Netlify
+export const handler = serverless(app);
+
+// Mantenemos esto solo para desarrollo local
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => console.log(`Local backend en puerto ${PORT}`));
+}
