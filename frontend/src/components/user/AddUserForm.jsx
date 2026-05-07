@@ -6,6 +6,8 @@ import ReCAPTCHA from "react-google-recaptcha";
 import AddUserFormFields from "./AddUserFormFields.jsx";
 
 function AddUsers({ onSuccess }) {
+  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
   const nav = useNavigate();
   const [captchaValido, setCaptchaValido] = useState(false);
   const [errors, setErrors] = useState({});
@@ -33,7 +35,8 @@ function AddUsers({ onSuccess }) {
         break;
       case "usuario":
         if (!/^[A-Za-z0-9_-]+$/.test(value))
-          error = "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
+          error =
+            "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
         break;
       case "fec_nac": {
         const fechaSeleccionada = new Date(value);
@@ -52,7 +55,10 @@ function AddUsers({ onSuccess }) {
         if (value.length < 6)
           error = "La contraseña debe contener al menos 6 caracteres";
         if (form.confirm_password && form.confirm_password !== value) {
-          setErrors((prev) => ({ ...prev, confirm_password: "Las contraseñas no coinciden" }));
+          setErrors((prev) => ({
+            ...prev,
+            confirm_password: "Las contraseñas no coinciden",
+          }));
         } else {
           setErrors((prev) => ({ ...prev, confirm_password: "" }));
         }
@@ -85,8 +91,8 @@ function AddUsers({ onSuccess }) {
     if (!form.fec_nac) faltan.push("Fecha");
     if (!form.password) faltan.push("Contraseña");
     if (!form.confirm_password) faltan.push("Confirmar contraseña");
-    
-    const erroresActivos = Object.entries(errors).filter(([_, msg]) => msg !== "");
+
+    const erroresActivos = Object.entries(errors).filter(([msg]) => msg !== "");
     erroresActivos.forEach(([campo]) => {
       if (!faltan.includes(campo)) faltan.push(`Corregir ${campo}`);
     });
@@ -112,22 +118,24 @@ function AddUsers({ onSuccess }) {
       if (checkError) throw checkError;
 
       if (existingUser) {
-        if (existingUser.email.toLowerCase() === form.email.trim().toLowerCase()) {
+        if (
+          existingUser.email.toLowerCase() === form.email.trim().toLowerCase()
+        ) {
           Swal.fire({
             title: "Correo ya registrado",
             text: "Este correo electrónico ya está vinculado a una cuenta.",
             icon: "warning",
-            confirmButtonColor: "#2f6fb0"
+            confirmButtonColor: "#2f6fb0",
           });
         } else {
           Swal.fire({
             title: "Usuario no disponible",
             text: "El nombre de usuario ya está en uso. Por favor, elige otro.",
             icon: "warning",
-            confirmButtonColor: "#2f6fb0"
+            confirmButtonColor: "#2f6fb0",
           });
         }
-        return; 
+        return;
       }
     } catch (err) {
       console.error("Error al validar datos:", err.message);
@@ -169,21 +177,24 @@ function AddUsers({ onSuccess }) {
       <h2>Registrarse</h2>
       <form onSubmit={submit}>
         <AddUserFormFields form={form} errors={errors} change={change} />
-        
+
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-          <ReCAPTCHA
-            sitekey="6LeD9cgsAAAAAEsdS_PkWKuwuLfhQn_d6H0OEGcv"
-            onChange={onCaptchaChange}
-          />
+          <ReCAPTCHA sitekey={siteKey} onChange={onCaptchaChange} />
         </div>
 
         <div className="mt-3">
           {faltantes.length > 0 ? (
-            <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+            <div
+              className="alert alert-warning py-2"
+              style={{ fontSize: "0.85rem" }}
+            >
               <strong>Pendiente:</strong> {faltantes.join(", ")}
             </div>
           ) : (
-            <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+            <div
+              className="alert alert-success py-2"
+              style={{ fontSize: "0.85rem" }}
+            >
               ✓ Información lista para registrar
             </div>
           )}
@@ -195,9 +206,9 @@ function AddUsers({ onSuccess }) {
           className="btn-custom"
           disabled={!formularioEsValido}
           style={{
-            width: '100%',
-            padding: '10px',
-            marginTop: '10px',
+            width: "100%",
+            padding: "10px",
+            marginTop: "10px",
             opacity: formularioEsValido ? 1 : 0.5,
             cursor: formularioEsValido ? "pointer" : "not-allowed",
           }}
