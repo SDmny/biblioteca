@@ -4,7 +4,6 @@ import { supabase } from "../utils/supabase";
 import Swal from "sweetalert2";
 
 function Header() {
-  const [showNotif, setShowNotif] = useState(false);
   const [user, setUser] = useState(null);
 
   const fetchUserData = async (userId) => {
@@ -165,7 +164,7 @@ function Header() {
                 <div className="user-box position-relative">
                   <Link to="/perfil" className="user-link">
                     <img
-                      src={user.img || "/src/assets/images/user.png"}
+                      src={user.img || "/user.png"}
                       className="user-img"
                       alt="avatar"
                       style={{ objectFit: "cover" }}
