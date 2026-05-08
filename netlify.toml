@@ -7,7 +7,7 @@
   directory = "../backend"
 
 [[redirects]]
-  from = "/api/*"
+  from = "/*"
   to = "/index.html"
   status = 200
 
