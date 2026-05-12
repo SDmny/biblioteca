@@ -92,11 +92,12 @@ function AddUsers({ onSuccess }) {
     if (!form.password) faltan.push("Contraseña");
     if (!form.confirm_password) faltan.push("Confirmar contraseña");
 
-    const erroresActivos = Object.entries(errors).filter(
-      ([mensaje]) => mensaje !== "",
-    );
-    erroresActivos.forEach(([campo]) => {
-      if (!faltan.includes(campo)) faltan.push(`Corregir ${campo}`);
+    const erroresActivos = Object.entries(errors)
+      .filter(([mensaje]) => mensaje !== "")
+      .map(([campo]) => campo);
+    erroresActivos.forEach((campo) => {
+      if (!faltan.includes(`Corregir ${campo}`))
+        faltan.push(`Corregir ${campo}`);
     });
 
     if (!captchaValido) faltan.push("Confirmar Captcha");
