@@ -22,7 +22,7 @@ function EditUserForm() {
     rol: "usuario", 
   });
 
-  const validateField = async (name, value) => {
+  const validateField = (name, value) => {
     let errorMsg = "";
 
     switch (name) {
@@ -32,20 +32,10 @@ function EditUserForm() {
         break;
       case "email":
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
-          errorMsg = "Correo electrónico no válido.";
-        } else {
-          const { data } = await supabase.from("user").select("email").eq("email", value.trim()).neq("id", id).maybeSingle();
-          if (data) errorMsg = "Este correo ya está en uso por otro usuario.";
-        }
+        if (!emailRegex.test(value)) errorMsg = "Correo electrónico no válido.";
         break;
       case "usuario":
-        if (value.trim().length < 4) {
-          errorMsg = "El usuario debe tener al menos 4 caracteres.";
-        } else {
-          const { data } = await supabase.from("user").select("username").eq("username", value.trim()).neq("id", id).maybeSingle();
-          if (data) errorMsg = "Nombre de usuario no disponible.";
-        }
+        if (value.trim().length < 4) errorMsg = "El usuario debe tener al menos 4 caracteres.";
         break;
       case "fec_nac": {
         if (!value) {
@@ -141,7 +131,7 @@ function EditUserForm() {
       return;
     }
 
-    const { error: dbError } = await supabase
+    const { data, error: dbError } = await supabase
       .from("user")
       .update({
         name: form.nombre.trim(),
@@ -151,10 +141,11 @@ function EditUserForm() {
         role: form.rol, 
         email: form.email.trim()
       })
-      .eq("id", id);
+      .eq("id", id)
+      .select();
 
     if (dbError) {
-      Swal.fire("Error", "No se pudo actualizar: " + dbError.message, "error");
+      Swal.fire("Error", "No se pudo actualizar la tabla: " + dbError.message, "error");
       return;
     }
 
@@ -165,14 +156,16 @@ function EditUserForm() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId: id, newPassword: form.password }),
         });
-        if (!res.ok) throw new Error();
+
+        if (!res.ok) throw new Error("Error en servidor de contraseñas");
       } catch (err) {
         Swal.fire("Aviso", "Datos básicos guardados, pero la contraseña no cambió.", "warning");
         return;
       }
     }
 
-    Swal.fire("¡Éxito!", "Usuario actualizado correctamente", "success").then(() => nav("/admin"));
+    Swal.fire("¡Éxito!", "Usuario actualizado correctamente", "success")
+      .then(() => nav("/admin"));
   };
 
   if (loading) return <div className="text-center mt-5">Cargando...</div>;
