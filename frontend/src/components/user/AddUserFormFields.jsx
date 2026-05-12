@@ -1,7 +1,13 @@
 import BasicInput from "../ui/BasicInput.jsx";
 import TypeInput from "../ui/TypeInput.jsx";
 
-function AddUserFormFields({ form, errors, change, includeRole = false }) {
+function AddUserFormFields({
+  form,
+  errors,
+  change,
+  verificarUsuario,
+  includeRole = false,
+}) {
   return (
     <>
       <BasicInput label="Nombre">
@@ -74,6 +80,7 @@ function AddUserFormFields({ form, errors, change, includeRole = false }) {
           placeholder="Usuario"
           value={form.usuario}
           onChange={change}
+          onBlur={() => verificarUsuario(form.usuario)}
           required
         />
         {errors.usuario && (
@@ -90,11 +97,11 @@ function AddUserFormFields({ form, errors, change, includeRole = false }) {
             value={form.rol}
             onChange={change}
             className="form-select"
-            style={{ 
-              width: "100%", 
-              padding: "10px", 
-              borderRadius: "8px", 
-              border: "1px solid #ccc" 
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
             }}
             required
           >

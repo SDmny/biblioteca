@@ -72,6 +72,34 @@ function AddUsers({ onSuccess }) {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
+  const verificarUsuario = async (username) => {
+    if (!username.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("user")
+        .select("username")
+        .eq("username", username.trim())
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error al verificar usuario:", error.message);
+        return;
+      }
+
+      if (data) {
+        setErrors((prev) => ({
+          ...prev,
+          usuario: "El nombre de usuario ya está en uso",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, usuario: "" }));
+      }
+    } catch (err) {
+      console.error("Error inesperado:", err.message);
+    }
+  };
+
   const change = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
@@ -177,7 +205,12 @@ function AddUsers({ onSuccess }) {
     <>
       <h2>Registrarse</h2>
       <form onSubmit={submit}>
-        <AddUserFormFields form={form} errors={errors} change={change} />
+        <AddUserFormFields
+          form={form}
+          errors={errors}
+          change={change}
+          verificarUsuario={verificarUsuario}
+        />
 
         <div style={{ marginTop: "15px", marginBottom: "15px" }}>
           <ReCAPTCHA sitekey={siteKey} onChange={onCaptchaChange} />

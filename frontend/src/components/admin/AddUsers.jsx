@@ -40,7 +40,7 @@ function AddUsers({ onSuccess }) {
         const fechaSeleccionada = new Date(value);
         const fechaActual = new Date();
         const year = fechaSeleccionada.getFullYear();
-        
+
         if (!value) {
           error = "La fecha de nacimiento es obligatoria";
         } else if (year < 1900) {
@@ -79,7 +79,7 @@ function AddUsers({ onSuccess }) {
 
   const obtenerMensajesValidacion = () => {
     let pendientes = [];
-    
+
     if (!form.nombre) pendientes.push("Nombre");
     if (!form.apellido) pendientes.push("Apellido");
     if (!form.email) pendientes.push("Email");
@@ -89,7 +89,7 @@ function AddUsers({ onSuccess }) {
     if (!form.confirm_password) pendientes.push("Confirmación");
     if (!form.rol) pendientes.push("Rol");
 
-    const erroresActivos = Object.entries(errors).filter(([_, msg]) => msg !== "");
+    const erroresActivos = Object.entries(errors).filter(([msg]) => msg !== "");
     erroresActivos.forEach(([campo]) => {
       if (!pendientes.includes(campo)) pendientes.push(`Error en ${campo}`);
     });
@@ -104,8 +104,8 @@ function AddUsers({ onSuccess }) {
     e.preventDefault();
 
     if (!formularioEsValido) return;
-    
-    const { data, error } = await supabase.auth.signUp({
+
+    const { error } = await supabase.auth.signUp({
       email: form.email.trim(),
       password: form.password,
       options: {
@@ -127,16 +127,50 @@ function AddUsers({ onSuccess }) {
     Swal.fire({
       title: "¡Usuario registrado!",
       text: "El usuario ha sido creado y se ha enviado un correo de confirmación a su bandeja.",
-      icon: "success"
+      icon: "success",
     });
 
     // Limpiar formulario tras éxito
     setForm({
-      nombre: "", apellido: "", fec_nac: "", email: "",
-      usuario: "", password: "", confirm_password: "", rol: ""
+      nombre: "",
+      apellido: "",
+      fec_nac: "",
+      email: "",
+      usuario: "",
+      password: "",
+      confirm_password: "",
+      rol: "",
     });
 
     if (onSuccess) onSuccess();
+  };
+
+  const verificarUsuario = async (username) => {
+    if (!username.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("user")
+        .select("username")
+        .eq("username", username.trim())
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error al verificar usuario:", error.message);
+        return;
+      }
+
+      if (data) {
+        setErrors((prev) => ({
+          ...prev,
+          usuario: "El nombre de usuario ya está en uso",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, usuario: "" }));
+      }
+    } catch (err) {
+      console.error("Error inesperado:", err.message);
+    }
   };
 
   return (
@@ -147,16 +181,23 @@ function AddUsers({ onSuccess }) {
             form={form}
             errors={errors}
             change={change}
+            verificarUsuario={verificarUsuario}
             includeRole={true}
           />
 
           <div className="mt-4">
             {listaPendiente.length > 0 ? (
-              <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+              <div
+                className="alert alert-warning py-2"
+                style={{ fontSize: "0.85rem" }}
+              >
                 <strong>Falta completar:</strong> {listaPendiente.join(", ")}
               </div>
             ) : (
-              <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+              <div
+                className="alert alert-success py-2"
+                style={{ fontSize: "0.85rem" }}
+              >
                 ✓ Todo listo para registrar
               </div>
             )}
@@ -169,8 +210,8 @@ function AddUsers({ onSuccess }) {
               className="btn-custom w-100"
               disabled={!formularioEsValido}
               style={{
-                padding: '10px',
-                fontWeight: 'bold',
+                padding: "10px",
+                fontWeight: "bold",
                 opacity: formularioEsValido ? 1 : 0.5,
                 cursor: formularioEsValido ? "pointer" : "not-allowed",
               }}

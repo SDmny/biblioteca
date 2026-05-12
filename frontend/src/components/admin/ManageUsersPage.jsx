@@ -6,31 +6,10 @@ import EditUserForm from "../../components/user/EditUserForm.jsx";
 import BasicCard from "../../components/ui/BasicCard.jsx";
 
 function ManageUsersPage({ mode = "all" }) {
-  const [users, setUsers] = useState(JSON.parse(localStorage.getItem("users")) || []);
+  const [users, setUsers] = useState(
+    JSON.parse(localStorage.getItem("users")) || [],
+  );
   const [editingUser, setEditingUser] = useState(null);
-
-  const handleCreateUser = (user) => {
-    if (!user.nombre || !user.apellido || !user.usuario || !user.email || !user.password) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
-      return;
-    }
-    if (!/\S+@\S+\.\S+/.test(user.email)) {
-      Swal.fire("Error", "Correo electrónico inválido", "error");
-      return;
-    }
-    if (user.password.length < 6) {
-      Swal.fire("Error", "La contraseña debe tener al menos 6 caracteres", "error");
-      return;
-    }
-    if (users.some((u) => u.usuario === user.usuario)) {
-      Swal.fire("Error", "Ese usuario ya existe", "error");
-      return;
-    }
-    const updated = [...users, user];
-    setUsers(updated);
-    localStorage.setItem("users", JSON.stringify(updated));
-    Swal.fire("Éxito", "Usuario creado correctamente", "success");
-  };
 
   const handleDeleteUser = (id) => {
     Swal.fire({
@@ -51,7 +30,11 @@ function ManageUsersPage({ mode = "all" }) {
 
   const handleUpdateUser = (user) => {
     if (!user.nombre || !user.apellido || !user.usuario || !user.email) {
-      Swal.fire("Campos incompletos", "Debes llenar todos los campos", "warning");
+      Swal.fire(
+        "Campos incompletos",
+        "Debes llenar todos los campos",
+        "warning",
+      );
       return;
     }
     if (!/\S+@\S+\.\S+/.test(user.email)) {

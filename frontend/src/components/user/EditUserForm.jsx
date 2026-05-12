@@ -8,7 +8,7 @@ import BackButton from "../ui/BackButton.jsx";
 function EditUserForm() {
   const { id } = useParams();
   const nav = useNavigate();
-  
+
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
@@ -19,7 +19,7 @@ function EditUserForm() {
     usuario: "",
     password: "",
     confirm_password: "",
-    rol: "usuario", 
+    rol: "usuario",
   });
 
   const validateField = (name, value) => {
@@ -30,12 +30,14 @@ function EditUserForm() {
       case "apellido":
         if (value.trim().length < 2) errorMsg = "Mínimo 2 caracteres.";
         break;
-      case "email":
+      case "email": {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) errorMsg = "Correo electrónico no válido.";
         break;
+      }
       case "usuario":
-        if (value.trim().length < 4) errorMsg = "El usuario debe tener al menos 4 caracteres.";
+        if (value.trim().length < 4)
+          errorMsg = "El usuario debe tener al menos 4 caracteres.";
         break;
       case "fec_nac": {
         if (!value) {
@@ -64,7 +66,7 @@ function EditUserForm() {
         break;
     }
 
-    setErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   useEffect(() => {
@@ -77,7 +79,7 @@ function EditUserForm() {
 
       if (error || !data) {
         Swal.fire("Error", "No se encontró el usuario", "error");
-        nav("/admin"); 
+        nav("/admin");
       } else {
         setForm({
           nombre: data.name || "",
@@ -85,8 +87,8 @@ function EditUserForm() {
           fec_nac: data.birthdate || "",
           email: data.email || "",
           usuario: data.username || "",
-          rol: data.role || "usuario", 
-          password: "", 
+          rol: data.role || "usuario",
+          password: "",
           confirm_password: "",
         });
         setLoading(false);
@@ -97,9 +99,9 @@ function EditUserForm() {
 
   const change = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
     validateField(name, value);
-    
+
     if (name === "password") {
       validateField("confirm_password", form.confirm_password);
     }
@@ -117,55 +119,100 @@ function EditUserForm() {
       if (msg) lista.push(campo.charAt(0).toUpperCase() + campo.slice(1));
     });
 
-    return [...new Set(lista)]; 
+    return [...new Set(lista)];
   };
 
   const listaErrores = obtenerErroresActuales();
   const esValido = listaErrores.length === 0;
 
+  const verificarUsuario = async (username) => {
+    if (!username.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("user")
+        .select("id, username")
+        .eq("username", username.trim())
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error al verificar usuario:", error.message);
+        return;
+      }
+
+      // Si existe y no es el mismo usuario que estamos editando
+      if (data && data.id !== id) {
+        setErrors((prev) => ({
+          ...prev,
+          usuario: "El nombre de usuario ya está en uso",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, usuario: "" }));
+      }
+    } catch (err) {
+      console.error("Error inesperado:", err.message);
+    }
+  };
+
   const submit = async (e) => {
     e.preventDefault();
 
     if (!esValido) {
-      Swal.fire("Error", "Por favor, corrige los errores antes de guardar.", "error");
+      Swal.fire(
+        "Error",
+        "Por favor, corrige los errores antes de guardar.",
+        "error",
+      );
       return;
     }
 
-    const { data, error: dbError } = await supabase
+    const { error: dbError } = await supabase
       .from("user")
       .update({
         name: form.nombre.trim(),
         lastname: form.apellido.trim(),
         birthdate: form.fec_nac,
         username: form.usuario.trim(),
-        role: form.rol, 
-        email: form.email.trim()
+        role: form.rol,
+        email: form.email.trim(),
       })
       .eq("id", id)
       .select();
 
     if (dbError) {
-      Swal.fire("Error", "No se pudo actualizar la tabla: " + dbError.message, "error");
+      Swal.fire(
+        "Error",
+        "No se pudo actualizar la tabla: " + dbError.message,
+        "error",
+      );
       return;
     }
 
     if (form.password.trim() !== "") {
       try {
-        const res = await fetch("http://localhost:3001/api/admin/update-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: id, newPassword: form.password }),
-        });
+        const res = await fetch(
+          "http://localhost:3001/api/admin/update-password",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: id, newPassword: form.password }),
+          },
+        );
 
         if (!res.ok) throw new Error("Error en servidor de contraseñas");
       } catch (err) {
-        Swal.fire("Aviso", "Datos básicos guardados, pero la contraseña no cambió.", "warning");
+        Swal.fire(
+          "Aviso",
+          "Datos básicos guardados, pero la contraseña no cambió.",
+          "warning" + err.message,
+        );
         return;
       }
     }
 
-    Swal.fire("¡Éxito!", "Usuario actualizado correctamente", "success")
-      .then(() => nav("/admin"));
+    Swal.fire("¡Éxito!", "Usuario actualizado correctamente", "success").then(
+      () => nav("/admin"),
+    );
   };
 
   if (loading) return <div className="text-center mt-5">Cargando...</div>;
@@ -175,47 +222,58 @@ function EditUserForm() {
       <div className="form-wrapper">
         <div className="d-flex align-items-center mb-4">
           <BackButton />
-          <h2 className="ms-3 mb-0" style={{ color: "var(--clr-azul3)", fontWeight: "bold" }}>
+          <h2
+            className="ms-3 mb-0"
+            style={{ color: "var(--clr-azul3)", fontWeight: "bold" }}
+          >
             Editar Usuario
           </h2>
         </div>
         <div className="form-card p-4">
           <form onSubmit={submit}>
-            <AddUserFormFields 
-              form={form} 
-              errors={errors} 
-              change={change} 
-              includeRole={true} 
+            <AddUserFormFields
+              form={form}
+              errors={errors}
+              change={change}
+              includeRole={true}
+              verificarUsuario={verificarUsuario}
             />
-            
-            <p className="text-muted mt-2" style={{fontSize: '0.8rem'}}>
-              * Por motivos de privacidad no se puede visualizar la contraseña. Deje la contraseña en blanco si no desea cambiarla.
+
+            <p className="text-muted mt-2" style={{ fontSize: "0.8rem" }}>
+              * Por motivos de privacidad no se puede visualizar la contraseña.
+              Deje la contraseña en blanco si no desea cambiarla.
             </p>
 
             <div className="mt-4">
               {listaErrores.length > 0 ? (
-                <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+                <div
+                  className="alert alert-warning py-2"
+                  style={{ fontSize: "0.85rem" }}
+                >
                   <strong>Pendiente:</strong> {listaErrores.join(", ")}
                 </div>
               ) : (
-                <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+                <div
+                  className="alert alert-success py-2"
+                  style={{ fontSize: "0.85rem" }}
+                >
                   ✓ Todos los campos están correctos
                 </div>
               )}
             </div>
 
-            <input 
-              type="submit" 
-              value="Guardar Cambios" 
-              className="btn-custom mt-2" 
-              style={{ 
+            <input
+              type="submit"
+              value="Guardar Cambios"
+              className="btn-custom mt-2"
+              style={{
                 width: "100%",
                 opacity: esValido ? 1 : 0.5,
                 cursor: esValido ? "pointer" : "not-allowed",
                 fontWeight: "bold",
-                padding: "12px"
-              }} 
-              disabled={!esValido} 
+                padding: "12px",
+              }}
+              disabled={!esValido}
             />
           </form>
         </div>
