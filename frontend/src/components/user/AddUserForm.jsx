@@ -92,7 +92,9 @@ function AddUsers({ onSuccess }) {
     if (!form.password) faltan.push("Contraseña");
     if (!form.confirm_password) faltan.push("Confirmar contraseña");
 
-    const erroresActivos = Object.entries(errors).filter(([msg]) => msg !== "");
+    const erroresActivos = Object.entries(errors).filter(
+      ([mensaje]) => mensaje !== "",
+    );
     erroresActivos.forEach(([campo]) => {
       if (!faltan.includes(campo)) faltan.push(`Corregir ${campo}`);
     });
