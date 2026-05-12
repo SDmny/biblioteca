@@ -11,7 +11,6 @@ function AddUsers({ onSuccess }) {
   const nav = useNavigate();
   const [captchaValido, setCaptchaValido] = useState(false);
   const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState(false); 
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
@@ -54,42 +53,42 @@ function AddUsers({ onSuccess }) {
       case "nombre":
       case "apellido":
         if (value.trim().length < 2)
-          error = "Mínimo 2 caracteres";
+          error = "Debe contener al menos 2 caracteres";
         break;
       case "email":
-        if (!/\S+@\S+\.\S+/.test(value)) error = "Correo inválido";
+        if (!/\S+@\S+\.\S+/.test(value)) error = "Correo electrónico inválido";
         break;
       case "usuario":
         if (!/^[A-Za-z0-9_-]+$/.test(value))
-          error = "Formato de usuario inválido";
+          error = "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
         break;
       case "fec_nac": {
         const fechaSeleccionada = new Date(value);
         const fechaActual = new Date();
         const year = fechaSeleccionada.getFullYear();
         if (!value) {
-          error = "Fecha obligatoria";
+          error = "La fecha de nacimiento es obligatoria";
         } else if (year < 1900) {
-          error = "Año inválido";
+          error = "El año no puede ser anterior a 1900";
         } else if (fechaSeleccionada > fechaActual) {
-          error = "Fecha futura";
+          error = "La fecha no puede ser futura";
         }
         break;
       }
       case "password":
         if (value.length < 6)
-          error = "Contraseña corta (mín. 6)";
+          error = "La contraseña debe contener al menos 6 caracteres";
         if (form.confirm_password && form.confirm_password !== value) {
           setErrors((prev) => ({
             ...prev,
-            confirm_password: "No coinciden",
+            confirm_password: "Las contraseñas no coinciden",
           }));
         } else {
           setErrors((prev) => ({ ...prev, confirm_password: "" }));
         }
         break;
       case "confirm_password":
-        if (value !== form.password) error = "No coinciden";
+        if (value !== form.password) error = "Las contraseñas no coinciden";
         break;
       default:
         break;
@@ -100,31 +99,29 @@ function AddUsers({ onSuccess }) {
   const change = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    setTouched(true); 
     validarCampo(name, value);
   };
 
   const onCaptchaChange = (value) => {
     setCaptchaValido(!!value);
-    if (value) setTouched(true);
   };
 
   const obtenerMensajesFaltantes = () => {
     let faltan = [];
-    if (!form.nombre.trim()) faltan.push("Nombre");
-    if (!form.apellido.trim()) faltan.push("Apellido");
-    if (!form.email.trim()) faltan.push("Email");
-    if (!form.usuario.trim()) faltan.push("Usuario");
+    if (!form.nombre) faltan.push("Nombre");
+    if (!form.apellido) faltan.push("Apellido");
+    if (!form.email) faltan.push("Email");
+    if (!form.usuario) faltan.push("Usuario");
     if (!form.fec_nac) faltan.push("Fecha");
     if (!form.password) faltan.push("Contraseña");
-    if (form.password !== form.confirm_password) faltan.push("Validar contraseña");
+    if (!form.confirm_password) faltan.push("Confirmar contraseña");
 
     const erroresActivos = Object.entries(errors).filter(([key, msg]) => msg !== "" && !msg.includes("✓"));
-    erroresActivos.forEach(([campo, msg]) => {
-      if (!faltan.includes(msg)) faltan.push(msg);
+    erroresActivos.forEach(([campo]) => {
+      if (!faltan.includes(campo)) faltan.push(`Corregir ${campo}`);
     });
 
-    if (!captchaValido) faltan.push("Captcha");
+    if (!captchaValido) faltan.push("Confirmar Captcha");
     return faltan;
   };
 
@@ -156,9 +153,10 @@ function AddUsers({ onSuccess }) {
 
     Swal.fire({
       title: "¡Registro Exitoso!",
-      text: "Verifica tu correo para confirmar la cuenta.",
+      text: "Se ha enviado un enlace de confirmación a tu correo. Por favor, verifícalo.",
       icon: "success",
       confirmButtonText: "Entendido",
+      confirmButtonColor: "#3085d6",
     }).then(() => {
       nav("/");
       if (onSuccess) onSuccess();
@@ -175,19 +173,17 @@ function AddUsers({ onSuccess }) {
           <ReCAPTCHA sitekey={siteKey} onChange={onCaptchaChange} />
         </div>
 
-        {touched && (
-          <div className="mt-3">
-            {faltantes.length > 0 ? (
-              <div className="alert alert-warning py-2" style={{ fontSize: "0.85rem" }}>
-                <strong>Pendiente:</strong> {faltantes.join(", ")}
-              </div>
-            ) : (
-              <div className="alert alert-success py-2" style={{ fontSize: "0.85rem" }}>
-                ✓ Información lista para registrar
-              </div>
-            )}
-          </div>
-        )}
+        <div className="mt-3">
+          {faltantes.length > 0 ? (
+            <div className="alert alert-warning py-2" style={{ fontSize: "0.85rem" }}>
+              <strong>Pendiente:</strong> {faltantes.join(", ")}
+            </div>
+          ) : (
+            <div className="alert alert-success py-2" style={{ fontSize: "0.85rem" }}>
+              ✓ Información lista para registrar
+            </div>
+          )}
+        </div>
 
         <input
           type="submit"
