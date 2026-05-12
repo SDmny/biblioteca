@@ -61,7 +61,7 @@ function AddUserFormFields({ form, errors, change, includeRole = false }) {
           required
         />
         {errors.email && (
-          <small style={{ color: "red", display: "block" }}>
+          <small style={{ color: errors.email.includes("disponible") ? "green" : "red", display: "block" }}>
             {errors.email}
           </small>
         )}
@@ -77,7 +77,7 @@ function AddUserFormFields({ form, errors, change, includeRole = false }) {
           required
         />
         {errors.usuario && (
-          <small style={{ color: "red", display: "block" }}>
+          <small style={{ color: errors.usuario.includes("disponible") ? "green" : "red", display: "block" }}>
             {errors.usuario}
           </small>
         )}

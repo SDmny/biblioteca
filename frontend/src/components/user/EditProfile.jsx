@@ -10,6 +10,7 @@ function EditProfile({ noExtras = false }) {
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [usuarioError, setUsuarioError] = useState("");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -45,6 +46,32 @@ function EditProfile({ noExtras = false }) {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    const verificarDisponibilidad = async () => {
+      if (loading || !form || !form.id) return;
+
+      if (form.usuario && /^[A-Za-z0-9_-]+$/.test(form.usuario)) {
+        const { data } = await supabase
+          .from("user")
+          .select("id")
+          .eq("username", form.usuario.trim())
+          .neq("id", form.id)
+          .maybeSingle();
+
+        if (data) {
+          setUsuarioError("Este usuario ya está en uso");
+        } else {
+          setUsuarioError("Usuario disponible ✓");
+        }
+      } else {
+        setUsuarioError("");
+      }
+    };
+
+    const timeoutId = setTimeout(verificarDisponibilidad, 500);
+    return () => clearTimeout(timeoutId);
+  }, [form?.usuario, form?.id, loading]);
+
   const change = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
@@ -61,7 +88,12 @@ function EditProfile({ noExtras = false }) {
 
     if (nombreTrimmed.length < 2) errores.push("Nombre (min. 2 letras)");
     if (apellidoTrimmed.length < 2) errores.push("Apellido (min. 2 letras)");
-    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) errores.push("Usuario (letras, números, _ o -)");
+    
+    if (!/^[A-Za-z0-9_-]+$/.test(usuarioTrimmed)) {
+      errores.push("Usuario (letras, números, _ o -)");
+    } else if (usuarioError && !usuarioError.includes("✓")) {
+      errores.push(usuarioError);
+    }
     
     if (!fecNac) {
       errores.push("Fecha de nacimiento");
@@ -183,6 +215,11 @@ function EditProfile({ noExtras = false }) {
         <br />
         <label className="fw-bold">Usuario</label>
         <input className="form-control" name="usuario" value={form.usuario || ""} onChange={change} />
+        {usuarioError && (
+          <small style={{ color: usuarioError.includes("✓") ? "green" : "red", display: "block" }}>
+            {usuarioError}
+          </small>
+        )}
         <br />
         <label className="fw-bold">Fecha de nacimiento</label>
         <input className="form-control" type="date" name="fec_nac" value={form.fec_nac || ""} onChange={change} />
