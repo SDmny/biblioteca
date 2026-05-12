@@ -1,15 +1,13 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../../utils/supabase.js";
+import { useState } from "react";
 import Swal from "sweetalert2";
-import ReCAPTCHA from "react-google-recaptcha";
-import AddUserFormFields from "./AddUserFormFields.jsx";
+import { supabase } from "../../utils/supabase.js";
+
+import BasicCard from "../ui/BasicCard.jsx";
+import BasicInput from "../ui/BasicInput.jsx";
+import TypeInput from "../ui/TypeInput.jsx";
+import AddUserFormFields from "../user/AddUserFormFields.jsx";
 
 function AddUsers({ onSuccess }) {
-  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-
-  const nav = useNavigate();
-  const [captchaValido, setCaptchaValido] = useState(false);
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     nombre: "",
@@ -19,33 +17,8 @@ function AddUsers({ onSuccess }) {
     usuario: "",
     password: "",
     confirm_password: "",
-    rol: "usuario",
+    rol: "",
   });
-
-  useEffect(() => {
-    const verificarDisponibilidad = async () => {
-      if (form.email && /\S+@\S+\.\S+/.test(form.email)) {
-        const { data } = await supabase.from("user").select("email").eq("email", form.email.trim()).maybeSingle();
-        if (data) {
-          setErrors(prev => ({ ...prev, email: "Este correo ya está registrado" }));
-        } else {
-          setErrors(prev => ({ ...prev, email: "Email disponible ✓" }));
-        }
-      }
-
-      if (form.usuario && /^[A-Za-z0-9_-]+$/.test(form.usuario)) {
-        const { data } = await supabase.from("user").select("username").eq("username", form.usuario.trim()).maybeSingle();
-        if (data) {
-          setErrors(prev => ({ ...prev, usuario: "El usuario ya está en uso" }));
-        } else {
-          setErrors(prev => ({ ...prev, usuario: "Usuario disponible ✓" }));
-        }
-      }
-    };
-
-    const timeoutId = setTimeout(verificarDisponibilidad, 500);
-    return () => clearTimeout(timeoutId);
-  }, [form.email, form.usuario]);
 
   const validarCampo = (name, value) => {
     let error = "";
@@ -60,12 +33,14 @@ function AddUsers({ onSuccess }) {
         break;
       case "usuario":
         if (!/^[A-Za-z0-9_-]+$/.test(value))
-          error = "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
+          error =
+            "El nombre de usuario solo puede contener letras, números, guion y guion bajo";
         break;
       case "fec_nac": {
         const fechaSeleccionada = new Date(value);
         const fechaActual = new Date();
         const year = fechaSeleccionada.getFullYear();
+        
         if (!value) {
           error = "La fecha de nacimiento es obligatoria";
         } else if (year < 1900) {
@@ -102,37 +77,35 @@ function AddUsers({ onSuccess }) {
     validarCampo(name, value);
   };
 
-  const onCaptchaChange = (value) => {
-    setCaptchaValido(!!value);
-  };
+  const obtenerMensajesValidacion = () => {
+    let pendientes = [];
+    
+    if (!form.nombre) pendientes.push("Nombre");
+    if (!form.apellido) pendientes.push("Apellido");
+    if (!form.email) pendientes.push("Email");
+    if (!form.usuario) pendientes.push("Usuario");
+    if (!form.fec_nac) pendientes.push("Fecha");
+    if (!form.password) pendientes.push("Contraseña");
+    if (!form.confirm_password) pendientes.push("Confirmación");
+    if (!form.rol) pendientes.push("Rol");
 
-  const obtenerMensajesFaltantes = () => {
-    let faltan = [];
-    if (!form.nombre) faltan.push("Nombre");
-    if (!form.apellido) faltan.push("Apellido");
-    if (!form.email) faltan.push("Email");
-    if (!form.usuario) faltan.push("Usuario");
-    if (!form.fec_nac) faltan.push("Fecha");
-    if (!form.password) faltan.push("Contraseña");
-    if (!form.confirm_password) faltan.push("Confirmar contraseña");
-
-    const erroresActivos = Object.entries(errors).filter(([key, msg]) => msg !== "" && !msg.includes("✓"));
+    const erroresActivos = Object.entries(errors).filter(([_, msg]) => msg !== "");
     erroresActivos.forEach(([campo]) => {
-      if (!faltan.includes(campo)) faltan.push(`Corregir ${campo}`);
+      if (!pendientes.includes(campo)) pendientes.push(`Error en ${campo}`);
     });
 
-    if (!captchaValido) faltan.push("Confirmar Captcha");
-    return faltan;
+    return pendientes;
   };
 
-  const faltantes = obtenerMensajesFaltantes();
-  const formularioEsValido = faltantes.length === 0;
+  const listaPendiente = obtenerMensajesValidacion();
+  const formularioEsValido = listaPendiente.length === 0;
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!formularioEsValido) return;
 
-    const { error } = await supabase.auth.signUp({
+    if (!formularioEsValido) return;
+    
+    const { data, error } = await supabase.auth.signUp({
       email: form.email.trim(),
       password: form.password,
       options: {
@@ -152,53 +125,59 @@ function AddUsers({ onSuccess }) {
     }
 
     Swal.fire({
-      title: "¡Registro Exitoso!",
-      text: "Se ha enviado un enlace de confirmación a tu correo. Por favor, verifícalo.",
-      icon: "success",
-      confirmButtonText: "Entendido",
-      confirmButtonColor: "#3085d6",
-    }).then(() => {
-      nav("/");
-      if (onSuccess) onSuccess();
+      title: "¡Usuario registrado!",
+      text: "El usuario ha sido creado y se ha enviado un correo de confirmación a su bandeja.",
+      icon: "success"
     });
+
+    // Limpiar formulario tras éxito
+    setForm({
+      nombre: "", apellido: "", fec_nac: "", email: "",
+      usuario: "", password: "", confirm_password: "", rol: ""
+    });
+
+    if (onSuccess) onSuccess();
   };
 
   return (
     <>
-      <h2>Registrarse</h2>
-      <form onSubmit={submit}>
-        <AddUserFormFields form={form} errors={errors} change={change} />
+      <BasicCard titulo={"Agregar Usuario"}>
+        <form onSubmit={submit}>
+          <AddUserFormFields
+            form={form}
+            errors={errors}
+            change={change}
+            includeRole={true}
+          />
 
-        <div style={{ marginTop: "15px", marginBottom: "15px" }}>
-          <ReCAPTCHA sitekey={siteKey} onChange={onCaptchaChange} />
-        </div>
+          <div className="mt-4">
+            {listaPendiente.length > 0 ? (
+              <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
+                <strong>Falta completar:</strong> {listaPendiente.join(", ")}
+              </div>
+            ) : (
+              <div className="alert alert-success py-2" style={{ fontSize: '0.85rem' }}>
+                ✓ Todo listo para registrar
+              </div>
+            )}
+          </div>
 
-        <div className="mt-3">
-          {faltantes.length > 0 ? (
-            <div className="alert alert-warning py-2" style={{ fontSize: "0.85rem" }}>
-              <strong>Pendiente:</strong> {faltantes.join(", ")}
-            </div>
-          ) : (
-            <div className="alert alert-success py-2" style={{ fontSize: "0.85rem" }}>
-              ✓ Información lista para registrar
-            </div>
-          )}
-        </div>
-
-        <input
-          type="submit"
-          value="Registrarse"
-          className="btn-custom"
-          disabled={!formularioEsValido}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginTop: "10px",
-            opacity: formularioEsValido ? 1 : 0.5,
-            cursor: formularioEsValido ? "pointer" : "not-allowed",
-          }}
-        />
-      </form>
+          <div className="mt-3">
+            <input
+              type="submit"
+              value="Agregar Usuario"
+              className="btn-custom w-100"
+              disabled={!formularioEsValido}
+              style={{
+                padding: '10px',
+                fontWeight: 'bold',
+                opacity: formularioEsValido ? 1 : 0.5,
+                cursor: formularioEsValido ? "pointer" : "not-allowed",
+              }}
+            />
+          </div>
+        </form>
+      </BasicCard>
     </>
   );
 }

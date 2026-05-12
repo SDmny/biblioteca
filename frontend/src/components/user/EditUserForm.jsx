@@ -22,35 +22,9 @@ function EditUserForm() {
     rol: "usuario", 
   });
 
-  useEffect(() => {
-    const verificarDisponibilidad = async () => {
-      if (loading) return;
-
-      if (form.email && /\S+@\S+\.\S+/.test(form.email)) {
-        const { data } = await supabase.from("user").select("id").eq("email", form.email.trim()).neq("id", id).maybeSingle();
-        if (data) {
-          setErrors(prev => ({ ...prev, email: "Este correo ya pertenece a otro usuario" }));
-        } else {
-          setErrors(prev => ({ ...prev, email: "Email disponible ✓" }));
-        }
-      }
-
-      if (form.usuario && /^[A-Za-z0-9_-]+$/.test(form.usuario)) {
-        const { data } = await supabase.from("user").select("id").eq("username", form.usuario.trim()).neq("id", id).maybeSingle();
-        if (data) {
-          setErrors(prev => ({ ...prev, usuario: "Este usuario ya está en uso" }));
-        } else {
-          setErrors(prev => ({ ...prev, usuario: "Usuario disponible ✓" }));
-        }
-      }
-    };
-
-    const timeoutId = setTimeout(verificarDisponibilidad, 500);
-    return () => clearTimeout(timeoutId);
-  }, [form.email, form.usuario, id, loading]);
-
   const validateField = (name, value) => {
     let errorMsg = "";
+
     switch (name) {
       case "nombre":
       case "apellido":
@@ -69,7 +43,8 @@ function EditUserForm() {
         } else {
           const fechaSeleccionada = new Date(value);
           const hoy = new Date();
-          if (fechaSeleccionada.getFullYear() < 1900) {
+          const anio = fechaSeleccionada.getFullYear();
+          if (anio < 1900) {
             errorMsg = "El año no puede ser anterior a 1900.";
           } else if (fechaSeleccionada > hoy) {
             errorMsg = "La fecha no puede ser futura.";
@@ -78,7 +53,9 @@ function EditUserForm() {
         break;
       }
       case "password":
-        if (value.length > 0 && value.length < 6) errorMsg = "La contraseña debe tener al menos 6 caracteres.";
+        if (value.length > 0 && value.length < 6) {
+          errorMsg = "La contraseña debe tener al menos 6 caracteres.";
+        }
         break;
       case "confirm_password":
         if (value !== form.password) errorMsg = "Las contraseñas no coinciden.";
@@ -86,12 +63,18 @@ function EditUserForm() {
       default:
         break;
     }
+
     setErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data, error } = await supabase.from("user").select("*").eq("id", id).single();
+      const { data, error } = await supabase
+        .from("user")
+        .select("*")
+        .eq("id", id)
+        .single();
+
       if (error || !data) {
         Swal.fire("Error", "No se encontró el usuario", "error");
         nav("/admin"); 
@@ -116,7 +99,10 @@ function EditUserForm() {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
     validateField(name, value);
-    if (name === "password") validateField("confirm_password", form.confirm_password);
+    
+    if (name === "password") {
+      validateField("confirm_password", form.confirm_password);
+    }
   };
 
   const obtenerErroresActuales = () => {
@@ -126,9 +112,11 @@ function EditUserForm() {
     if (!form.email.trim()) lista.push("Email");
     if (!form.usuario.trim()) lista.push("Usuario");
     if (!form.fec_nac) lista.push("Fecha");
+
     Object.entries(errors).forEach(([campo, msg]) => {
-      if (msg && !msg.includes("✓")) lista.push(campo.charAt(0).toUpperCase() + campo.slice(1));
+      if (msg) lista.push(campo.charAt(0).toUpperCase() + campo.slice(1));
     });
+
     return [...new Set(lista)]; 
   };
 
@@ -137,11 +125,13 @@ function EditUserForm() {
 
   const submit = async (e) => {
     e.preventDefault();
+
     if (!esValido) {
       Swal.fire("Error", "Por favor, corrige los errores antes de guardar.", "error");
       return;
     }
-    const { error: dbError } = await supabase
+
+    const { data, error: dbError } = await supabase
       .from("user")
       .update({
         name: form.nombre.trim(),
@@ -151,26 +141,31 @@ function EditUserForm() {
         role: form.rol, 
         email: form.email.trim()
       })
-      .eq("id", id);
+      .eq("id", id)
+      .select();
 
     if (dbError) {
-      Swal.fire("Error", dbError.message, "error");
+      Swal.fire("Error", "No se pudo actualizar la tabla: " + dbError.message, "error");
       return;
     }
 
     if (form.password.trim() !== "") {
       try {
-        await fetch("http://localhost:3001/api/admin/update-password", {
+        const res = await fetch("http://localhost:3001/api/admin/update-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId: id, newPassword: form.password }),
         });
+
+        if (!res.ok) throw new Error("Error en servidor de contraseñas");
       } catch (err) {
-        Swal.fire("Aviso", "Datos guardados, pero la contraseña falló.", "warning");
+        Swal.fire("Aviso", "Datos básicos guardados, pero la contraseña no cambió.", "warning");
         return;
       }
     }
-    Swal.fire("¡Éxito!", "Usuario actualizado", "success").then(() => nav("/admin"));
+
+    Swal.fire("¡Éxito!", "Usuario actualizado correctamente", "success")
+      .then(() => nav("/admin"));
   };
 
   if (loading) return <div className="text-center mt-5">Cargando...</div>;
@@ -186,10 +181,17 @@ function EditUserForm() {
         </div>
         <div className="form-card p-4">
           <form onSubmit={submit}>
-            <AddUserFormFields form={form} errors={errors} change={change} includeRole={true} />
+            <AddUserFormFields 
+              form={form} 
+              errors={errors} 
+              change={change} 
+              includeRole={true} 
+            />
+            
             <p className="text-muted mt-2" style={{fontSize: '0.8rem'}}>
-              * Deje la contraseña en blanco si no desea cambiarla.
+              * Por motivos de privacidad no se puede visualizar la contraseña. Deje la contraseña en blanco si no desea cambiarla.
             </p>
+
             <div className="mt-4">
               {listaErrores.length > 0 ? (
                 <div className="alert alert-warning py-2" style={{ fontSize: '0.85rem' }}>
@@ -201,11 +203,18 @@ function EditUserForm() {
                 </div>
               )}
             </div>
+
             <input 
               type="submit" 
               value="Guardar Cambios" 
               className="btn-custom mt-2" 
-              style={{ width: "100%", opacity: esValido ? 1 : 0.5, cursor: esValido ? "pointer" : "not-allowed", fontWeight: "bold", padding: "12px" }} 
+              style={{ 
+                width: "100%",
+                opacity: esValido ? 1 : 0.5,
+                cursor: esValido ? "pointer" : "not-allowed",
+                fontWeight: "bold",
+                padding: "12px"
+              }} 
               disabled={!esValido} 
             />
           </form>
